@@ -86,6 +86,8 @@ B) ___It is extremely sensitive to the data we give it___. Remember earlier how 
 
 C) ___We have to know in advance what we expect the computer to learn___. This is a more subtle limitation. By giving the computer the labels, we know the set of possible answers. If our eventual goal (more generally) is to use learned computers to improve our ability to think, shouldn't we allow the computer to surprise us with what it learns? In specific situations, a supervised learning framework can be very effective.
 
+\\[ a^2 = b^2 + c^2 \\]
+
 
 
     
