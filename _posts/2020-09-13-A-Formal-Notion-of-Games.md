@@ -1,3 +1,9 @@
+---
+layout: post
+title: "A Formal Notion of Games"
+date: 2020-09-13
+---
+
 #### *Prerequisite Math*: None
 #### *Prerequisite Coding*: None
 
