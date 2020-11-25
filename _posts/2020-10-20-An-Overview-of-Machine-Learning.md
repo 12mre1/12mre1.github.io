@@ -1,3 +1,9 @@
+---
+layout: post
+title: "An Overview of Machine Learning"
+date: 2020-10-20
+---
+
 ## What is Machine Learning?
 
 _Prerequisite Math: None_
