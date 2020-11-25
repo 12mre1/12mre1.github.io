@@ -1,10 +1,16 @@
 ---
 layout: default
-title: Hank Quinlan's Blog
+title: Matt's Blog
 ---
 	<h1>{{ page.title }}</h1>
 	<ul class="posts">
-
+		<p> Welcome to my blog! My goal in writing these posts is to provide clear explanations of somewhat difficult technical concepts.
+		I also find that writing helps to clarify my own understanding. I write about a broad range of topics from statistics, mathematics, 
+		economics and computer science. Most of my posts only require high-school knowledge of math and computer programming, but when
+		advanced prerequisites are needed, I state them in the beginning of the post. Virtually all of the programming is written in Python, R 
+		or C (this is just a consequence of my education). In the spirit of life-long learning, every post contains suggested resources for
+		further reading. If you have suggestions for new posts, or improvements to existing ones, please don't hesitate to contact me. </p> 
+		
 	  {% for post in site.posts %}
 	    <li><span>{{ post.date | date_to_string }}</span> » <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a></li>
 	  {% endfor %}
