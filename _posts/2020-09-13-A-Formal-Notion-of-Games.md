@@ -56,11 +56,11 @@ The matrix above is the most common representation for games. It is called **nor
   
 Let's consider another game, called the **Deadlock**. It works like this:
 
-- Two nuclear superpowers are trying to dissolve their arsenals of nuclear weapons
-- Each country has a choice: Cooperate in the dissolution, or renege and keep their arms
-- If both countries renege, they receive the same payout
-- Each country gets a higher individual benefit when they renege and their opponent cooperates (they become relatively stronger)
-- If both countries cooperate, they are both weaker (you can think of this compared to the rest of the world)
+   - Two nuclear superpowers are trying to dissolve their arsenals of nuclear weapons
+   - Each country has a choice: Cooperate in the dissolution, or renege and keep their arms
+   - If both countries renege, they receive the same payout
+   - Each country gets a higher individual benefit when they renege and their opponent cooperates (they become relatively stronger)
+   - If both countries cooperate, they are both weaker (you can think of this compared to the rest of the world)
 
 Here is the normal form representation of this game:
 
