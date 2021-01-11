@@ -17,9 +17,9 @@ our brains deal with linear relationships every day. For example, many people ar
 and most of us at least roughly obey the speed limit (a linear relation between distance and time) while driving. Another benefit of 
 assuming a linear relationship is that the math becomes much more manageable, as we will see shortly.
 
-$y_i = \beta_0 + \beta_1 x_i + \epsilon_i$ 
+\\[ y_i = \beta_0 + \beta_1 x_i + \epsilon_i$ \\]
 
-### What is OLS?
+### What is Ordinary Least Squares?
 
 ### How Do We Estimate $\beta$?
 
@@ -32,6 +32,9 @@ $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$
 ### Application: Predicting Student Test Scores
 
 ### Other Extensions
+- Weighted Least Squares
+- Generalized Least Squares
+- Non-linear Least Squares
 
 ### Further Reading
 
