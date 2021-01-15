@@ -67,7 +67,7 @@ for it. If we knew the true error, we could predict perfectly. All we can do is 
 average) as possible. Since our line is fully characterized by the two coefficients \\( (\beta_0, \beta_1) \\), our question becomes: what
 coefficient values should we pick to make our predictions as accurate as possible? 
 
-Perhaps the most obvious approach is simply minimize overall error. But what exactly do we mean by this? If we simply took total error to be
+Perhaps the most obvious approach is to simply minimize overall error. But what exactly do we mean by this? If we took total error to be
 the sum of all the errors of individual observations (ie \\( \Sigma_i \epsilon_i \\)), our underpredictions would cancel with our 
 overpredictions. The negative would cancel with the positive. To correct for this, we can instead try to minimize the sum of squared errors.
 Formally, we want to choose our coefficients to minimize this value:
@@ -79,6 +79,60 @@ This is much clearer. Minimizing the squared error solves our problem of error c
 easy to optimize. Note that there are other formulations that work well (for instance absolute error), but we will stick with this one 
 for the duration of the post. Least Squares is a form of __loss function__, and most machine learning problems try to obtain predictions
 by minimizing some loss function across a training dataset. 
+
+### From Math to Code
+
+```python
+class LinearRegression:
+  # A class to automate linear regression using both
+  # analytic and numeric solutions
+  def __init__(self, X, y):
+    '''
+    Object must be initialized with dependent
+    and independent variables.
+    '''
+    self.features = X
+    self.labels = y
+
+  def get_features(self):
+    # Return the array of features (design matrix, n x d)
+    print('This regression uses {} features'.format(self.features.shape(1)))
+    return self.features
+
+  def get_labels(self):
+    # Return the array of labels (n x 1 col vector)
+    return self.labels
+
+  # Let's define the analytic solution
+  def analytic_fit(self):
+    '''
+    This method solves for coefficients using the analytic approach.
+    Requires no input beyond pre-existing attributes of LinearRegression
+    Output - Just print statements, but attributes will be defined
+    '''
+    normmatinv = np.linalg.inv(np.dot(self.features.T,self.features))
+    mommat = np.dot(self.features.T, self.labels)
+    # Inverting the inverted cancels itself
+    self.normal_matrix = np.linalg.inv(normmatinv)
+    self.moment_matrix = mommat
+    # Define the coefficients, predictions, and residuals
+    beta = np.dot(normmatinv, mommat)
+    self.coefs = beta
+    self.yhats = np.dot(self.features, beta)
+    self.residuals = np.subtract(self.labels, self.yhats)
+    print('------- Regression fitting complete. ----------')
+  
+  # What happens when we want to predict with new data?
+  def predict(self, X_new):
+    '''
+    Given a new set of features, we want to return predictions.
+    Input - a design matrix, but no associated labels
+    Output - An n x 1 array of predictions 
+    '''
+    new_preds = np.dot(X_new, self.coefs)
+    return new_preds
+
+```
 
 ### Newton's Method
 
