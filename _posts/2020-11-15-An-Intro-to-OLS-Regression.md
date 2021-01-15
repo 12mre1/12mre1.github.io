@@ -34,19 +34,29 @@ __slope coefficient__. These together make up the line that our model uses to pr
 is called the __error__ . It reflects the fact that, on an observation to observation basis, our prediction might be a little bit off. In 
 other words, our line will not pass perfectly through all the points in our dataset. There will be some difference between our predicted
 value of y, and the true value of y. In this case, we use subscript i, \\( i = 1,...,n \\) to denote the fact that each observation
-has its own error, but note that the slope and intercept are constant across all observations. In this model, we call Y the __dependent
-variable__, and X the __independent variable__. This is because we generally want to predict Y given X (not the other way around), and
+has its own error, but note that the slope and intercept are constant across all observations. In this model, we call Y the __dependent variable__, 
+and X the __independent variable__. This is because we generally want to predict Y given X (not the other way around), and
 this terminology is used for other models as well. Sometimes, in the regression setting we use the terms __regressor__ and __regressand__ 
 to denote X and Y respectively. 
 
-Sometimes we make additional assumptions on our error term, \\( \epsilon_i \\). First, we assume that the errors are \\( iid \\). This means
+We often make additional assumptions on our error term, \\( \epsilon_i \\). First, we assume that the errors are \\( iid \\). This means
 that errors are independent across observations, and that each of the errors comes from the same Data Generating Process (DGP). All
 this means is that, after accounting for the linear shape of the relationship between X and y, there is no other trend or relationship
-that we have not accounted for. As we will see later, this assumption is not always realistic. The case described above is called 
-__simple linear regression__, because we are only studying the relationship between Y and one other variable, X. We can generalize the
-math above to account for 
+that we have not accounted for. As we will see later, this assumption is not always realistic. We also assume that errors are mean zero.
+In other words, our predictions will be perfect on average. Consider, for a moment, if the errors were not mean zero. If errors had an 
+average value of say, 2, we could simply add 2 to our intercept and force the errors down to zero mean! 
 
-### How Do We Estimate $\beta$?
+The case described above is called __simple linear regression__, because we are only studying the relationship between Y and one other 
+variable, X. We can generalize the math above to account for multiple independent variables (indeed, we will do so later). When this happens, 
+the model takes the form not of a line, but of a _plane_ (or a _hyperplane_ for > 3 dimensions). But we'll come back to that later. 
+Regardless of the number of variables, we make one additional assumption about our errors: that they are independent of our regressor(s). 
+Formally, this means that \\( E(\epsilon_i|x_i) = 0 \\). We call this assumption __exogeneity__ of errors, and it is crucial. If the
+errors and the regressors were not independent, there would be some way of using X to influence the errors. When trying to find the true
+relationship between Y and X, we would never be able to isolate X alone, since any changes to X would impact Y both through X
+directly, and through the error. By definition, we want our error to be unpredictable. If the error were predictable, it would mean our
+linear model is __incorrectly specified__, or unreflective of the true Data Generating Process.
+
+### How Do We Estimate \\( \beta \\)?
 
 ### Newton's Method
 
