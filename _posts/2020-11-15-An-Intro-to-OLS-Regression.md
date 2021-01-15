@@ -19,7 +19,7 @@ assuming a linear relationship is that the math becomes much more manageable, as
 
 ### What is Ordinary Least Squares?
 
-OLS stands for Ordinary Least Squares. We sometimes call this Linear Least Squares, or just Linear Regression. The names comes from the fact 
+OLS stands for Ordinary Least Squares. We sometimes call this Linear Least Squares, or just Linear Regression. The names come from the fact 
 that we're choosing our line (the linear model) in order to minimize the sum of the squared errors of our predictions. Why this is a good thing
 will become clear a bit later. For now, let's formally define our model. Suppose we have a dataset of n observations, where each observation is 
 a datapoint (x,y). What we're trying to do is learn the general relationship between the two variables (X and Y). In this post, I will follow
@@ -29,7 +29,22 @@ values (say, 152 cm and 170 lbs). Assuming a linear relationship, our model woul
 
 \\[ y_i = \beta_0 + \beta_1 x_i + \epsilon_i \\]
 
-In this case, the model is simply
+In this case, the model is simply a sum of three terms. \\( \beta_0 \\) is the __intercept__ of our line, while \\( \beta_1 \\) is the 
+__slope coefficient__. These together make up the line that our model uses to predict new, unseen data. The third term, \\( \epsilon_i \\) 
+is called the __error__ . It reflects the fact that, on an observation to observation basis, our prediction might be a little bit off. In 
+other words, our line will not pass perfectly through all the points in our dataset. There will be some difference between our predicted
+value of y, and the true value of y. In this case, we use subscript i, \\( i = 1,...,n \\) to denote the fact that each observation
+has its own error, but note that the slope and intercept are constant across all observations. In this model, we call Y the __dependent
+variable__, and X the __independent variable__. This is because we generally want to predict Y given X (not the other way around), and
+this terminology is used for other models as well. Sometimes, in the regression setting we use the terms __regressor__ and __regressand__ 
+to denote X and Y respectively. 
+
+Sometimes we make additional assumptions on our error term, \\( \epsilon_i \\). First, we assume that the errors are \\( iid \\). This means
+that errors are independent across observations, and that each of the errors comes from the same Data Generating Process (DGP). All
+this means is that, after accounting for the linear shape of the relationship between X and y, there is no other trend or relationship
+that we have not accounted for. As we will see later, this assumption is not always realistic. The case described above is called 
+__simple linear regression__, because we are only studying the relationship between Y and one other variable, X. We can generalize the
+math above to account for 
 
 ### How Do We Estimate $\beta$?
 
