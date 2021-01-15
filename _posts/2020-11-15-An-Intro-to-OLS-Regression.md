@@ -83,6 +83,9 @@ by minimizing some loss function across a training dataset.
 ### From Math to Code
 
 ```python
+
+{% highlight python %}
+
 class LinearRegression:
   # A class to automate linear regression using both
   # analytic and numeric solutions
@@ -131,6 +134,8 @@ class LinearRegression:
     '''
     new_preds = np.dot(X_new, self.coefs)
     return new_preds
+
+{% endhighlight %}
 
 ```
 
