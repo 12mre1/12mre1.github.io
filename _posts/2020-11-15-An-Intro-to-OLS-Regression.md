@@ -39,6 +39,9 @@ and X the __independent variable__. This is because we generally want to predict
 this terminology is used for other models as well. Sometimes, in the regression setting we use the terms __regressor__ and __regressand__ 
 to denote X and Y respectively. 
 
+
+### Model Assumptions
+
 We often make additional assumptions on our error term, \\( \epsilon_i \\). First, we assume that the errors are \\( iid \\). This means
 that errors are independent across observations, and that each of the errors comes from the same Data Generating Process (DGP). All
 this means is that, after accounting for the linear shape of the relationship between X and y, there is no other trend or relationship
@@ -57,6 +60,25 @@ directly, and through the error. By definition, we want our error to be unpredic
 linear model is __incorrectly specified__, or unreflective of the true Data Generating Process.
 
 ### How Do We Estimate \\( \beta \\)?
+
+So we have a model of the population. For this reason, the equation above is called the __population regression line__, since the true values 
+of Y will include the error terms. However, since in the real world, we will not know what the true error is, our prediction will not account
+for it. If we knew the true error, we could predict perfectly. All we can do is try to minimize the error, making our predictions as good (on 
+average) as possible. Since our line is fully characterized by the two coefficients \\( (\beta_0, \beta_1) \\), our question becomes: what
+coefficient values should we pick to make our predictions as accurate as possible? 
+
+Perhaps the most obvious approach is simply minimize overall error. But what exactly do we mean by this? If we simply took total error to be
+the sum of all the errors of individual observations (ie \\( \Sigma_i \epsilon_i \\)), our underpredictions would cancel with our 
+overpredictions. The negative would cancel with the positive. To correct for this, we can instead try to minimize the sum of squared errors.
+Formally, we want to choose our coefficients to minimize this value:
+
+\\[ \min_{\beta_0, \beta_1} \Sigma_i \epsilon_{i}^{2} \\]
+\\[ \Rightarrow \ \min_{\beta_0, \beta_1} \Sigma_i (y_i - \beta_0 - \beta_1 x_i)^{2} \\]
+
+This is much clearer. Minimizing the squared error solves our problem of error cancellation, and as we will see shortly, this expression is 
+easy to optimize. Note that there are other formulations that work well (for instance absolute error), but we will stick with this one 
+for the duration of the post. Least Squares is a form of __loss function__, and most machine learning problems try to obtain predictions
+by minimizing some loss function across a training dataset. 
 
 ### Newton's Method
 
