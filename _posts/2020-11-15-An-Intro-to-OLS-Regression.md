@@ -87,15 +87,31 @@ our sum of squared residuals with \\( \Sigma \\) notation, we can write is as a 
 
 \\[ = \min_{\beta} (y^T - \beta^T X^T ) (y - X \beta)\\]
 
-\\[ = \min_{\beta} (y^T y - - y^T X \beta  - \beta^T X^T y + \beta^T X^T X \beta ) \\]
+\\[ = \min_{\beta} (y^T y - y^T X \beta  - \beta^T X^T y + \beta^T X^T X \beta ) \\]
 
 \\[ = \min_{\beta} (y^T y - 2 \beta^T X^T y + \beta^T X^T X \beta ) \\]
 
 Note that the last equality here comes from the fact that the middle two terms are identical, since the transpose of a scalar is itself.
 \\( \beta^T X^T y \\) has dimension \\( (1 \times d) \times (d \times n) \times (n \times 1) = (1 \times 1) \\), and \\( y^T X \beta \\) 
-has dimension \\( (1 \times n) \times (n \times d) \times (d \times 1) = (1 \times 1) \\) .
+has dimension \\( (1 \times n) \times (n \times d) \times (d \times 1) = (1 \times 1) \\) . Now we have an expression we can optimize (minimize).
+We do this by taking the derivative with respect to \\( \beta \\), and setting it to zero:
+
+\\[ FOC(\beta) \ \Rightarrow \ \frac{d}{d \beta} (y^T y - 2 \beta^T X^T y + \beta^T X^T X \beta) = 0 \\]
+
+\\[ \Rightarrow -2 X^T y + 2 X^T X \beta = 0 \\]
+
+\\[ \Rightarrow \hat{\beta}_{OLS} = (X^T X)^{-1} X^T y \\]
+
+By solving the above equation, we obtain a closed-form expression for the OLS estimator of \\( \beta \\). The expression above can be thought of as
+a function of two matrices: \\( X^T X \\), which we call the __normal matrix__, and \\( X^T y \\), which we call the __moments matrix__. Notice also
+that our estimator is only defined if the normal matrix is invertible. What this means is that the columns of the normal matrix must be linearly
+independent. But, assuming this is not a problem, we now have a closed form expression we can use to program our own regression algorithm. 
 
 ### From Math to Code
+
+To test our algorithm, we will use the python package `numpy`, which is designed specifically to handle matrix equations. Below, I define a 
+simple `LinearRegression` class that allows us to fit a linear regression to a dataset. Once fit, we will also be able to predict on new
+values of X. I won't go through the code line by line, but the comments are easily understood.
 
 
 ```python
@@ -153,6 +169,8 @@ has dimension \\( (1 \times n) \times (n \times d) \times (d \times 1) = (1 \tim
       return new_preds
 
 ```
+
+Now that we have the algorithm completed, we can use it to walk through an example.
 
 ### Newton's Method
 
