@@ -92,8 +92,8 @@ our sum of squared residuals with \\( \Sigma \\) notation, we can write is as a 
 \\[ = \min_{\beta} (y^T y - 2 \beta^T X^T y + \beta^T X^T X \beta ) \\]
 
 Note that the last equality here comes from the fact that the middle two terms are identical, since the transpose of a scalar is itself.
-\\( \beta^T X^T y \\) has dimension \\( (1 x d) \times (d x n) \times (n x 1) = (1 x 1) \\), and \\( y^T X \beta \\) has dimension 
-\\( (1 x n) \times (n x d) \times (d x 1) = (1 x 1) \\) .
+\\( \beta^T X^T y \\) has dimension \\( (1 \times d) \times (d \times n) \times (n \times 1) = (1 \times 1) \\), and \\( y^T X \beta \\) 
+has dimension \\( (1 \times n) \times (n \times d) \times (d \times 1) = (1 \times 1) \\) .
 
 ### From Math to Code
 
