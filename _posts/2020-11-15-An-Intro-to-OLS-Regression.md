@@ -225,7 +225,7 @@ to visualize the line, within the context of our data:
 
 ```
 
-<center><img src="12mre1.github.io/images/linreg.png" alt = "Linear Regression Graph"></center>
+<center><img src="https://github.com/12mre1/12mre1.github.io/tree/main/images" alt = "Linear Regression Graph"></center>
 
 We can see from the graph that the line does a great job of representing the true relationship between X and y, given the errors.
 
