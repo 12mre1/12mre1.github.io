@@ -225,9 +225,9 @@ to visualize the line, within the context of our data:
 
 ```
 
-We can see from the graph that the line does a great job of representing the true relationship between X and y, given the errors.
+<center><img src="../images/linreg.png" alt = "Linear Regression Graph"></center>
 
-### Newton's Method
+We can see from the graph that the line does a great job of representing the true relationship between X and y, given the errors.
 
 ### Properties of the OLS Estimator
 
