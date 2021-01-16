@@ -181,9 +181,11 @@ simulate data with a linear relationship. I also add simulated noise, to account
 will not be perfectly linear.
 
 ```python
-x = np.arange(100)
-eps = np.random.normal(0,5, size = (100,))
-y = 5 + 0.5*x + eps
+
+  x = np.arange(100)
+  eps = np.random.normal(0,5, size = (100,))
+  y = 5 + 0.5*x + eps
+
 ```
 
 In the above code, I generate simple values of x as the integers between 0 and 100. Then, I construct the values of y using
@@ -193,16 +195,38 @@ to it. In this algorithm, I modify X slightly to include a column of ones, so th
 I only have 1 feature here, we should expect only two coefficients.
 
 ```python
-# Define the Lin Reg object
-model = LinearRegression(x,y)
-# Fit the Regression to the model
-model.analytic_fit()
-# Print coefficients
-print(model.coefs)
 
-------- Regression fitting complete. ----------
-[4.07490293 0.5088341 ]
+  # Define the Lin Reg object
+  model = LinearRegression(x,y)
+  # Fit the Regression to the model
+  model.analytic_fit()
+  # Print coefficients
+  print(model.coefs)
+
+  ------- Regression fitting complete. ----------
+  [4.07490293 0.5088341 ]
+
 ```
+
+Here the result is our two coefficients (intercept and slope). Notice that the model does a fairly decent job of approximated the true
+coefficients (5 and 0.5). So how do we interpret these coefficients? These are the two parameters characterizing the line that 
+minimizes the sum of squared prediction errors for our dataset (X,y). To further demonstrate this, we can use the `matplotlib` package
+to visualize the line, within the context of our data:
+
+```python
+
+  # Plot the data with the regression line
+  plt.scatter(model.features[:,1], model.labels)
+  plt.plot(model.features[:,1], model.yhats, color = 'orange')
+  plt.xlabel('y')
+  plt.ylabel('X')
+  plt.title('Data with OLS Line')
+  plt.show()
+
+```
+
+We can see from the graph that the line does a great job of representing the true relationship between X and y, given the errors.
+
 ### Newton's Method
 
 ### Properties of the OLS Estimator
