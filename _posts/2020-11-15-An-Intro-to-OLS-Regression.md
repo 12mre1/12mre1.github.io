@@ -93,8 +93,10 @@ our sum of squared residuals with \\( \Sigma \\) notation, we can write is as a 
 
 Note that the last equality here comes from the fact that the middle two terms are identical, since the transpose of a scalar is itself.
 \\( \beta^T X^T y \\) has dimension \\( (1 \times d) \times (d \times n) \times (n \times 1) = (1 \times 1) \\), and \\( y^T X \beta \\) 
-has dimension \\( (1 \times n) \times (n \times d) \times (d \times 1) = (1 \times 1) \\) . Now we have an expression we can optimize (minimize).
-We do this by taking the derivative with respect to \\( \beta \\), and setting it to zero:
+has dimension \\( (1 \times n) \times (n \times d) \times (d \times 1) = (1 \times 1) \\) . To account for the intercept term we saw earlier,
+we add a column of ones to the left side of our X matrix. This ensures that one of the coefficients will simply be a constant. 
+
+Now we have an expression we can optimize (minimize). We do this by taking the derivative with respect to \\( \beta \\), and setting it to zero:
 
 \\[ FOC(\beta) \ \Rightarrow \ \frac{d}{d \beta} (y^T y - 2 \beta^T X^T y + \beta^T X^T X \beta) = 0 \\]
 
@@ -116,7 +118,7 @@ values of X. I won't go through the code line by line, but the comments are easi
 
 ```python
 
-# Let's use numpy to help with the computing
+  # Let's use numpy to help with the computing
   import numpy as np
 
   class LinearRegression:
@@ -127,12 +129,16 @@ values of X. I won't go through the code line by line, but the comments are easi
       Object must be initialized with dependent
       and independent variables.
       '''
-      self.features = X
+      n = X.shape[0]
+      # Add a column of ones
+      self.features = np.c_[np.ones(n), X.reshape((n,1))]
       self.labels = y
 
     def get_features(self):
       # Return the array of features (design matrix, n x d)
-      print('This regression uses {} features'.format(self.features.shape(1)))
+      # print(type(self.features))
+      # print(self.features.shape)
+      print('This regression uses {} features'.format(self.features.shape[1]))
       return self.features
 
     def get_labels(self):
@@ -157,7 +163,7 @@ values of X. I won't go through the code line by line, but the comments are easi
       self.yhats = np.dot(self.features, beta)
       self.residuals = np.subtract(self.labels, self.yhats)
       print('------- Regression fitting complete. ----------')
-    
+      
     # What happens when we want to predict with new data?
     def predict(self, X_new):
       '''
@@ -170,15 +176,40 @@ values of X. I won't go through the code line by line, but the comments are easi
 
 ```
 
-Now that we have the algorithm completed, we can use it to walk through an example.
+Now that we have the algorithm completed, we can use it to walk through an example. We'll use that same `numpy` package to 
+simulate data with a linear relationship. I also add simulated noise, to account for the fact that in reality, the data
+will not be perfectly linear.
 
+```python
+x = np.arange(100)
+eps = np.random.normal(0,5, size = (100,))
+y = 5 + 0.5*x + eps
+```
+
+In the above code, I generate simple values of x as the integers between 0 and 100. Then, I construct the values of y using
+the linear equation we saw above, with an added noise term. Here, I use normally distributed noise, since it is symmetric
+and mean-zero, but I could have used other distributions (Uniform, Cauchy, etc.). Now that I have data, I can fit our algorithm
+to it. In this algorithm, I modify X slightly to include a column of ones, so the intercept can be properly calculated. Because
+I only have 1 feature here, we should expect only two coefficients.
+
+```python
+# Define the Lin Reg object
+model = LinearRegression(x,y)
+# Fit the Regression to the model
+model.analytic_fit()
+# Print coefficients
+print(model.coefs)
+
+------- Regression fitting complete. ----------
+[4.07490293 0.5088341 ]
+```
 ### Newton's Method
 
 ### Properties of the OLS Estimator
 
 ### Computational Concerns
 
-### Application: Predicting Student Test Scores
+
 
 ### Other Extensions
 
