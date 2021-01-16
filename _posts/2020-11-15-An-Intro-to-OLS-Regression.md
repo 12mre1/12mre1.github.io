@@ -85,6 +85,9 @@ by minimizing some loss function across a training dataset.
 
 ```python
 
+# Let's use numpy to help with the computing
+import numpy as np
+
 class LinearRegression:
   # A class to automate linear regression using both
   # analytic and numeric solutions
