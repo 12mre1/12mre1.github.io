@@ -1,6 +1,11 @@
 name: Matthew Edwards
+# Conversion
 markdown: kramdown
-  coderay_default_lang: python
 highlighter: rouge
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+  extensions: fenced_code_blocks
 permalink: /blog/:year/:month/:day/:title
   
