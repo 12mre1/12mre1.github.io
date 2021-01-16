@@ -228,6 +228,8 @@ to visualize the line, within the context of our data:
 <center><img src="https://github.com/12mre1/12mre1.github.io/tree/main/images" alt = "Linear Regression Graph"></center>
 
 We can see from the graph that the line does a great job of representing the true relationship between X and y, given the errors.
+To predict the value of y for a new value of x, we simply find where on the line our X sits. For larger X values beyond those
+on the graph, the line is extended.
 
 ### Properties of the OLS Estimator
 
@@ -237,10 +239,14 @@ We can see from the graph that the line does a great job of representing the tru
 
 ### Other Extensions
 
-- Weighted Least Squares
-- Generalized Least Squares
-- Non-linear Least Squares
-- Regularized Regression
+The reason OLS is considered 'Ordinary' is because there are several extensions to the basic model above, that can greatly improve
+the ability of regression to predict. The list I show is not exhaustive, but these are considered key extensions. I may write 
+separate posts on one or more of them at a later date.
+
+1. Weighted Least Squares
+2. Generalized Least Squares
+3. Non-linear Least Squares
+4. Regularized Regression
 
 ### Further Reading
 
