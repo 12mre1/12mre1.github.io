@@ -80,6 +80,11 @@ easy to optimize. Note that there are other formulations that work well (for ins
 for the duration of the post. Least Squares is a form of __loss function__, and most machine learning problems try to obtain predictions
 by minimizing some loss function across a training dataset. 
 
+As mentioned earlier, we can rewrite this math to use __vector notation__, which is much easier to implement as computer code. Instead of writing 
+our sum of squared residuals with \\( \Sigma \\) notation, we can write is as a product of matrices:
+
+\\[ \min_{\beta} (y - X \beta)^T (y - X \beta) \\]
+
 ### From Math to Code
 
 
