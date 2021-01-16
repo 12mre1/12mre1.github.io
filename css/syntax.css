@@ -16,10 +16,10 @@
 .highlight .gd { color: #cd0000 } /* Generic.Deleted */
 .highlight .ge { color: #cccccc; font-style: italic } /* Generic.Emph */
 .highlight .gr { color: #FF0000 } /* Generic.Error */
-.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gh { color: #2ce86e; font-weight: bold } /* Generic.Heading */
 .highlight .gi { color: #00cd00 } /* Generic.Inserted */
 .highlight .go { color: #808080 } /* Generic.Output */
-.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gp { color: #2ce86e; font-weight: bold } /* Generic.Prompt */
 .highlight .gs { color: #cccccc; font-weight: bold } /* Generic.Strong */
 .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
 .highlight .gt { color: #0040D0 } /* Generic.Traceback */
