@@ -86,56 +86,56 @@ by minimizing some loss function across a training dataset.
 ```python
 
 # Let's use numpy to help with the computing
-import numpy as np
+  import numpy as np
 
-class LinearRegression:
-  # A class to automate linear regression using both
-  # analytic and numeric solutions
-  def __init__(self, X, y):
-    '''
-    Object must be initialized with dependent
-    and independent variables.
-    '''
-    self.features = X
-    self.labels = y
+  class LinearRegression:
+    # A class to automate linear regression using both
+    # analytic and numeric solutions
+    def __init__(self, X, y):
+      '''
+      Object must be initialized with dependent
+      and independent variables.
+      '''
+      self.features = X
+      self.labels = y
 
-  def get_features(self):
-    # Return the array of features (design matrix, n x d)
-    print('This regression uses {} features'.format(self.features.shape(1)))
-    return self.features
+    def get_features(self):
+      # Return the array of features (design matrix, n x d)
+      print('This regression uses {} features'.format(self.features.shape(1)))
+      return self.features
 
-  def get_labels(self):
-    # Return the array of labels (n x 1 col vector)
-    return self.labels
+    def get_labels(self):
+      # Return the array of labels (n x 1 col vector)
+      return self.labels
 
-  # Let's define the analytic solution
-  def analytic_fit(self):
-    '''
-    This method solves for coefficients using the analytic approach.
-    Requires no input beyond pre-existing attributes of LinearRegression
-    Output - Just print statements, but attributes will be defined
-    '''
-    normmatinv = np.linalg.inv(np.dot(self.features.T,self.features))
-    mommat = np.dot(self.features.T, self.labels)
-    # Inverting the inverted cancels itself
-    self.normal_matrix = np.linalg.inv(normmatinv)
-    self.moment_matrix = mommat
-    # Define the coefficients, predictions, and residuals
-    beta = np.dot(normmatinv, mommat)
-    self.coefs = beta
-    self.yhats = np.dot(self.features, beta)
-    self.residuals = np.subtract(self.labels, self.yhats)
-    print('------- Regression fitting complete. ----------')
-  
-  # What happens when we want to predict with new data?
-  def predict(self, X_new):
-    '''
-    Given a new set of features, we want to return predictions.
-    Input - a design matrix, but no associated labels
-    Output - An n x 1 array of predictions 
-    '''
-    new_preds = np.dot(X_new, self.coefs)
-    return new_preds
+    # Let's define the analytic solution
+    def analytic_fit(self):
+      '''
+      This method solves for coefficients using the analytic approach.
+      Requires no input beyond pre-existing attributes of LinearRegression
+      Output - Just print statements, but attributes will be defined
+      '''
+      normmatinv = np.linalg.inv(np.dot(self.features.T,self.features))
+      mommat = np.dot(self.features.T, self.labels)
+      # Inverting the inverted cancels itself
+      self.normal_matrix = np.linalg.inv(normmatinv)
+      self.moment_matrix = mommat
+      # Define the coefficients, predictions, and residuals
+      beta = np.dot(normmatinv, mommat)
+      self.coefs = beta
+      self.yhats = np.dot(self.features, beta)
+      self.residuals = np.subtract(self.labels, self.yhats)
+      print('------- Regression fitting complete. ----------')
+    
+    # What happens when we want to predict with new data?
+    def predict(self, X_new):
+      '''
+      Given a new set of features, we want to return predictions.
+      Input - a design matrix, but no associated labels
+      Output - An n x 1 array of predictions 
+      '''
+      new_preds = np.dot(X_new, self.coefs)
+      return new_preds
 
 ```
 
