@@ -1,5 +1,6 @@
 name: Matthew Edwards
 markdown: kramdown
+  coderay_default_lang: python
 highlighter: rouge
 permalink: /blog/:year/:month/:day/:title
   
