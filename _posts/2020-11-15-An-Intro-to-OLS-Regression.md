@@ -225,7 +225,7 @@ to visualize the line, within the context of our data:
 
 ```
 
-<center><img src="./img/linreg.png" alt = "Linear Regression Graph"></center>
+<center><img src="img/linreg.png" alt = "Linear Regression Graph"></center>
 
 We can see from the graph that the line does a great job of representing the true relationship between X and y, given the errors.
 To predict the value of y for a new value of x, we simply find where on the line our X sits. For larger X values beyond those
