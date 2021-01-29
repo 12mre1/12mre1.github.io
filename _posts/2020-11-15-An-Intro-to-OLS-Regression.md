@@ -243,10 +243,27 @@ The reason OLS is considered 'Ordinary' is because there are several extensions 
 the ability of regression to predict. The list I show is not exhaustive, but these are considered key extensions. I may write 
 separate posts on one or more of them at a later date.
 
-1. Weighted Least Squares
-2. Generalized Least Squares
-3. Non-linear Least Squares
-4. Regularized Regression
+__1. Weighted Least Squares__
+In the above formulation, we assumed that each of our n data observations was equally important. Thus, we gave their errors equal weight
+in our minimization problem. Under weighted least squares, we can include a matrix of weights that premultplies the design matrix to
+upweight certain observations relative to others. The solution is very similar to OLS.
+
+__2. Generalized Least Squares__
+Another assumption we made above was that our errors were independent, meaning they were uncorrelated. In practice, this assumption does
+not always hold. Generalized Least squares accounts for this possibility by rescaling the residuals before they are squared and added.
+This estimator can also be used to account for heteroskedasticity (non-constant variance of the errors).
+
+__3. Non-linear Least Squares__
+This is another generalization where, although we still minimize the sum of squared errors, we no longer assume the prediction-response
+relationship is linear. Since the solution in this case is often not available in closed form, numerical methods are often used
+to iterative optimize the error surface.
+
+__4. Regularized Regression__
+How do we avoid extremely large coefficients? One option is to minimize LS error subject to a constraint on the total sum of the 
+parameters (coefficients) of the model. This is called regularization, and in some cases, it can also be used for model selection.
+What we usually do is add to the LS equation by including a penalty term, which increases in the size of the parameters.
+By minimizing this new equation, we force the parameters on the unimportant variables to shrink. 
+
 
 ### Further Reading
 
