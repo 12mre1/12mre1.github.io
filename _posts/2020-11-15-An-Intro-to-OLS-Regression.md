@@ -256,7 +256,7 @@ This estimator can also be used to account for heteroskedasticity (non-constant 
 __3. Non-linear Least Squares__
 This is another generalization where, although we still minimize the sum of squared errors, we no longer assume the prediction-response
 relationship is linear. Since the solution in this case is often not available in closed form, numerical methods are often used
-to iterative optimize the error surface.
+to iteratively optimize the error surface.
 
 __4. Regularized Regression__
 How do we avoid extremely large coefficients? One option is to minimize LS error subject to a constraint on the total sum of the 
