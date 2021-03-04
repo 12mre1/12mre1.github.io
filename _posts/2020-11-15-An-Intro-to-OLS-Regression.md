@@ -255,7 +255,7 @@ of the most desirable properties an estimator can have.
 
 ### Other Extensions
 
-The reason OLS is considered 'Ordinary' is because there are several extensions to the basic model above, that can greatly improve
+The reason OLS is considered 'ordinary' is because there are several extensions to the basic model above, that can greatly improve
 the ability of regression to predict. The list I show is not exhaustive, but these are considered key extensions. I may write 
 separate posts on one or more of them at a later date.
 
