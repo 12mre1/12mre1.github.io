@@ -235,13 +235,13 @@ on the graph, the line is extended.
 
 Although linear regression is a very simple model, that may not always be appropriate for the data, it has some very nice properties. To start, if we take the (conditional) expectation of \\( \hat{beta} \\), we get the following result. Note that I'm using vector notation here, for simplicity.
 
-\\[ E(\hat{beta} | X) = (X^T X)^{-1} X^T E(y|X) \\]
+\\( E(\hat{beta} | X) = (X^T X)^{-1} X^T E(y|X) \\)
 
 \\[ = (X^T X)^{-1} X^T E( X\beta + \epsilon |X) \\]
 
 \\[ = (X^T X)^{-1} X^TX E(\beta|X) + (X^T X)^{-1} X^TX E(\epsilon|X) \\]
 
-\\[ E(\hat{beta} | X) = E(\beta|X) + E(\epsilon|X) = \beta \\]
+\\[ \E(\hat{beta} | X) = E(\beta|X) + E(\epsilon|X) = \beta \\]
 
 \\[ = \min_{\beta} (y^T y - y^T X \beta  - \beta^T X^T y + \beta^T X^T X \beta ) \\]
 
