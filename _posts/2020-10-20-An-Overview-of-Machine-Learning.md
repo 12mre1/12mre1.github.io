@@ -55,9 +55,9 @@ __But today is different__. Most of today's advanced techniques resulting in the
 
 __Explainable Machine Learning__ is part of a larger movement of research called __Explainable AI__, or __XAI__. It balances the improvements AI brings with the dangers of striving for artificial intelligence. The main focus of this area is to find solution to the following 2 questions:
 
-    1. If we're designing intelligent systems to improve our own ability to think, how can we make sure we understand what the computer is doing when it can accomplishs tasks we can't?
+- 1. If we're designing intelligent systems to improve our own ability to think, how can we make sure we understand what the computer is doing when it can accomplishs tasks we can't?
 
-    2. If we do build a system that is more generally intelligent than us, how can we make sure that it will want the same things we do?
+- 2. If we do build a system that is more generally intelligent than us, how can we make sure that it will want the same things we do?
 
 Answering the first question isn't strictly necessary as long as we have both control, and a solid grasp of what constitutes good performance. For instance, there is no harm in letting a complicated system generate stock predictions as long as humans have the final say, and can identify erroneous outputs. We can simply adjust our model until the results are more reasonable, without buying anything. 
 
