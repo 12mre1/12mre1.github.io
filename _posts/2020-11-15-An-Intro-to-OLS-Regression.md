@@ -249,6 +249,8 @@ The last result comes from the OLS definition (X is orthogonal to the error term
 is __unbiased__, meaning that on average, the estimated value will be equal to the true value of the coefficient(s). Unbiasedness is one
 of the most desirable properties an estimator can have.
 
+Another closely related property is called __consistency__. Generally speaking, an estimator is consistent if, as our sample grows infinitely large, the estimator converges in probability to the true value. In more casual terms, consistency is a guarantee that if we get enough data, our estimator will be perfect. But is the OLS estimator of \\( \hat{\beta} \\) consistent?
+
 ### Computational Concerns
 
 
