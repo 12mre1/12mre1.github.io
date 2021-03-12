@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "The Surprising Effectiveness of K Nearest Neighbours"
-date: 2021-03-02
+date: 2021-12-10
 ---
 
 ## The Effective Simplicity of KNN
