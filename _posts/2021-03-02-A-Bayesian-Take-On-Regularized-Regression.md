@@ -12,7 +12,6 @@ _Prerequisite Coding: None. This is post is entirely theory._
 
 Converting the given definitions into vector notation, we have:
 
-
 {% raw %}
 $$
 \begin{align*}
@@ -22,8 +21,6 @@ $$
 \end{align*}
 $$
 {% endraw %}
-
-\
 
 (i) If the priors for our $\beta_{j}$ are zero-mean and independent (ie diagonal covariance matrix), then we have $\beta \sim N(0, u^2 I)$ for some constant $u$. We can compute the posterior:
 
@@ -48,7 +45,7 @@ $$
 $$
 {% endraw %}
 
-Note that this is identical to the Ridge Regression estimate, with tuning parameter \( \lambda = \frac{\sigma^2}{u^2} \).
+Note that this is identical to the Ridge Regression estimate, with tuning parameter \\( \lambda = \frac{\sigma^2}{u^2} \\).
 
 \
 
