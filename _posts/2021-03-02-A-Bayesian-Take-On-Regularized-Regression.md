@@ -22,7 +22,7 @@ $$
 $$
 {% endraw %}
 
-(i) If the priors for our $\beta_{j}$ are zero-mean and independent (ie diagonal covariance matrix), then we have $\beta \sim N(0, u^2 I)$ for some constant $u$. We can compute the posterior:
+If the priors for our \\( \beta_{j} \\) are zero-mean and independent (ie diagonal covariance matrix), then we have \\( \beta \sim N(0, u^2 I) \\) for some constant \\( u \\). We can compute the posterior:
 
 {% raw %}
 $$
@@ -49,7 +49,7 @@ Note that this is identical to the Ridge Regression estimate, with tuning parame
 
 \
 
-(ii) If we have normally distributed $\epsilon$, but this time we use a double-exponential (or Laplace) prior for our $\beta_{j}s$, then (still assuming independence among individual priors):
+If we have normally distributed \\( \epsilon \\), but this time we use a double-exponential (or Laplace) prior for our  \\( \beta_{j}s \\), then (still assuming independence among individual priors):
 
 {% raw %}
 $$
@@ -71,7 +71,7 @@ $$
 $$
 {% endraw %}
 
-Just like before, we compute the MAP estimate of $\beta$, which is equivalent to finding the posterior mode:
+Just like before, we compute the MAP estimate of \\( \beta \\), which is equivalent to finding the posterior mode:
 
 {% raw %}
 $$
@@ -83,4 +83,4 @@ $$
 $$
 {% raw %}
 
-This is identical to the LASSO estimate, with tuning parameter $\lambda = \frac{\sigma^2}{\tau}$.
+This is identical to the LASSO estimate, with tuning parameter  \\( \lambda = \frac{\sigma^2}{\tau} \\).
