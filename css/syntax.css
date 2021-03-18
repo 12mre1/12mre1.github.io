@@ -1,26 +1,26 @@
-.highlight pre { background-color: #222222 }
-.highlight .hll { background-color: #222222 }
+.highlight pre { background-color: #cccccc }
+.highlight .hll { background-color: #cccccc }
 .highlight .c { color: #00d400 } /* Comment */
-.highlight .err { color: #cccccc; border: 1px solid #FF0000 } /* Error */
-.highlight .g { color: #cccccc } /* Generic */
+.highlight .err { color: #222222; border: 1px solid #FF0000 } /* Error */
+.highlight .g { color: #222222 } /* Generic */
 .highlight .k { color: #cdcd00 } /* Keyword */
-.highlight .l { color: #cccccc } /* Literal */
-.highlight .n { color: #cccccc } /* Name */
+.highlight .l { color: #222222 } /* Literal */
+.highlight .n { color: #222222 } /* Name */
 .highlight .o { color: #3399cc } /* Operator */
-.highlight .x { color: #cccccc } /* Other */
-.highlight .p { color: #cccccc } /* Punctuation */
+.highlight .x { color: #222222 } /* Other */
+.highlight .p { color: #222222 } /* Punctuation */
 .highlight .cm { color: #00d400 } /* Comment.Multiline */
 .highlight .cp { color: #00d400 } /* Comment.Preproc */
 .highlight .c1 { color: #00d400 } /* Comment.Single */
 .highlight .cs { color: #cd0000; font-weight: bold } /* Comment.Special */
 .highlight .gd { color: #cd0000 } /* Generic.Deleted */
-.highlight .ge { color: #cccccc; font-style: italic } /* Generic.Emph */
+.highlight .ge { color: #222222; font-style: italic } /* Generic.Emph */
 .highlight .gr { color: #FF0000 } /* Generic.Error */
 .highlight .gh { color: #00d400; font-weight: bold } /* Generic.Heading */
 .highlight .gi { color: #00cd00 } /* Generic.Inserted */
 .highlight .go { color: #808080 } /* Generic.Output */
 .highlight .gp { color: #00d400; font-weight: bold } /* Generic.Prompt */
-.highlight .gs { color: #cccccc; font-weight: bold } /* Generic.Strong */
+.highlight .gs { color: #222222; font-weight: bold } /* Generic.Strong */
 .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
 .highlight .gt { color: #0040D0 } /* Generic.Traceback */
 .highlight .kc { color: #cdcd00 } /* Keyword.Constant */
@@ -29,25 +29,25 @@
 .highlight .kp { color: #cdcd00 } /* Keyword.Pseudo */
 .highlight .kr { color: #cdcd00 } /* Keyword.Reserved */
 .highlight .kt { color: #00cd00 } /* Keyword.Type */
-.highlight .ld { color: #cccccc } /* Literal.Date */
+.highlight .ld { color: #222222 } /* Literal.Date */
 .highlight .m { color: #cd00cd } /* Literal.Number */
 .highlight .s { color: #cd0000 } /* Literal.String */
-.highlight .na { color: #cccccc } /* Name.Attribute */
+.highlight .na { color: #222222 } /* Name.Attribute */
 .highlight .nb { color: #cd00cd } /* Name.Builtin */
 .highlight .nc { color: #00cdcd } /* Name.Class */
-.highlight .no { color: #cccccc } /* Name.Constant */
-.highlight .nd { color: #cccccc } /* Name.Decorator */
-.highlight .ni { color: #cccccc } /* Name.Entity */
+.highlight .no { color: #222222 } /* Name.Constant */
+.highlight .nd { color: #222222 } /* Name.Decorator */
+.highlight .ni { color: #222222 } /* Name.Entity */
 .highlight .ne { color: #666699; font-weight: bold } /* Name.Exception */
-.highlight .nf { color: #cccccc } /* Name.Function */
-.highlight .nl { color: #cccccc } /* Name.Label */
-.highlight .nn { color: #cccccc } /* Name.Namespace */
-.highlight .nx { color: #cccccc } /* Name.Other */
-.highlight .py { color: #cccccc } /* Name.Property */
-.highlight .nt { color: #cccccc } /* Name.Tag */
+.highlight .nf { color: #222222 } /* Name.Function */
+.highlight .nl { color: #222222 } /* Name.Label */
+.highlight .nn { color: #222222 } /* Name.Namespace */
+.highlight .nx { color: #222222 } /* Name.Other */
+.highlight .py { color: #222222 } /* Name.Property */
+.highlight .nt { color: #222222 } /* Name.Tag */
 .highlight .nv { color: #00cdcd } /* Name.Variable */
 .highlight .ow { color: #cdcd00 } /* Operator.Word */
-.highlight .w { color: #cccccc } /* Text.Whitespace */
+.highlight .w { color: #222222 } /* Text.Whitespace */
 .highlight .mf { color: #cd00cd } /* Literal.Number.Float */
 .highlight .mh { color: #cd00cd } /* Literal.Number.Hex */
 .highlight .mi { color: #cd00cd } /* Literal.Number.Integer */
