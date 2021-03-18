@@ -249,11 +249,7 @@ The last result comes from the OLS definition (X is orthogonal to the error term
 is __unbiased__, meaning that on average, the estimated value will be equal to the true value of the coefficient(s). Unbiasedness is one
 of the most desirable properties an estimator can have.
 
-Another closely related property is called __consistency__. Generally speaking, an estimator is consistent if, as our sample grows infinitely large, the estimator converges in probability to the true value. In more casual terms, consistency is a guarantee that if we get enough data, our estimator will be perfect. But is the OLS estimator of \\( \hat{\beta} \\) consistent?
-
-### Computational Concerns
-
-
+Another closely related property is called __consistency__. Generally speaking, an estimator is consistent if, as our sample grows infinitely large, the estimator converges in probability to the true value. In more casual terms, consistency is a guarantee that if we get enough data, our estimator will be perfect. Although I will not prove it here, the OLS estimator is, in fact, consistent (I encourage you to try and show this yourself).
 
 ### Other Extensions
 
@@ -285,3 +281,9 @@ By minimizing this new equation, we force the parameters on the unimportant vari
 
 ### Further Reading
 
+- From a practical perspective, the text [Extending the Linear Model with R](https://julianfaraway.github.io/faraway/ELM/) by Faraway is a great option.
+
+- For an economic perspective, and a great treatment of the extension I discuss, you can't go wrong with the first 
+3 or 4 chapters of [Econometric Theory and Methods](http://qed.econ.queensu.ca/ETM/) by MacKinnon and Davidson. 
+
+- The classic [Intro to Statistical Learning with R](https://www.statlearning.com/) by Hastie et al. also has a great regression section.
