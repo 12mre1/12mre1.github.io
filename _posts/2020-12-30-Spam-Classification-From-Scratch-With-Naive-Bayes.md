@@ -97,3 +97,29 @@ We can see that we are left only with the binary label (1 = spam, 0 = ham), and 
 class the positive label in binary classification. We can see that the ham/spam breakdown of our dataset is 87/13. This is important to remember as we
 fit models, because a classifier that predicts ham for every email would get a training accuracy of 87% (thus what we define as 'good' measures of performance
 must take this baseline into account).
+
+To get a sense of what these email messages look like, let's define a function that prints a random message (along with its label). Because I do not
+set a random seed within this function, running it multiple times will give different results:
+
+```python
+# Print a random message
+
+# This function will print a random email message
+def print_random_message(df):
+  i = np.random.randint(len(df))
+  message = df.iloc[i,1]
+  label = df.iloc[i,0]
+  print('Here is one of the messages:\n\n', message)
+  print('\nIt is labelled as:\n\n',label)
+
+# call the function
+print_random_message(data)
+
+>Here is one of the messages:
+>
+> They said if its gonna snow, it will start around 8 or 9 pm tonite! They are predicting an inch of accumulation.
+>
+>It is labelled as:
+>
+> 0.0
+```
