@@ -76,7 +76,7 @@ def clean_email_df(DF):
 data = clean_email_df(df)
 print('After cleaning:\n', data.head(5))
 
-```
+#--------------------------------------------------------------------------------------
 >Before cleaning:
 >      v1  ... Unnamed: 4
 >0   ham  ...        NaN
@@ -105,7 +105,7 @@ print('After cleaning:\n', data.head(5))
 >2    1.0  Free entry in 2 a wkly comp to win FA Cup fina...
 >3    0.0  U dun say so early hor... U c already then say...
 >4    0.0  Nah I dont think he goes to usf, he lives aro...
-```{: .blue}
+```
 
 We can see that we are left only with the binary label (1 = spam, 0 = ham), and the text of the message. Note that it is also good practice to give the minority
 class the positive label in binary classification. We can see that the ham/spam breakdown of our dataset is 87/13. This is important to remember as we
@@ -128,7 +128,7 @@ def print_random_message(df):
 
 # call the function
 print_random_message(data)
-
+#------------------------------------------------------------------------------------------------------------------
 >Here is one of the messages:
 >
 > They said if its gonna snow, it will start around 8 or 9 pm tonite! They are predicting an inch of accumulation.
@@ -162,6 +162,7 @@ data['tokens'] = data['message'].apply(nltk.word_tokenize)
 
 print(data['tokens'].head(5))
 
+#-------------------------------------------------------------------------------
 >[nltk_data] Downloading package punkt to /root/nltk_data...
 >[nltk_data]   Unzipping tokenizers/punkt.zip.
 >0    [Go, until, jurong, point, ,, crazy.., Availab...
@@ -208,6 +209,7 @@ data = lower_tokens(data, 'tokens')
 
 print(list(data))
 
+#--------------------------------------------------------------
 >0    [go, until, jurong, point, ,, crazy.., availab...
 >1             [ok, lar, ..., joking, wif, u, oni, ...]
 >2    [free, entry, in, 2, a, wkly, comp, to, win, f...
@@ -216,3 +218,48 @@ print(list(data))
 >Name: lowercase_tokens, dtype: object
 >['label', 'message', 'tokens', 'lowercase_tokens']
 ``` 
+Now all our tokens have been lowered. Another common preprocessing step is to remove punctuation marks from the tokens. When we
+split the running text by whitespace, any punctuation will have been appended to the word it is next to. Unless we deal with this,
+a word used in the middle of a sentence (e.g. `green`) will be treated differently than the identical word used at the end (`green!`).
+This is not so difficult to do, if we use a simple regular expression. __Regular expressions__ are sequences of characters designed to
+extract patterns from larger strings. Although I will not go into much detail here, you can learn all about them at the tutorial 
+website [regexone](https://regexone.com/). I recommend completing the entire set of exercises. You'll be a regex expert in no time.
+
+The following code uses the regex symbol `\w` to denote all alphanumeric characters (letters, numbers and underscores). Using the condition
+that I keep only those types of characters, I drop all forms of punctuation. Note that in some cases, there may be some special characters
+you want to keep (e.g. `#` or `@` in twitter text). In cases like that, you may want to extract special text first, then remove punctuation
+in this way. The `re` python library has a great function for substituting based on regex: 
+```python
+##### Let's remove punctuation #####
+
+def remove_punct(df, colname):
+  '''Remove punctuation from a col of tokens.
+  Inputs: df - the dataframe containing the tokens
+          colname - the name of the column containing
+          the tokens
+  Output: A new df with punctuationless tokens appended as 
+  separate column.'''
+  # Instantiate list of row lists
+  tokens_no_punct = []
+  # Create a list of lists with what we want
+  for row in df[colname]:
+    tokens_no_punct.append([re.sub('[^\w\s]','', t) for t in row])
+
+  # add the new info to our df
+  df['tokens_no_punct'] = tokens_no_punct
+  # print some new token lists 
+  print(df['tokens_no_punct'].head(5))
+
+  return df
+
+# Execute function
+data = remove_punct(data, 'lowercase_tokens')
+
+#--------------------------------------------------------------------
+>0    [go, until, jurong, point, , crazy, available,...
+>1                   [ok, lar, , joking, wif, u, oni, ]
+>2    [free, entry, in, 2, a, wkly, comp, to, win, f...
+>3    [u, dun, say, so, early, hor, , u, c, already,...
+>4    [nah, i, do, nt, think, he, goes, to, usf, , h...
+>Name: tokens_no_punct, dtype: object
+```
