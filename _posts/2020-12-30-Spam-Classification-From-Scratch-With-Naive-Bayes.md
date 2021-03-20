@@ -75,8 +75,7 @@ def clean_email_df(DF):
 
 data = clean_email_df(df)
 print('After cleaning:\n', data.head(5))
-```
-<span style="background-color: #d7f5f5">
+
 ```
 >Before cleaning:
 >      v1  ... Unnamed: 4
@@ -106,8 +105,7 @@ print('After cleaning:\n', data.head(5))
 >2    1.0  Free entry in 2 a wkly comp to win FA Cup fina...
 >3    0.0  U dun say so early hor... U c already then say...
 >4    0.0  Nah I dont think he goes to usf, he lives aro...
-```
-</span>
+```{: .blue}
 
 We can see that we are left only with the binary label (1 = spam, 0 = ham), and the text of the message. Note that it is also good practice to give the minority
 class the positive label in binary classification. We can see that the ham/spam breakdown of our dataset is 87/13. This is important to remember as we
