@@ -16,7 +16,19 @@ In this post, i'm going to implement a very simple model called __Naive Bayes__,
 using the python language not only to run the model itself, but also to preprocess the dataset. To train the model, I'll be using a dataset of emails 
 created for [this Kaggle competition](https://www.kaggle.com/uciml/sms-spam-collection-dataset?select=spam.csv). You can freely download the data in csv format
 (in fact I encourage you to do so and follow along with this post). To run the necessary packages, i'm using a google colab notebook, but you can easily 
-use this code on your local machine, or in an IDE (e.g. Anaconda). To begin, I load the data into colab. The following code is unique to colab, and just lets
+use this code on your local machine, or in an IDE (e.g. Anaconda). Here is a rough outline of the concepts I cover:
+
+1. Tokenization
+2. Converting tokens to lowercase
+3. Removing punctuation and special characters
+4. Removing stopwords
+5. Stemming and Lemmatization
+6. Removing blank tokens
+7. Splitting data into train/test
+8. Fitting the Naive Bayes Model
+9. Evaluating prediction on the test set
+
+To begin, I load the data into colab. The following code is unique to colab, and just lets
 me upload the csv file from my drive:
 ```python
 # Load the dataset
@@ -123,3 +135,82 @@ print_random_message(data)
 >
 > 0.0
 ```
+This particular message is ham. We can see that the message comes as a __string__, which is just a long sequence of characters.
+Note that is the natural language processing setting, we treat whitespace as its own character. So we can also think about these
+strings as sequences of words, separated by whitespace. However, the string on its own is not a very useful predictor of ham and
+spam, because almost every string is different. If we're just measuring similarity between strings by treating them as sequences 
+of characters, most of any string is noise (ie not a useful signal for our classification). There are models that use language
+at the character level to predict, for example, the next word in a sentence, or next sentence in a paragraph (such models are 
+called, not surprisingly, __language models__). But in this case, our individual unit will be words, or word-like objects. We 
+call these objects __tokens__, and most are just words (ie `are`, `just`, and `most` are tokens), but occasionally we treat other 
+special character sequences as their own tokens, depending on the text (ie `Government of Canada` might be a single token).
+
+Converting running text from string format into lists of tokens is called __tokenization__. Splitting running text this way 
+may see like a complicated task, but there are several python packages that do this automatically. The one I'll use is called
+`nltk`. The following code converts our running text into lists of tokens:
+```python
+#### Tokenize ####
+
+import nltk
+# Download the tokenizer
+nltk.download('punkt')
+
+# Create a new column in our DF that contains token lists instead of raw text
+data['tokens'] = data['message'].apply(nltk.word_tokenize)
+
+print(data['tokens'].head(5))
+
+>[nltk_data] Downloading package punkt to /root/nltk_data...
+>[nltk_data]   Unzipping tokenizers/punkt.zip.
+>0    [Go, until, jurong, point, ,, crazy.., Availab...
+>1             [Ok, lar, ..., Joking, wif, u, oni, ...]
+>2    [Free, entry, in, 2, a, wkly, comp, to, win, F...
+>3    [U, dun, say, so, early, hor, ..., U, c, alrea...
+>4    [Nah, I, do, nt, think, he, goes, to, usf, ,,...
+>Name: tokens, dtype: object
+```
+We can see that our dataframe now has an additional column containing the list of tokens from the running text. Another common preprocessing
+step is to convert our tokens into lowercase only. This prevents our model from treating two tokens as separate just because one of them
+appears at the beginning of a sentence, or in a title, for example. Note that in some cases, capitalization may be an indicator of the 
+position, and you may not want to convert all tokens to lowercase. But for our modelling stategy, the position of the token does not matter
+(only its presence). I'll talk more about this later when I introduce the Naive Bayes model, but for now, notice that the following code
+converts our tokens to lowercase:
+```python
+##### Convert tokens into lowercase ####
+
+def lower_tokens(df, colname):
+  '''Convert a df column of tokens to lowercase.
+  Inputs: df - the dataframe containing the tokens
+          col_name - the name of the column containing
+          the tokens
+  Output: A new df with lowercase tokens appended as 
+  separate column.'''
+
+  # Create a list of lists with what we want
+  lowercase_tokens = []
+
+  # For every row in DF
+  for row in df[colname]:
+    # Add the lowercase version of token to row list
+    lowercase_tokens.append([t.lower() for t in row])
+
+  # add the new info to our df
+  df['lowercase_tokens'] = lowercase_tokens
+  # print some lowercase token lists
+  print(data['lowercase_tokens'].head(5))
+  # return new df
+  return(df)
+
+# Execute function
+data = lower_tokens(data, 'tokens')
+
+print(list(data))
+
+>0    [go, until, jurong, point, ,, crazy.., availab...
+>1             [ok, lar, ..., joking, wif, u, oni, ...]
+>2    [free, entry, in, 2, a, wkly, comp, to, win, f...
+>3    [u, dun, say, so, early, hor, ..., u, c, alrea...
+>4    [nah, i, do, nt, think, he, goes, to, usf, ,,...
+>Name: lowercase_tokens, dtype: object
+>['label', 'message', 'tokens', 'lowercase_tokens']
+``` 
