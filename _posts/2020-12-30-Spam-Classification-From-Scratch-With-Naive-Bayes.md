@@ -531,3 +531,6 @@ print(y_train.head(5))
 Now we're ready to fit the model. But first, let's look at exactly how the Naive Bayes model works.
 
 ## Naive Bayes Classification
+
+We're interested in classifying our documents (lists of tokens) into two classes. Let's call these classes \\( S \\) and \\( H \\), for Spam and Ham. How might we use our tokens to predict the class?
+- __Idea__: Let's try to model the probabilities of each class __conditional on the tokens in the document__. Suppose our message has D tokens. It might not be obvious how to do this, but we can rely on Bayes Rule:
