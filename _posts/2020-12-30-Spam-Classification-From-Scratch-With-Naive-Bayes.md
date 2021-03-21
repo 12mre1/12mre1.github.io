@@ -263,3 +263,66 @@ data = remove_punct(data, 'lowercase_tokens')
 >4    [nah, i, do, nt, think, he, goes, to, usf, , h...
 >Name: tokens_no_punct, dtype: object
 ```
+Excellent! Now we our tokens are almost completely clean. Notice that several words are repeated quite often (e.g. a , u). This
+is not necessarily a bad thing - sometimes key words will be crucial in classifying the email. However, many words we see often
+in spam and ham messages are only repeated often because they are used the most frequently in the english language. These are 
+words you might be able to guess even without looking at the tokens (e.g. _the_, _it_, _be_, _a_). We call these types of tokens
+__stopwords__, and because they tend to appear often in all observations regardless of class, they have almost no predictive 
+power. It is common to remove them from our observations, and that is what we will do here. Rather than trying to generate our
+own list of stopwords, we can use a freely available one that comes with `nltk`. This given list has almost 200 stopwords, and 
+in this case I use a subset of this:
+```python
+######### Remove Stopwords #########
+
+##### Time to remove Stopwords #####
+
+from nltk.corpus import stopwords
+nltk.download('stopwords')
+# print the top 75 most popular english words
+sw = stopwords.words('english')[:75]
+
+# I converted to np array for better printing
+print(np.array(sw).reshape((15,5)))
+
+def remove_sws(df, colname, sw_list):
+  tokens_no_sw = []
+  for row in df[colname]:
+    tokens_no_sw.append([w for w in row if w not in sw_list])
+  # Add column to df
+  data['tokens_no_sw'] = tokens_no_sw
+
+  # Print some examples
+  print(df['tokens_no_sw'].tail(5))
+
+  return df
+
+# Execute function
+
+data = remove_sws(data, 'tokens_no_punct', sw)
+
+#---------------------------------------------------------------
+>[nltk_data] Downloading package stopwords to /root/nltk_data...
+>[nltk_data]   Unzipping corpora/stopwords.zip.
+>[['i' 'me' 'my' 'myself' 'we']
+> ['our' 'ours' 'ourselves' 'you' "you're"]
+> ["you've" "you'll" "you'd" 'your' 'yours']
+> ['yourself' 'yourselves' 'he' 'him' 'his']
+> ['himself' 'she' "she's" 'her' 'hers']
+> ['herself' 'it' "it's" 'its' 'itself']
+> ['they' 'them' 'their' 'theirs' 'themselves']
+> ['what' 'which' 'who' 'whom' 'this']
+> ['that' "that'll" 'these' 'those' 'am']
+> ['is' 'are' 'was' 'were' 'be']
+> ['been' 'being' 'have' 'has' 'had']
+> ['having' 'do' 'does' 'did' 'doing']
+> ['a' 'an' 'the' 'and' 'but']
+> ['if' 'or' 'because' 'as' 'until']
+> ['while' 'of' 'at' 'by' 'for']]
+>5567    [2nd, time, tried, 2, contact, u, u, won, å750...
+>5568      [will, ì_, b, going, to, esplanade, fr, home, ]
+>5569    [pity, , , in, mood, , so, , any, other, sugge...
+>5570    [guy, some, bitching, acted, like, d, interest...
+>5571                             [rofl, , true, to, name]
+>Name: tokens_no_sw, dtype: object
+```
+You can see the list of stopwords above, along with some of our tokenized messages once those stopwords have been removed.
