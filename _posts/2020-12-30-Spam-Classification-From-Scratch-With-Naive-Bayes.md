@@ -534,3 +534,41 @@ Now we're ready to fit the model. But first, let's look at exactly how the Naive
 
 We're interested in classifying our documents (lists of tokens) into two classes. Let's call these classes \\( S \\) and \\( H \\), for Spam and Ham. How might we use our tokens to predict the class?
 - __Idea__: Let's try to model the probabilities of each class __conditional on the tokens in the document__. Suppose our message has D tokens. It might not be obvious how to do this, but we can rely on Bayes Rule:
+
+{% raw %}
+
+$$ Pr(S|w_1 , \cdots , w_D)  = \frac{Pr(w_1 , \cdots , w_D | S) Pr(S)}{Pr(w_1 , \cdots , w_D)} \propto Pr(w_1 , \cdots , w_D | S) Pr(S) $$
+
+{% endraw %}
+
+So the probability that our message is spam is equal to the probability that we get these words given the message is spam, multiplied by the probability of any message being spam (this is pretty intuitive). We call the left term the __likelihood__, and the right term the __prior__.
+
+- __Problem__: How in the world do we estimate \\( Pr(w_1 , \cdots , w_D | S) \\) ?
+
+-  __Solution__: We use a __naive__ assumption. Let's assume that words are independent of each other conditional on class (this is obviously not true in reality, but it makes our lives easier). Then we can rewrite our probability:
+
+{% raw %}
+
+$$ Pr(S|w_1 , \cdots , w_D)  = \propto \Pi_{i=1}^{D}Pr(w_i | S) Pr(S) $$
+
+{% endraw %}
+
+Now we have something we can estimate. Assume V is the set of all words in your training corpus. The __Naive Bayes__ approach does the following:
+1. Estimate \\( \hat{Pr}(S) = \frac{N_s}{N} \\), where \\( N_s \\) is the number of documents labelled as S. Similarly estimate \\( \hat{Pr}(H) = 1 - \hat{Pr}(S) \\).
+2. For every token in every document, estimate \\( \hat{Pr}(w_i|S) = \frac{count(w_i|S)}{\Sigma_{w \in V} count(w_i|S)} \\), where \\( count(w_i|S) \\) is the number of times token  \\( w_i \\) appears __in all spam documents__, and  \\( \Sigma_{w \in V} count(w_i|S) \\) is the total number of words in all spam documents. Do a similar computation for Ham documents and tokens. 
+3. Once we have these probabilities, we can compute \\( \hat{Pr}(S|w_1 , \cdots , w_D) \\) and \\( \hat{Pr}(H|w_1 , \cdots , w_D) \\) for any new document. Then we simply label that document as Spam or Ham, depending on which probability is larger.
+
+__One small problem__: If a word in the test corpus does not appear in the training corpus, it will have a count (and thus a probability) of zero. This will make the entire \\( \hat{Pr}(S|w_1 , \cdots , w_D) = 0 \\), even if other words in the document still have positive probability. To deal with this, we use __smoothing__, assigning every word an arbitrarily low probability. There are different ways to do this, but here is a technique called __Laplace Smoothing__:
+
+{% raw %}
+
+$$\hat{Pr}(w_i|S) = \frac{count(w_i|S) + 1}{\Sigma_{w \in V} (count(w_i|S) + 1)}$$
+
+{% endraw %}
+
+
+This probability estimation approach is called __Bag of Words (BOW)__, because we treat classes and documents as collections of words, where order does not matter.
+Note that the estimators above (before smoothing) are simply the maximum likelihood estimators of the word probabilities, if we assume the word counts in sentences
+follow a __multinomial distribution__. Thus, this approach is called __Multinomial Naive Bayes__, and could easily be extended for the case of more than 2 classes.
+Although there are packages in python that can fit this kind of model automatically (one great example is the `MultinomialNB()` transformer from `scikit-learn`), 
+just like the preprocessing steps, I will build this from scratch so you can see how it works.
