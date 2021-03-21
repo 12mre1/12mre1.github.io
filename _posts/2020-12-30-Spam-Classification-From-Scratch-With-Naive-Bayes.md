@@ -325,4 +325,209 @@ data = remove_sws(data, 'tokens_no_punct', sw)
 >5571                             [rofl, , true, to, name]
 >Name: tokens_no_sw, dtype: object
 ```
-You can see the list of stopwords above, along with some of our tokenized messages once those stopwords have been removed.
+You can see the list of stopwords above, along with some of our tokenized messages once those stopwords have been removed. But we're nto quite done yet.
+I might not be obvious here, but in any given corpus of text, there will be many words that actually have identical meanings, but are only different 
+because of tense (run, ran running) or because of plurality (dog, dogs). Ideally, we'd like to merge these various forms by converting them into 
+identical tokens. However english is a very irregular language, and this is not a very easy task. Two common approaches for doing this are called
+stemming and lemmatization. 
+
+__Stemming__ is the act of converting a word to its root by removing the word's suffix. For example, _running_ would be converted to _run_, _apples_
+to _apple_, and _digestion_ to _digest_. However, given the oddities and irregularities of the english language, there is no universal set of rules
+for pefectly accomplishing this. Thus, most stemmers are large, hand-compiled databases of words/tokens that map irregular forms into their roots.
+However, many relationships can be missed (ie _knives_ to _knife_), and sometimes when rules are used, they don't quite give a perfect result (ie 
+_babies_ becomes _babi_). Perhaps the most common stemmer is called the __Porter stemmer__, named for its creator. Although not perfect, using a 
+stemmer can give significant improvement further down the line.  
+
+__Lemmatizing__ is a similar process that takes this a step further. Instead of converting tokens to their roots, it converts them to their __lemmas__,
+or dictionary words. This is particularly useful for converting different verb tenses into single tokens. For example (run, ran, running, runs) would
+all convert to run. This is typically stronger than stemming alone, however most lemmatizers are also hand-compiled databases of words. Thus, not only
+are they difficult to create, but they are not perfect. However, just like stemming, using a lemmatizer will often give significant improvement. Just
+like stemmers, we have several options for our lemmatizer, but one of the most common ones is called the _WordNet_ lemmatizer, and that is what I will
+use here. The following code stems and lemmatizes our token lists:
+```python
+######### Stemming and Lemmatization ###########
+
+from nltk.stem.snowball import SnowballStemmer
+from nltk.stem import WordNetLemmatizer
+
+# download lemmatizer
+nltk.download('wordnet')
+
+# Instantiate stemmer and lemmatizer objects
+stemmer = SnowballStemmer('english')
+lemmatizer = WordNetLemmatizer()
+
+### Stemming our dataset (Snowball Stemmer) ###
+
+def stem_tokens(df, colname):
+  '''Convert tokens into their stems (roots)
+  Inputs: df - The DataFrame of tokens.
+          colname - The column name with the tokens.
+  Output: Dataframe with new column of stemmed tokens.'''
+
+  # Instantiate list of rows
+  stemmed_tokens = []
+  # Loop for each row in df to stem token by token
+  for row in df[colname]:
+    stemmed_tokens.append([stemmer.stem(t) for t in row])
+
+  # Add stemmed tokens to df
+  df['stemmed_tokens'] = stemmed_tokens
+
+  # Print results
+  print('\nAfter stemming:\n\n', df['stemmed_tokens'].head(3))
+
+  return df
+
+##### Lemmatize the Dataset #####
+
+def lemmatize_tokens(df, colname):
+  '''Lemmatize tokens (convert to dictionary word)
+  Inputs: df - The DataFrame of tokens.
+          colname - The column name with the tokens.
+  Output: Dataframe with new column of lemmatized tokens.'''
+
+  # Instantiate list of rows
+  lem_tokens = []
+  for row in df[colname]:
+    lem_tokens.append([lemmatizer.lemmatize(t) for t in row])
+
+  # Add lemmatized tokens to df
+  df['lem_tokens'] = lem_tokens
+  # Print results
+  print('\nAfter Lemmatizing:\n\n',df['lem_tokens'].head(3))
+
+  return df
+
+# Execute lemmatizing and stemming
+
+data = stem_tokens(data, 'tokens_no_sw')
+data = lemmatize_tokens(data, 'stemmed_tokens')
+
+print(data.head(3))
+
+#-----------------------------------------------------------------
+
+>[nltk_data] Downloading package wordnet to /root/nltk_data...
+>[nltk_data]   Unzipping corpora/wordnet.zip.
+>
+>After stemming:
+>
+>0    [go, jurong, point, , crazi, avail, onli, in, ...
+>1                     [ok, lar, , joke, wif, u, oni, ]
+>2    [free, entri, in, 2, wkli, comp, to, win, fa, ...
+>Name: stemmed_tokens, dtype: object
+>
+>After Lemmatizing:
+>
+>0    [go, jurong, point, , crazi, avail, onli, in, ...
+>1                     [ok, lar, , joke, wif, u, oni, ]
+>2    [free, entri, in, 2, wkli, comp, to, win, fa, ...
+>Name: lem_tokens, dtype: object
+>   label  ...                                         lem_tokens
+>0    0.0  ...  [go, jurong, point, , crazi, avail, onli, in, ...
+>1    0.0  ...                   [ok, lar, , joke, wif, u, oni, ]
+>2    1.0  ...  [free, entri, in, 2, wkli, comp, to, win, fa, ...
+>
+>[3 rows x 8 columns]
+
+```
+This is good. Our token list are almost as clean as they can be without us treating individual instances (for a perfectly clean dataset, you will 
+probably have to do this with hand-built lists of token mappings). One last step we will take is to remove blank tokens. These are just a consequence
+of our earlier removal of punctuation and special characters. We didn't tehnically remove them, rather we replaced them with whitespace. So for tokens
+that were just a special character or punctuation mark, we are now left with tokens that are pure whitespace (blanks).
+
+The code below removes these blank tokens. At the same time, we've been keeping each preprocessing step as its own column. There's no need to keep
+these intermediate series, so I drop them, leaving only label, raw text, and the final processed tokens.
+```python
+##### Remove blank tokens (empty strings) #####
+def remove_blank_tokens(df, colname):
+  '''Remove blank tokens from df'''
+  # Instantiate  list of non-blank tokens
+  no_blanks = []
+  # Loop through data
+  for row in df[colname]:
+    no_blanks.append([t for t in row if t != ''])
+  df['tokens'] = no_blanks
+  
+  return df
+
+data = remove_blank_tokens(data, 'lem_tokens')
+
+##### Drop intermediate columns #####
+def remove_inter_cols(df, keep_col):
+  '''Remove intermediate cols from df'''
+  data = df[['label', 'message', keep_col]]
+  return data
+
+data = remove_inter_cols(data, 'tokens')
+
+print(data.head(3))
+
+#-------------------------------------------------
+>   label  ...                                             tokens
+>0    0.0  ...  [go, jurong, point, crazi, avail, onli, in, bu...
+>1    0.0  ...                       [ok, lar, joke, wif, u, oni]
+>2    1.0  ...  [free, entri, in, 2, wkli, comp, to, win, fa, ...
+>
+>[3 rows x 3 columns]
+```
+Now our dataset is pretty clean. Note that we could painstakingly continue to clean individual tokens on a case-by-case basis (if this were a project or 
+application going into production, you should definitely do this), but for our purposes, the steps we have taken will be enough to achieve good performance.
+Up until now, I've been processing the data as one set, but, as with any model-fitting technique, now is the time to split the data into training and 
+test sets (and possibly a validation set if you're experimenting with several modelling options). Packages like `scikit-learn` have excellent built-in
+functions to split data this way, but because we are working with pandas dataframes, and to show you exactly how this works, I code this split below.
+When random number generation is involved, it is always a good idea to set your seed, for reproducibility.
+```python
+import numpy as np
+from math import *
+
+def train_test_split(df, test_size, y_col = 'label', x_col = 'tokens', set_seed = 42):
+  '''Splits a given preprocessed pandas DF into training and test sets. 
+  Expects two columns only (label, message).
+  Inputs: df - The dataframe of tokens and labels.
+  test_size - The proportion of data that should be used in the test set.
+  y_col - The name of the pandas column with the labels.
+  x_col - The name of the pandas column with the tokens. 
+  set_seed - The seed of the random generator.
+  Output: Returns X_train, X_test, Y_train, Y_test'''
+  n_obs = len(df)
+  num_test_obs = floor(test_size*n_obs)
+  # Generate indices of test labels
+  np.random.seed(set_seed)
+  rand_idx = np.random.randint(0, n_obs - 1, num_test_obs)
+  # Convert numpy array to regular list 
+  test_idx = rand_idx.tolist()
+  train_idx = [i for i in list(range(n_obs)) if i not in test_idx]
+  # print('Test indices:', test_idx)
+
+  # Generate training features
+  X_train, y_train = df[x_col].loc[train_idx], df[y_col].loc[train_idx]
+  X_test, y_test = df[x_col].loc[test_idx], df[y_col].loc[test_idx]
+
+  return X_train, X_test, y_train, y_test
+
+# Split into train and test
+x_train, x_test, y_train, y_test = train_test_split(data, test_size = 0.1)
+print(x_train.head(5))
+print(y_train.head(5))
+
+#------------------------------------------------------------------------------------
+
+>0    [go, jurong, point, crazi, avail, onli, in, bu...
+>1                         [ok, lar, joke, wif, u, oni]
+>2    [free, entri, in, 2, wkli, comp, to, win, fa, ...
+>3    [u, dun, say, so, earli, hor, u, c, alreadi, t...
+>5    [freemsg, hey, there, darl, s, 3, week, s, now...
+>Name: tokens, dtype: object
+>0    0.0
+>1    0.0
+>2    1.0
+>3    0.0
+>5    1.0
+>Name: label, dtype: float64
+```
+
+Now we're ready to fit the model. But first, let's look at exactly how the Naive Bayes model works.
+
+## Naive Bayes Classification
