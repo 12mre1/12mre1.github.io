@@ -172,6 +172,9 @@ print(data['tokens'].head(5))
 >4    [Nah, I, do, nt, think, he, goes, to, usf, ,,...
 >Name: tokens, dtype: object
 ```
+
+## Converting Tokens to Lowercase
+
 We can see that our dataframe now has an additional column containing the list of tokens from the running text. Another common preprocessing
 step is to convert our tokens into lowercase only. This prevents our model from treating two tokens as separate just because one of them
 appears at the beginning of a sentence, or in a title, for example. Note that in some cases, capitalization may be an indicator of the 
@@ -218,6 +221,9 @@ print(list(data))
 >Name: lowercase_tokens, dtype: object
 >['label', 'message', 'tokens', 'lowercase_tokens']
 ``` 
+
+## Removing Punctuation and Special Characters
+
 Now all our tokens have been lowered. Another common preprocessing step is to remove punctuation marks from the tokens. When we
 split the running text by whitespace, any punctuation will have been appended to the word it is next to. Unless we deal with this,
 a word used in the middle of a sentence (e.g. `green`) will be treated differently than the identical word used at the end (`green!`).
@@ -263,6 +269,9 @@ data = remove_punct(data, 'lowercase_tokens')
 >4    [nah, i, do, nt, think, he, goes, to, usf, , h...
 >Name: tokens_no_punct, dtype: object
 ```
+
+## Removing Stopwords
+
 Excellent! Now we our tokens are almost completely clean. Notice that several words are repeated quite often (e.g. a , u). This
 is not necessarily a bad thing - sometimes key words will be crucial in classifying the email. However, many words we see often
 in spam and ham messages are only repeated often because they are used the most frequently in the english language. These are 
@@ -325,6 +334,9 @@ data = remove_sws(data, 'tokens_no_punct', sw)
 >5571                             [rofl, , true, to, name]
 >Name: tokens_no_sw, dtype: object
 ```
+
+## Stemming and Lemmatization
+
 You can see the list of stopwords above, along with some of our tokenized messages once those stopwords have been removed. But we're nto quite done yet.
 I might not be obvious here, but in any given corpus of text, there will be many words that actually have identical meanings, but are only different 
 because of tense (run, ran running) or because of plurality (dog, dogs). Ideally, we'd like to merge these various forms by converting them into 
@@ -432,6 +444,9 @@ print(data.head(3))
 >[3 rows x 8 columns]
 
 ```
+
+## Removing Blank Tokens
+
 This is good. Our token list are almost as clean as they can be without us treating individual instances (for a perfectly clean dataset, you will 
 probably have to do this with hand-built lists of token mappings). One last step we will take is to remove blank tokens. These are just a consequence
 of our earlier removal of punctuation and special characters. We didn't tehnically remove them, rather we replaced them with whitespace. So for tokens
@@ -472,6 +487,9 @@ print(data.head(3))
 >
 >[3 rows x 3 columns]
 ```
+
+## Train Test Split
+
 Now our dataset is pretty clean. Note that we could painstakingly continue to clean individual tokens on a case-by-case basis (if this were a project or 
 application going into production, you should definitely do this), but for our purposes, the steps we have taken will be enough to achieve good performance.
 Up until now, I've been processing the data as one set, but, as with any model-fitting technique, now is the time to split the data into training and 
@@ -694,7 +712,7 @@ print(json.dumps(d, indent=4, sort_keys=True))
 Recall these are log probabilities, so the numbers will be negative, but a larger number indicates a higher frequency. 
 
 Now that we have our probabilities (generated based on the training data), we can use them to compute probabilities for entire
-observastions in both the training and testing sets. The posterior class probabilities for each email will simply be the sum of 
+observations in both the training and testing sets. The posterior class probabilities for each email will simply be the sum of 
 the log probabilities of each token in each email, plus the class prior. Remember the prior must also be computed based on the training 
 data. We compute probabilities for the ham and spam classes, and the prediction will simply be the higher of the two posterior class probabilities:
 ```python
