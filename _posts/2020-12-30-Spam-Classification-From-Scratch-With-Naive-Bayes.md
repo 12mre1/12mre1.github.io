@@ -476,55 +476,29 @@ Now our dataset is pretty clean. Note that we could painstakingly continue to cl
 application going into production, you should definitely do this), but for our purposes, the steps we have taken will be enough to achieve good performance.
 Up until now, I've been processing the data as one set, but, as with any model-fitting technique, now is the time to split the data into training and 
 test sets (and possibly a validation set if you're experimenting with several modelling options). Packages like `scikit-learn` have excellent built-in
-functions to split data this way, but because we are working with pandas dataframes, and to show you exactly how this works, I code this split below.
-When random number generation is involved, it is always a good idea to set your seed, for reproducibility.
+functions to split data this way, and I will use that here.
 ```python
 import numpy as np
 from math import *
-
-def train_test_split(df, test_size, y_col = 'label', x_col = 'tokens', set_seed = 42):
-  '''Splits a given preprocessed pandas DF into training and test sets. 
-  Expects two columns only (label, message).
-  Inputs: df - The dataframe of tokens and labels.
-  test_size - The proportion of data that should be used in the test set.
-  y_col - The name of the pandas column with the labels.
-  x_col - The name of the pandas column with the tokens. 
-  set_seed - The seed of the random generator.
-  Output: Returns X_train, X_test, Y_train, Y_test'''
-  n_obs = len(df)
-  num_test_obs = floor(test_size*n_obs)
-  # Generate indices of test labels
-  np.random.seed(set_seed)
-  rand_idx = np.random.randint(0, n_obs - 1, num_test_obs)
-  # Convert numpy array to regular list 
-  test_idx = rand_idx.tolist()
-  train_idx = [i for i in list(range(n_obs)) if i not in test_idx]
-  # print('Test indices:', test_idx)
-
-  # Generate training features
-  X_train, y_train = df[x_col].loc[train_idx], df[y_col].loc[train_idx]
-  X_test, y_test = df[x_col].loc[test_idx], df[y_col].loc[test_idx]
-
-  return X_train, X_test, y_train, y_test
+from sklearn.model_selection import train_test_split
 
 # Split into train and test
-x_train, x_test, y_train, y_test = train_test_split(data, test_size = 0.1)
+x_train, x_test, y_train, y_test = train_test_split(data['tokens'], data['label'], test_size = 0.1)
 print(x_train.head(5))
 print(y_train.head(5))
-
 #------------------------------------------------------------------------------------
 
->0    [go, jurong, point, crazi, avail, onli, in, bu...
->1                         [ok, lar, joke, wif, u, oni]
->2    [free, entri, in, 2, wkli, comp, to, win, fa, ...
->3    [u, dun, say, so, earli, hor, u, c, alreadi, t...
->5    [freemsg, hey, there, darl, s, 3, week, s, now...
+>526     [today, s, offer, claim, ur, å150, worth, disc...
+>4834    [oh, rite, well, im, with, best, mate, pete, w...
+>1253    [mum, say, wan, to, go, then, go, then, can, s...
+>3595             [good, morn, princess, happi, new, year]
+>4217     [actual, m, wait, 2, week, when, start, put, ad]
 >Name: tokens, dtype: object
->0    0.0
->1    0.0
->2    1.0
->3    0.0
->5    1.0
+>526     1.0
+>4834    0.0
+>1253    0.0
+>3595    0.0
+>4217    0.0
 >Name: label, dtype: float64
 ```
 
@@ -557,7 +531,7 @@ Now we have something we can estimate. Assume V is the set of all words in your 
 
 __i)__ Estimate \\( \hat{Pr}(S) = \frac{N_s}{N} \\), where \\( N_s \\) is the number of documents labelled as S. Similarly estimate \\( \hat{Pr}(H) = 1 - \hat{Pr}(S) \\).
 
-__ii)__ For every token in every document, estimate \\( \hat{Pr}(w_i \vert S) = \frac{count(w_i \vert S)}{\Sigma_{w \in V} count(w_i \vertS)} \\), where \\( count(w_i\vert S) \\) is the number of times token  \\( w_i \\) appears __in all spam documents__, and  \\( \Sigma_{w \in V} count(w_i \vert S) \\) is the total number of words in all spam documents. Do a similar computation for Ham documents and tokens. 
+__ii)__ For every token in every document, estimate \\( \hat{Pr}(w_i \vert S) = \frac{count(w_i \vert S)}{\Sigma_{w \in V} count(w_i \vert S)} \\), where \\( count(w_i\vert S) \\) is the number of times token  \\( w_i \\) appears __in all spam documents__, and  \\( \Sigma_{w \in V} count(w_i \vert S) \\) is the total number of words in all spam documents. Do a similar computation for Ham documents and tokens. 
 
 __iii)__ Once we have these probabilities, we can compute \\( \hat{Pr}(S \vert w_1 , \cdots , w_D) \\) and \\( \hat{Pr}(H \vert w_1 , \cdots , w_D) \\) for any new document. Then we simply label that document as Spam or Ham, depending on which probability is larger.
 
@@ -575,3 +549,225 @@ Note that the estimators above (before smoothing) are simply the maximum likelih
 follow a __multinomial distribution__. Thus, this approach is called __Multinomial Naive Bayes__, and could easily be extended for the case of more than 2 classes.
 Although there are packages in python that can fit this kind of model automatically (one great example is the `MultinomialNB()` transformer from `scikit-learn`), 
 just like the preprocessing steps, I will build this from scratch so you can see how it works.
+
+The goal of the next few functions is to separate the documents (tokens lists) into bags of words (1 for ham, 1 for spam). I start by computing the two class priors, using the formula given earlier. Technically we're computing log probabilities, because it is easier to work with sums than products:
+```python
+###### Create Priors ######
+
+###### Create Priors ######
+
+def get_log_priors(X, y):
+  '''Compute prior probabilities for each class'''
+  assert len(X) == len(y)
+  # Total number of document
+  n_doc = len(X)
+  # Spam documents
+  n_spam = len(X[y == 1.0])
+  # Ham documents
+  n_ham = len(X[y == 0.0])
+
+  # Quick sanity check
+  assert n_ham + n_spam == n_doc
+
+  # Vocab of a class is the union of all words of class C
+  spam_prior = log(n_spam/n_doc)
+  ham_prior = log(n_ham/n_doc)
+
+  return spam_prior, ham_prior
+
+# Get prior class probabilities
+spam_prior, ham_prior = get_log_priors(x_train, y_train)
+```
+Next I want to turn my pandas dataframe of messages into bags of words. It no longer makes sense to store these two collections of tokens in DF format, so
+the resulting function returns two lists of tokens. One list contains all tokens in all spam documents, and the other contains all tokens in all ham documents. Note that I only want the tokens from the training data, since the probabilities generated with the bags of words cannot contain information from the test data (this would be an example of __data leakage__, and it would make our test error useless as a measure of generalization).
+```python
+##### Get BOWs for each class ######
+
+def get_bags_of_words(X, y):
+  '''Convert df into bags of words for each class.
+  Inputs: X - features (tokens)
+  y - labels (binary).
+  Returns: One list of tokens for each class.'''
+  # Separate ham and spam into two dfs
+  spam_obs = X[y == 1.0]
+  ham_obs = X[y == 0.0]
+  print('Number of spam and ham observations:',len(spam_obs), len(ham_obs))
+
+  # Single list of all spam tokens (includes duplicates)
+  spam_token_lists = spam_obs.values.flatten().tolist()
+  spam_bow = [t for l in spam_token_lists for t in l]
+
+  # Single list of ham tokens (includes duplicates)
+  ham_token_lists = ham_obs.values.flatten().tolist()
+  ham_bow = [t for l in ham_token_lists for t in l]
+  
+  print('Size of spam and ham bags of words:',len(spam_bow), len(ham_bow))
+
+  return spam_bow, ham_bow
+
+s_bow, h_bow = get_bags_of_words(x_train, y_train)
+
+#---------------------------------------------------------------
+
+>Number of spam and ham observations: 676 4338
+>Size of spam and ham bags of words: 13523 45373
+```
+So now we have two bags of words containing all tokens in each of the two classes. Our next step is to convert these larger token lists into
+counts of tokens. A convenient data structure to store this information is the _dictionary_, with keys being tokens, and values being their counts. The following code produces token count dictionaries for both ham and spam classes:
+```python
+###### Convert tokens into counts ######
+def get_token_counts(spam_bow, ham_bow):
+  '''Convert class token lists to dictionaries of counts'''
+  # Create counts of spam tokens
+  spam_counts = dict()
+  for t in spam_bow:
+    spam_counts[t] = spam_counts.get(t,0)
+    spam_counts[t] += 1
+  
+  # Create counts of ham tokens
+  ham_counts = dict()
+  for t in ham_bow:
+    ham_counts[t] = ham_counts.get(t,0)
+    ham_counts[t] += 1
+
+  print(len(spam_counts), len(ham_counts))
+  return spam_counts, ham_counts
+
+s_counts, h_counts = get_token_counts(s_bow, h_bow)
+
+# Print a few tokens from each class
+print('Five token counts from Spam:\n',list(s_counts.items())[:5])
+print('Five token counts from Ham:\n',list(h_counts.items())[:5])
+
+#---------------------------------------------------------------------
+
+>2585 5662
+>Five token counts from Spam:
+> [('today', 35), ('s', 78), ('offer', 39), ('claim', 106), ('ur', 125)]
+>Five token counts from Ham:
+> [('oh', 104), ('rite', 17), ('well', 100), ('im', 69), ('with', 247)]
+```
+We can see (intuitively) that some words appear much more frequently than others. Now we want to convert these counts into probabilities 
+according to the maximum likelihood estimate given earlier. The following code converts the dictionary of counts to a dictionary of probabilities.
+To give you a sense of what this looks like, I print the first 10 entries (alphabetically) from the spam dictionary.
+```python
+from math import *
+import json 
+
+#### Convert BOW counts into probabilities ####
+def get_token_probs(count_dict):
+  '''Convert docs (token lists) to class probs'''
+  prob_dict = {}
+  # Extra term is for laplace smoothing (denominators of posterior estimates)
+  sum_counts = sum(count_dict.values()) + len(count_dict.keys())
+  for key in count_dict.keys():
+    prob_dict[key] = log((count_dict[key] + 1)/sum_counts)
+
+  # Define a default probability for unseen test tokens
+  default_prob = log(1/sum_counts)
+  # return the dictionary of log probabilities
+  return prob_dict, default_prob
+
+# Create prob dictionaries for each class
+spam_probs, default_prob_spam = get_token_probs(s_counts)
+ham_probs, default_prob_ham =  get_token_probs(h_counts)
+
+# Print some spam probs to see (10)
+d = dict(list(spam_probs.items())[0:10])
+print(json.dumps(d, indent=4, sort_keys=True))
+
+#----------------------------------------------------------------------
+
+>{
+>    "2": -4.584781932701026,
+>    "comp": -7.388142313607561,
+>    "cup": -7.898967937373551,
+>    "entri": -6.4718515817334055,
+>    "fa": -8.081289494167507,
+>    "free": -4.412612747371089,
+>    "in": -5.456620902004347,
+>    "to": -3.270732478454464,
+>    "win": -5.665375715866457,
+>    "wkli": -6.982677205499396
+>}
+```
+Recall these are log probabilities, so the numbers will be negative, but a larger number indicates a higher frequency. 
+
+Now that we have our probabilities (generated based on the training data), we can use them to compute probabilities for entire
+observastions in both the training and testing sets. The posterior class probabilities for each email will simply be the sum of 
+the log probabilities of each token in each email, plus the class prior. Remember the prior must also be computed based on the training 
+data. We compute probabilities for the ham and spam classes, and the prediction will simply be the higher of the two posterior class probabilities:
+```python
+#### Convert observations in original df into probabilities ####
+def get_doc_probs(X, spam_probs, ham_probs, def_prob_spam, def_prob_ham):
+  '''Convert docs (token lists) to posterior probabilities.
+  Input: X - The dataframe of features
+  spam_probs - The dictionary of probabilities for spam tokens.
+  ham_probs - The dictionary of probabilities for ham tokens.
+  def_prob_ham - The default prob of ham class for unseen tokens
+  def_prob_spam - The default prob of spam class for unseen tokens
+  Output: A dataframe of predictions, with both ham and spam post. probs'''
+
+  # Instantiate probabilities for each doc for each class
+  p_spam = []
+  p_ham = []
+  for row in X:
+    # Compute log likelihood probabilities for each token in each doc
+    token_probs_spam = [spam_probs.get(t, def_prob_spam) for t in row]
+    token_probs_ham = [ham_probs.get(t, def_prob_ham) for t in row]
+
+    # Append posterior probabilities (likelihood + prior) 
+    p_spam.append(sum(token_probs_spam) + spam_prior)
+    p_ham.append(sum(token_probs_ham) + ham_prior)
+
+  print(len(p_ham))
+  print(len(p_spam))
+  # Add posterior probabilities as columns
+  df = pd.DataFrame(p_spam, columns = ['p_spam'])
+  print(df.columns)
+  df['p_ham'] = p_ham
+  df['prediction'] = (df['p_spam'] > df['p_ham']).astype(float)
+
+  return df
+
+# Predict on training data
+train_preds = get_doc_probs(x_train, spam_probs, ham_probs, default_prob_spam, default_prob_ham)
+
+# Predict on testing data
+train_preds = get_doc_probs(x_test, spam_probs, ham_probs, default_prob_spam, default_prob_ham)
+```
+Now we have two data frames (one for training, and one for testing data), each with the probabilities for each class, and the associated prediction.
+We can use these dataframes to compute simple training and testing accuracy, which is defined (in this setting) as the proportion of predictions 
+(in both classes combined) that are correct.
+```python
+# Generate training error
+print('---------- Training Accuracy ----------')
+train_error = sum((train_preds['prediction'] == y_train))/len(y_train)
+print(train_error)
+
+# Generate testing error
+print('---------- Test Accuracy ----------')
+test_error = sum((test_preds['prediction'] == y_test))/len(y_test)
+print(test_error)
+
+#------------------------------------------------------------------
+>---------- Training Error ----------
+>0.9900279218189071
+>
+>---------- Test Error ----------
+>0.9587813620071685
+```
+This is pretty great! We can see that our training accuracy is slightly higher than the testing accuracy, which is an indication of overfitting (ie the algorithm
+is capturing some patterns unique to the data but not true for the spam/ham relationship in general). However, given the class imbalance (87% were ham), a
+classification accuracy of almost 96% is quite good. Some state of the art models (ie neural networks) could probably achieve close to 100% accuracy on the 
+test set, however given how simple our model is, this performance is promising, and serves as a strong baseline. Note also that more preprocessing before running
+this model would probably also improve performance slightly, however given the many steps we already took, and the diminishing returns of further preprocessing,
+that additional improvement would likely not have been worth it.
+
+## Further Reading
+
+- Perhaps the best text on NLP in general is [Speech and Language Processing](https://web.stanford.edu/~jurafsky/slp3/) by Jurafsky and Martin. It contains an entire chapter dedicated to Naive Bayes, and also addresses many of the preprocessing steps done here.
+
+- The `Scikit-learn` documentation for [Multinomial Naive Bayes](https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html) is certainly worth reading.
+
+- [This](https://machinelearningmastery.com/classification-as-conditional-probability-and-the-naive-bayes-algorithm/) is a similar article, also providing python code.
