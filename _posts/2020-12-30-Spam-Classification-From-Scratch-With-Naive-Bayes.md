@@ -543,7 +543,7 @@ $$ Pr(S|w_1 , \cdots , w_D)  = \frac{Pr(w_1 , \cdots , w_D | S) Pr(S)}{Pr(w_1 , 
 
 So the probability that our message is spam is equal to the probability that we get these words given the message is spam, multiplied by the probability of any message being spam (this is pretty intuitive). We call the left term the __likelihood__, and the right term the __prior__. 
 
-- __Problem__: How in the world do we estimate \\( Pr(w_1 , \cdots , w_D | S) \\)?
+- __Problem__: How in the world do we estimate \\(Pr(w_1 , \cdots , w_D | S)\\)?
 
 -  __Solution__: We use a __naive__ assumption. Let's assume that words are independent of each other conditional on class (this is obviously not true in reality, but it makes our lives easier). Then we can rewrite our probability:
 
