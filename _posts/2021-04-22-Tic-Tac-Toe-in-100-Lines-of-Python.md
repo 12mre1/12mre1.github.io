@@ -12,11 +12,11 @@ _Prerequisite Coding: Python (Numpy)_
 
 One of the most popular board games worldwide is __Tic Tac Toe__, also known to some as __Naughts and Crosses__. Today I'm going to walk through how you can set up a simple two player game using (roughly) 100 lines of Python (not accounting for spaces of course). I think you'll find that the trick to making games like this is not so much the rules of the game, but how you represent them using data structures. I believe this code can be easily implemented in another language, if you would like to try building it yourself (I prefer python, but I know others may have their go-to as well). Before we get started with the coding of the game, let's just refresh ourselves on the rules:
 
-    - 1. The game is traditionally played on a 3x3 board
-    - 2. One player is represented by Xs, and the other by Os (hence the game's title)
-    - 3. Players take turns placing either an X or an O on the board
-    - 4. The first player to achieve 3 of their own pieces in a row, column, or diagonal is the winner
-    - 5. It is possible to tie (in my code that follows, there will simply be no options for placing pieces)
+1. The game is traditionally played on a 3x3 board
+2. One player is represented by Xs, and the other by Os (hence the game's title)
+3. Players take turns placing either an X or an O on the board
+4. The first player to achieve 3 of their own pieces in a row, column, or diagonal is the winner
+5. It is possible to tie (in my code that follows, there will simply be no options for placing pieces)
 
 My goal in doing this was to make a simple working version of the game that covers these rules, and (this is important for any game) was not difficult to play. My game is contained in a single python file, designed to be run on a bash shell (but you could easily run it on another system that can execute python files). So where to begin?
 
@@ -42,4 +42,36 @@ board_idx = {0.0: (0,0), 1.0: (0,1), 2.0: (0,2),
             6.0: (2,0), 7.0: (2,1), 8.0: (2,2)}
 # Maps player symbol to index number (also board value)
 player_idx = {'X': 1.0, 'O': 2.0}
+```
+So we have a basic representation of our board, and we know (roughly) how to access specific elements if we need to. From here, I'll define several functions that we'll used to execute the game. The first of these functions is designed to accept and validate user input. We know the game will start with a blank board, so we'll need to prompt a given player to enter their response, and accept, validate, and store their input. Recall earlier that we defined a grid of numbers with those floating point numbers. These floats can be used by players to dictate their moves in the game. 
+
+```python
+def get_valid_move(game_board):
+    '''Generate and validate user input.'''
+    # Generate list of valid moves
+    valid_moves = np.where(game_board.flatten() == 0.0)[0]
+    print('Possible valid moves:\n\n', valid_moves,'\n')
+    x = float(input('Enter a value (0-8):'))
+        # Check that that position is available
+    if x in valid_moves:
+        return x
+    else:
+        print('Sorry, you can only play on available board positions.\n\n')
+        x = get_valid_move(game_board)
+        return x
+```
+Note that the function above is intermediate - I will use it later on as a piece of the game play pipeline. But here's what's going on in this code. Recall that, when we initialized the game board earlier, we start with a matrix of zeros - thus, zero is used to represent a blank space on the board. The `valid_moves` object in the function above represents an array containing all positions that are blank (the game board value is zero). The list of valid moves is printed for the player. Next I use the built-in `input` function, which will take the choice of the player and store it. If the player's input is valid (lies within the list of valid moves), we allow that choice to be returned. If not, we run the function again.
+
+So now we have a way of collecting and validating player input. What we'll need next is a way of updating our board based on player choices. The following function accomplishes this by accepting as an argument the user input we collected above. Note that in this case, how we update the board will depend on which player gave their input. Notice that we update the board by updating the specific entry indicated through the mapping we defined earlier.
+
+```python
+def adjust_board(user_input, game_board, player):
+    '''Takes user input and updates the game board'''
+    idx = board_idx[user_input]
+    # print('Index you chose:', idx)
+    if game_board[idx] == 0:
+        game_board[idx] = player_idx[player]
+    else:
+        print('Sorry, you must choose a blank square.')
+    return game_board
 ```
