@@ -75,3 +75,149 @@ def adjust_board(user_input, game_board, player):
         print('Sorry, you must choose a blank square.')
     return game_board
 ```
+Recall also that I defined a mapping from player symbol to the associated value. This is useful, because it gives us a very easy way of changing a blank space on the board from a zero to a one (if X) or two (if O). So now, we have the ability to take player input, and use it to update our game. What's missing? Well, for starters, it may not be easy for players to make decisions using a board of numbers. So in order to make the user interface a bit nicer, we should have a way of displaying our game board with blanks, Xs and Os instead of zeroes, ones and twos. To do this, we can create a simple substitution function that makes a copy of the current (floating point) game board, and replaces those values with their symbolic counterparts.
+
+```python
+def symbol_board(game_board):
+    '''Print game board with symbols instead of numbers'''
+    new_board = game_board.astype(str)
+    new_board[new_board == '0.0'] = ' '
+    new_board[new_board == '1.0'] = 'X'
+    new_board[new_board == '2.0'] = 'O'
+    return new_board
+```
+The above code is fairly straightforward, so I won't expand on it too much. Note numpy arrays have homogeneous datatypes, so we need to coerce the entire boards' entries into strings before making the substitiutions you see above. Another function I use is just a wrapper function designed to engage the board update and prompt the user to input their choice. The following function just uses two of the functions we defined above:
+
+```python
+def player_move(player, game_board):
+    '''Update board according to player choice
+    player - the player symbol (string): X or O'''
+    # Remind user of current board
+    print('Here is the current board:')
+    print('--------------------------\n')
+    print(symbol_board(game_board), '\n')
+    # State which player is moving
+    print('Player',player,'where would you like to put an',player,'?\n')
+    # Remind player of board positions
+    print('Here are the board positions you might choose from:')
+    print('---------------------------------------------------\n')
+    print(board_positions, '\n')
+    # Take and validate user input
+    user_input = get_valid_move(game_board)
+    # print('You selected:', user_input)
+    # Update board 
+    game_board = adjust_board(user_input, game_board, player)
+```
+If you look at the details of the above function, you'll see it's mostly designed to inform the player how exactly to make their decision. At each new turn, we print the current game board (using symbols, not floats), we list the available possibilities, and we identify whose turn it actually is. Then we take the user input, and update the board accordingly. One other detail that I haven't mentioned up to this point is that players will alternate turns, and traditionally player O begins the game. To account for this, I define the following small function:
+
+```python
+# Update whose turn it is
+def update_turn(player):
+    if player == 'X':
+        player = 'O'
+    elif player =='O':
+        player = 'X'
+    return player
+```
+This just alternates the player variable depending on whose turn it is. So let's review what we have so far. We have our game board, represented by a numpy array, with an accompanying array showing players which float corresponds to which board position. We have functions designed to take and validate user input (the choice of float), and another function to update to game board accordingly. We also have a function designed to alternate player O and X, with O starting first. We almost have enough for the complete game, but we're missing one important detail - how do we know when a player wins? Recall the rules I mentioned in the beginning - we need to check to see if a given player has three consecutive pieces. If they do, we should declare them the victor. The following function accomplishes this:
+
+```python
+def check_victory(game_board, player, win):
+    '''Check to see if a player has won'''
+    # Whether we look for 1s or 2s depends on player
+    test_cond = np.ones((3,1))*player_idx[player]
+    # Check board
+    # Board transpose needed to check off diagonal
+    board_flip = np.transpose(game_board)
+    for i in range(3):
+        # Check rows
+        row_compare =  np.transpose(game_board[i]) == test_cond
+        if row_compare.all():
+            win = True
+        # Check cols
+        col_compare = np.transpose(game_board[:,i]) == test_cond
+        if col_compare.all():
+            win = True
+        # Check diags
+        diag_compare = np.transpose(np.diagonal(game_board)) == test_cond
+        if diag_compare.all():
+            win = True
+        trans_compare = np.diagonal(board_flip) == test_cond
+        if trans_compare.all():
+            win = True
+        
+    if win == True:
+        print('-----------------------------------\n')
+        print('\nCongratulations',player,'You won!')
+    return win
+```
+This code is designed to be run after each player's turn. Looks at the current state of the game, checks the victory conditions listed above, and if it finds that one of the victory conditions is true, it declares a winner. Note the presence of the boolean variable `win`, which we instantiate as false, and will only be true if one of the players makes a winning move. As I mentioned before, it is possible to draw, in which case the game needs to be manually reset. So we have everything we need. Let's run the game! I use a simple while loop to execute the above functions repeatedly:
+```python
+# Define win flag
+win = False
+# Os goes first
+player = 'O'
+
+print('\nWelcome to Naughts and Crosses. As is customary, Player O will go first. Good luck!\n')
+print('--------------------------------------------------------------------------------------')
+# While no-one has won
+while win == False:
+    # Execute move
+    player_move(player, board)
+    # Check board for victory
+    win = check_victory(board, player, win)
+    # Swap players
+    player = update_turn(player)
+```
+Running this python file will give the following output (I use a bash shell, but you can execute this in whatever environment you normally use):
+```bash
+Welcome to Naughts and Crosses. As is customary, Player O will go first. Good luck!
+
+--------------------------------------------------------------------------------------
+Here is the current board:
+--------------------------
+
+[[' ' ' ' ' ']
+ [' ' ' ' ' ']
+ [' ' ' ' ' ']]
+
+Player O where would you like to put an O ?
+
+Here are the board positions you might choose from:
+---------------------------------------------------
+
+[[0. 1. 2.]
+ [3. 4. 5.]
+ [6. 7. 8.]]
+
+Possible valid moves:
+
+ [0 1 2 3 4 5 6 7 8]
+
+Enter a value (0-8):
+```
+Suppose the first move from player 1 is to go top right (position 0). Here's what the update looks like:
+```python
+Here is the current board:
+--------------------------
+
+[['O' ' ' ' ']
+ [' ' ' ' ' ']
+ [' ' ' ' ' ']]
+
+Player X where would you like to put an X ?
+
+Here are the board positions you might choose from:
+---------------------------------------------------
+
+[[0. 1. 2.]
+ [3. 4. 5.]
+ [6. 7. 8.]]
+
+Possible valid moves:
+
+ [1 2 3 4 5 6 7 8]
+
+Enter a value (0-8):
+```
+That's all there is to it! I encourage you to build this, or a similar game yourself. It's quite fun, and you'd be surprised what you can get done in a short amount of time. You might extend what I've done, to count the number of moves, or to use a larger board. One of the reason's I built this myself was because I plan to build a Reinforcement-Learning Agent to play against. Tic-tac-toe is one of the simplest controlled environments to train computers on. Whatever you chose, I recommend using python, because of its simplicity and power.
