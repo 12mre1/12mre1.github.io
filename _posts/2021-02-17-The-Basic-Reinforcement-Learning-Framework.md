@@ -6,6 +6,12 @@ date: 2021-02-17
 
 ## The Basic Framework of Reinforcement Learning
 
-_Prerequisite Math: Calculus (Derivatives, Sequences and Series), Intermediate Statistics(Markov Chains), Control Theory(Bellman Equations)_
+_Prerequisite Math: None_
 
 _Prerequisite Coding: None_
+
+This post is dedicated to the basics of __Reinforcement Learning__, which is a subdomain of Machine Learning more generally. Many machine learning techniques involve teaching computers to perform a task by giving the algorithm a series of examples, so the computer can attempt to deduce patterns underlying proper(optimal) behavior. Often (though not always), these examples come with labels made by humans , that allow for evaluative feedback (loss) to guide the machine towards the optimal solution given certain data. However RL operates in a fundamentally different way.  Instead of explicitly teaching the computer using human-driven feedback, we give the reinforcement learning agent a direct connection to its __environment__, so that it may __explore possible strategies through trial and error__. In this sense, RL agents learn from experience, and from this experience can learn to evaluate the consequences of actions.
+
+Because of the sequential nature of environment exploration, and the fact that the agent can have a very large number of interactions through time, the goal of any Reinforcement agent is simply to maximize a __reward signal__ across time. This brings a number of challenges, since the action of the agent early in time may have a large impact on possible future rewards later. Thus, in evaluating possible actions, the agent must somehow think beyond its current situation. In other words, the agent must plan ahead. So how do we formally define such a framework? 
+
+I begin here by defining the action space $\mathcal{A}$, which is simply the set of all possible actions an agent may take.
