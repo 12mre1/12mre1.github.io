@@ -14,4 +14,4 @@ This post is dedicated to the basics of __Reinforcement Learning__, which is a s
 
 Because of the sequential nature of environment exploration, and the fact that the agent can have a very large number of interactions through time, the goal of any Reinforcement agent is simply to maximize a __reward signal__ across time. This brings a number of challenges, since the action of the agent early in time may have a large impact on possible future rewards later. Thus, in evaluating possible actions, the agent must somehow think beyond its current situation. In other words, the agent must plan ahead. So how do we formally define such a framework? 
 
-I begin here by defining the action space $\mathcal{A}$, which is simply the set of all possible actions an agent may take.
+I begin here by defining the action space $A$, which is simply the set of all possible actions an agent may take.
