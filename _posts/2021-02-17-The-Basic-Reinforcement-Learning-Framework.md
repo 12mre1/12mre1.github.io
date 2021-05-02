@@ -26,10 +26,10 @@ And now for the last fundamental component: __the reward signal__. One the axiom
 
 The above text contained a lot of new information. Let's briefly review what we've covered. The general RL agent relies on the following components:
 
-    - __States__ contain all information about the task/game/learning process up to the current time. The state is an observation the agent receives about the current condition of the environment.
-    - __Actions__ are the possible choices the agent considers. The set of feasible actions may change depending on the state. In general, the agent wants to choose the action that maximizes potential future rewards.
-    - __Rewards__ are received by the agent after every action, and provide feedback as to the quality of the choice. The reward is a scalar, and the agent is constantly looking ahead to evaluate the current state and action while balancing immediate and long-term rewards.
-    - __Policy__: What the agent is ultimately after is the action at each state that will result in the greatest long-term reward. Such a mapping is called the optimal policy, which can be difficult to find, since the state-action space can be very large. 
+- __States__ contain all information about the task/game/learning process up to the current time. The state is an observation the agent receives about the current condition of the environment.
+- __Actions__ are the possible choices the agent considers. The set of feasible actions may change depending on the state. In general, the agent wants to choose the action that maximizes potential future rewards.
+- __Rewards__ are received by the agent after every action, and provide feedback as to the quality of the choice. The reward is a scalar, and the agent is constantly looking ahead to evaluate the current state and action while balancing immediate and long-term rewards.
+- __Policy__: What the agent is ultimately after is the action at each state that will result in the greatest long-term reward. Such a mapping is called the optimal policy, which can be difficult to find, since the state-action space can be very large. 
 
 The following picture captures the continual interaction between agent and environment quite nicely, accounting for the order in which each piece of information is received:
 
