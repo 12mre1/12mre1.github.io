@@ -79,7 +79,7 @@ Recall also that we have a given policy \\( \pi(a \mid x) \\) that maps states t
 
 These two value functions are what the agent uses to evaluate any given state the agent finds themselves in. Note that the two value functions are related in the following way:
 
-$$ v^{\pi}(x) = \sum_{a \in A} \pi(a \mid x) \cdot Q^{\pi}(x,a) $$
+$$ v^{\pi}(x) = \sum_{a \in A} \pi(a \mid x) Q^{\pi}(x,a) $$
 
 But notice that, in order to compute the above values using their initial formulations, we would need to know all future rewards (or their distributions). Since this is not feasible when the agent is early in the sequence, we can reformulate the value functions using the recurrent relation for return I showed earlier:
 
