@@ -87,6 +87,16 @@ $$ v^{\pi}(x) = E_{\pi}(G_t \mid X_t = x) $$
 
 $$ = E_{\pi}(R_{t+1} + \gamma G_{t+1} \mid X_t = x) $$ 
 
-$$ \sum_{a} \pi(a|x) \sum_{x'} \sum_{r} p(x', r | x, a) [r + \gamma E_{\pi}(G_{t+1} \mid X_{t+1} = x')] $$
+$$ = \sum_{a} \pi(a|x) \sum_{x'} \sum_{r} p(x', r | x, a) [r + \gamma E_{\pi}(G_{t+1} \mid X_{t+1} = x')] $$
 
-$$ \sum_{a} \pi(a|x) \sum_{x'} \sum_{r} p(x', r | x, a) [r + \gamma v^{\pi}(x')] $$ 
+$$ v^{\pi}(x) = \sum_{a} \pi(a|x) \sum_{x'} \sum_{r} p(x', r | x, a) [r + \gamma v^{\pi}(x')] $$ 
+
+This last equation is called the __Bellman Equation__, and it is crucial to the solving of MDP problems, which includes almost all RL problems. The reason it's so important is because it gives the agent the ability to work backwards from the terminal state (T) and generate values for each previous state. To get a good policy (ie to know which action to choose) the agent just needs to identify the action with the highest value. How exactly we estimate the value function in practice (when the dynamics are not necessarily known) is the subject of another blog post. But for now, just remember that given the final reward and state (which gives the final return), the Bellman equation let's the agent backtrack through the rollout of states it has taken prior, and generate values for each state it has visited. Given enough repetitions of the task (ie sufficient exploration of the state space), the agent will know which states are desirable, and will update its policy to select actions that take it to those more desirable states. 
+
+This concludes the basic framework that underpins most RL problems. Although I did not show it explicitly above, there is a similar Bellman equation for the action-value function (I encourage you to work that out for yourself). What I've discussed today is just the tip of the iceberg. 
+
+## Further Reading
+
+- The canonical RL text is called _Reinforcement Learning: An Introduction_ by Sutton and Barto.
+- _David Silver_ has a series of Lectures on RL which are available free online through his personal website.
+- _Coursera_ has partnered with the _University of Alberta_ to bring an excellent Reinforcement Learning Specialization.
