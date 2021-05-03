@@ -73,10 +73,20 @@ Now we have everything we need to define the problem asa __Markov Decision Proce
 - \\( P \\) is the state transition probability matrix that represents the dynamics \\( P_{xx'}^{a} = P(X_{t+1} = x'\mid X_t = x, A_t = a) \\)
 - \\( R \\) is a reward function, \\(R_{x}^{a} =  E[R_{t+1} \mid X_t = x , A_t = a] \\)
 
-Recall also that we have a given policy \\( \pi(a \mid x) \\) that maps states to actions. Now we can see that the reward our agent receives is a __random variable__. This makes it difficult to maximize the return defined above, since there is so much uncertainty (and the return itself is now a random variable). To overcome this, we simply maximize the average, or the __expected return__. But how does this tie into evaluating a given state? Given our MDP ( \\( \gamma, X, R, A, P \\) ) and policy \\( pi \\):
+Recall also that we have a given policy \\( \pi(a \mid x) \\) that maps states to actions. Now we can see that the reward our agent receives is a __random variable__. This makes it difficult to maximize the return defined above, since there is so much uncertainty (and the return itself is now a random variable). To overcome this, we simply maximize the average, or the __expected return__. But how does this tie into evaluating a given state? Given our MDP ( \\( \gamma, X, R, A, P \\) ) and policy \\( \pi \\):
 - The __state-value function__ \\( v_{\pi}(x) = E_{\pi}(G_t \mid X_t = x) \\) is the expected return beginning at a certain state and following a given policy.
 - The __action-value function__  \\( q_{\pi}(x,a) = E_{\pi}(G_t \mid X_t = x, A_t = a) \\) is the expected return starting from state x, choosing action a and following policy \\( \pi \\)
 
 These two value functions are what the agent uses to evaluate any given state the agent finds themselves in. Note that the two value functions are related in the following way:
 
-$$ V^{\pi}(x) = \sum_{a \in A} \pi(a \mid x) \dot Q^{\pi}(x,a) $$
+$$ v^{\pi}(x) = \sum_{a \in A} \pi(a \mid x) \cdot Q^{\pi}(x,a) $$
+
+But notice that, in order to compute the above values using their initial formulations, we would need to know all future rewards (or their distributions). Since this is not feasible when the agent is early in the sequence, we can reformulate the value functions using the recurrent relation for return I showed earlier:
+
+$$ v^{\pi}(x) = E_{\pi}(G_t \mid X_t = x) $$ 
+
+$$ = E_{\pi}(R_{t+1} + \gamma G_{t+1} \mid X_t = x) $$ 
+
+$$ \sum_{a} \pi(a|x) \sum_{x'} \sum_{r} p(x', r | x, a) [r + \gamma E_{\pi}(G_{t+1} \mid X_{t+1} = x')] $$
+
+$$ \sum_{a} \pi(a|x) \sum_{x'} \sum_{r} p(x', r | x, a) [r + \gamma v^{\pi}(x')] $$ 
