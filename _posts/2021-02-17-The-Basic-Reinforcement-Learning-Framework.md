@@ -54,7 +54,9 @@ $$ R_1 + R_2 + \cdots + R_T $$
 It is exactly this sum of rewards that we want the agent to maximize through its choice of actions. But simply maxizing the sum of rewards above treats future rewards identical to those experienced near the current state. This is certainly not how humans would value future rewards (ie time value of money - all else held constant, you would prefer something today to receiving it tomorrow). And in many cases, we would like our agent to place more weight on current reward than on future rewards. This is accomplished by using a __discounted sum of rewards__, which we also call the __return__ from a given state:
 
 $$ G_t \doteq R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots $$
+
 $$ \Rightarrow G_t = \doteq R_{t+1} + \gamma ( R_{t+2} + \gamma R_{t+3} + \cdots) $$
+
 $$ \Rightarrow G_t = \doteq R_{t+1} + \gamma G_{t+1} $$
 
 The above sequence is easily computed, treating \\( \gamma \\) as a hyperparameter that controls how myopic or near-sighted the agent is. For a finite number time steps, we get that \\( G_t = \sum_{t+1}^{T}\gamma^{k-t-1}R_{k} \\). Note that the recurrent relation formed makes it easy to start at an end (terminal) state, which would have a return of 0,  and work backwards to the current state. This is one of the hallmarks of __dynamic programming__, which underlies much of the state evaluation we will see soon. But where do these rewards actually come from? Recall above, w
