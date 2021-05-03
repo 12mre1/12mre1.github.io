@@ -64,13 +64,19 @@ The above sequence is easily computed, treating \\( \gamma \\) as a hyperparamet
 
 ## Dynamics and Markov Decision Processes
 
-The __dynamics__ of our system refers to the underlying process that controls the transition from one state to the next. The way we typically express the dynamics is by defining a probability distribution that maps current state and action to next state and reward - \\( p(x', r| x, a)\\). One potential problem you might have considered is that the true probability of arriving at a certain state in the next time step can be incredibly complex. To avoid this problem, we make a simplifying assumption - we assume that the probability of reward and next state depends only on current state and action. This is called the __Markov assumption__, and it constrains our dynamics to be memoryless; the future now depends only on the present, and not on the past. This assumption might strike you as an oversimplification of reality, but it turns out to work surprisingly well in practice. 
+The __dynamics__ of our system refers to the underlying process that controls the transition from one state to the next. The way we typically express the dynamics is by defining a probability distribution that maps current state and action to next state and reward - \\( p(x', r \mid x, a)\\). One potential problem you might have considered is that the true probability of arriving at a certain state in the next time step can be incredibly complex. To avoid this problem, we make a simplifying assumption - we assume that the probability of reward and next state depends only on current state and action. This is called the __Markov assumption__, and it constrains our dynamics to be memoryless; the future now depends only on the present, and not on the past. This assumption might strike you as an oversimplification of reality, but it turns out to work surprisingly well in practice. 
 
-Now we have everything we need to define the problem asa __Markov Decision Process__. An MDP is a 5-tuple( \\( \gamma, X, R, A, P  \\) ) where:
+Now we have everything we need to define the problem asa __Markov Decision Process__. An MDP is a 5-tuple ( \\( \gamma, X, R, A, P \\) ) where:
 - \\( \gamma \\) is the discount factor
 - \\( X \\) is the state space
 - \\( A \\) is the action space (note that the action space may depend on the state)
-- \\( P \\) is the state transition probability matrix that represents the dynamics \\( P_{xx'}^{a} = P(X_{t+1} = x'| X_t = x, A_t = a) \\)
-- \\( R \\) is a reward function, \\(R_{x}^{a} =  E[R_{t+1} | X_t = x , A_t = a] \\)
+- \\( P \\) is the state transition probability matrix that represents the dynamics \\( P_{xx'}^{a} = P(X_{t+1} = x'\mid X_t = x, A_t = a) \\)
+- \\( R \\) is a reward function, \\(R_{x}^{a} =  E[R_{t+1} \mid X_t = x , A_t = a] \\)
 
-Now we can see that the reward our agent receives is a __random variable__. This makes it difficult to maximize the return defined above, since there is so much uncertainty (and the return itself is now a random variable). To overcome this, we simply maximize the average, or the __expected return__.
+Recall also that we have a given policy \\( \pi(a \mid x) \\) that maps states to actions. Now we can see that the reward our agent receives is a __random variable__. This makes it difficult to maximize the return defined above, since there is so much uncertainty (and the return itself is now a random variable). To overcome this, we simply maximize the average, or the __expected return__. But how does this tie into evaluating a given state? Given our MDP ( \\( \gamma, X, R, A, P \\) ) and policy \\( pi \\):
+- The __state-value function__ \\( v_{\pi}(x) = E_{\pi}(G_t \mid X_t = x) \\) is the expected return beginning at a certain state and following a given policy.
+- The __action-value function__  \\( q_{\pi}(x,a) = E_{\pi}(G_t \mid X_t = x, A_t = a) \\) is the expected return starting from state x, choosing action a and following policy \\( \pi \\)
+
+These two value functions are what the agent uses to evaluate any given state the agent finds themselves in. Note that the two value functions are related in the following way:
+
+$$ V^{\pi}(x) = \sum_{a \in A} \pi(a \mid x) \dot Q^{\pi}(x,a) $$
