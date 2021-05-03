@@ -55,8 +55,22 @@ It is exactly this sum of rewards that we want the agent to maximize through its
 
 $$ G_t \doteq R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots $$
 
-$$ \Rightarrow G_t = \doteq R_{t+1} + \gamma ( R_{t+2} + \gamma R_{t+3} + \cdots) $$
+$$ \Rightarrow G_t = R_{t+1} + \gamma ( R_{t+2} + \gamma R_{t+3} + \cdots) $$
 
-$$ \Rightarrow G_t = \doteq R_{t+1} + \gamma G_{t+1} $$
+$$ \Rightarrow G_t = R_{t+1} + \gamma G_{t+1} $$
 
-The above sequence is easily computed, treating \\( \gamma \\) as a hyperparameter that controls how myopic or near-sighted the agent is. For a finite number time steps, we get that \\( G_t = \sum_{t+1}^{T}\gamma^{k-t-1}R_{k} \\). Note that the recurrent relation formed makes it easy to start at an end (terminal) state, which would have a return of 0,  and work backwards to the current state. This is one of the hallmarks of __dynamic programming__, which underlies much of the state evaluation we will see soon. But where do these rewards actually come from? Recall above, w
+The above sequence is easily computed, treating \\( \gamma \\) as a hyperparameter that controls how myopic or near-sighted the agent is. For a finite number time steps, we get that \\( G_t = \sum_{t+1}^{T}\gamma^{k-t-1}R_{k} \\). Note that the recurrent relation formed makes it easy to start at an end (terminal) state, which would have a return of 0,  and work backwards to the current state. This is one of the hallmarks of __dynamic programming__, which underlies much of the state evaluation we will see soon. But where do these rewards actually come from? Until now, we have assumed that the reward is given to the agent dependent on current state and action, but we can make this relationship more explicit.
+
+
+## Dynamics and Markov Decision Processes
+
+The __dynamics__ of our system refers to the underlying process that controls the transition from one state to the next. The way we typically express the dynamics is by defining a probability distribution that maps current state and action to next state and reward - \\( p(x', r| x, a)\\). One potential problem you might have considered is that the true probability of arriving at a certain state in the next time step can be incredibly complex. To avoid this problem, we make a simplifying assumption - we assume that the probability of reward and next state depends only on current state and action. This is called the __Markov assumption__, and it constrains our dynamics to be memoryless; the future now depends only on the present, and not on the past. This assumption might strike you as an oversimplification of reality, but it turns out to work surprisingly well in practice. 
+
+Now we have everything we need to define the problem asa __Markov Decision Process__. An MDP is a 5-tuple( \\( \gamma, X, R, A, P  \\) ) where:
+- \\( \gamma \\) is the discount factor
+- \\( X \\) is the state space
+- \\( A \\) is the action space (note that the action space may depend on the state)
+- \\( P \\) is the state transition probability matrix that represents the dynamics \\( P_{xx'}^{a} = P(X_{t+1} = x'| X_t = x, A_t = a) \\)
+- \\( R \\) is a reward function, \\(R_{x}^{a} =  E[R_{t+1} | X_t = x , A_t = a] \\)
+
+Now we can see that the reward our agent receives is a __random variable__. This makes it difficult to maximize the return defined above, since there is so much uncertainty (and the return itself is now a random variable). To overcome this, we simply maximize the average, or the __expected return__.
