@@ -70,8 +70,8 @@ Now we have everything we need to define the problem asa __Markov Decision Proce
 - \\( \gamma \\) is the discount factor
 - \\( X \\) is the state space
 - \\( A \\) is the action space (note that the action space may depend on the state)
-- \\( P \\) is the state transition probability matrix that represents the dynamics \\( P_{xx'}^{a} = P(X_{t+1} = x'\mid X_t = x, A_t = a) \\)
-- \\( R \\) is a reward function, \\(R_{x}^{a} =  E[R_{t+1} \mid X_t = x , A_t = a] \\)
+- \\( P \\) is the state transition probability matrix that represents the dynamics \\( P_{xx'}^{a} = P(X_{t+1} = x'\mid X_t = x, A_t = a)\\)
+- \\( R \\) is a reward function, \\( R_{x}^{a} =  E[R_{t+1} \mid X_t = x , A_t = a] \\)
 
 Recall also that we have a given policy \\( \pi(a \mid x) \\) that maps states to actions. Now we can see that the reward our agent receives is a __random variable__. This makes it difficult to maximize the return defined above, since there is so much uncertainty (and the return itself is now a random variable). To overcome this, we simply maximize the average, or the __expected return__. But how does this tie into evaluating a given state? Given our MDP ( \\( \gamma, X, R, A, P \\) ) and policy \\( \pi \\):
 - The __state-value function__ \\( v_{\pi}(x) = E_{\pi}(G_t \mid X_t = x) \\) is the expected return beginning at a certain state and following a given policy.
