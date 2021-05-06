@@ -41,4 +41,22 @@ require(tidyverse)
 require(geojsonio)
 districts <- geojson_read('./data/geos.geojson', what = "sp")
 income <- read_csv('./data/data.csv')
+names(districts)
+ [1] "a"    "t"    "dw"   "hh"   "id"   "pop"  "name" "pop2" "rgid"
+[10] "rpid" "ruid"
 ```
+
+Note that R stores our boundary file as a `SpatialPolygonDataFrame`, which is a special data structure designed to handle a very large number of reference points (usually latitude and longitude). It essentially operates as a nested list, with 36 individual districts/divisions each containing their own information. We can see that the dataframe itself has an attribute called `data`, which contains several other pieces of information, including household number and id, as well as population (in 2 different forms). Essentially what we're trying to do is add our income data as another variable in this set. Once we do that, creating the map is fairly straightforward.
+
+Before we do this, let's take a look at our income data. I'm going to start by renaming the default label to `median income`. Then I'll take a look at the distribution of income in our area.
+```R
+income <- income %>% rename(med_income = `v_CA16_2213: Median after-tax income in 2015 among recipients ($)`)
+
+income %>% ggplot() + geom_histogram(aes(x = med_income), 
+                                     binwidth = 500, fill = 'red') +
+  ggtitle('Histogram of Median After-tax Income in the GTA') +
+  labs(x = 'Median Income') + theme_classic()
+```
+This code generates the following plot:
+
+<center><img src="/img/med-inc-hist.png" alt = "IncomeHistogram"></center>
