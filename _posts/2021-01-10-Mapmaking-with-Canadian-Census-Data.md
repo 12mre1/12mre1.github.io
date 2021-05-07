@@ -80,3 +80,21 @@ m <- leaflet(districts) %>%
 ```
 Note the third parameter in our `setView()` function, which controls the level of zoom. This is just an integer that mandates how granular our map is (a map of the would should zoom further out, but for our GTA scope, we want to be zoomed in quite a bit). The code above instantiates the leaflet map object along with the base layers provided by default in MapBox (Mapbox is the owner of leaflet). Here is the basic information leaflet provides:
 <center><img src="/img/leaflet-base.png" alt = "BaseMap"></center>
+
+The above is just a static picture of the widget we will eventually build, but you can see how convenient it is that so much information is already provided for you. It's not obvious from the static image above, but Leaflet provides such information for every country (we just happened to be interested in Canada). So now all that remains is to add our custom information on top of what is given. This is also fairly straightforward. We simply add to our existing code a layer of polygons defined by our dataset. To do this, though, we must define the color bins we want to use for our choropleth, which I do first:
+
+```R
+bins <- c(25000, 27500, 30000, 32500, 35000, 37500, 40000, Inf)
+pal <- colorBin("YlOrRd", domain = districts$med_inc, bins = bins)
+m <- m %>% addPolygons(
+  fillColor = ~pal(med_inc),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7)
+```
+The above code gives us the following map:
+
+<center><img src="/img/income-map.png" alt = "IncomeMap"></center>
+
