@@ -216,13 +216,13 @@ saveWidget(m, file=paste0( getwd(), "/data/income-choropleth.html"), selfcontain
 ```
 
 <center><iframe
-  src="../data/income-choropleth.html"
+  src="/data/income-choropleth.html"
   style="width:80%; height:300px;"
 ></iframe></center>
 
 That's it! Now you have an incredibly intuitive map that anyone can interact with. 
 
-# Further Reading
+## Further Reading
 
 - [Here](https://jayrobwilliams.com/posts/2020/09/jekyll-html) is a nice post using point data instead of polygons to produce a map in R with Leaflet
 - [Here](https://leafletjs.com/examples/choropleth/) is a similar post to what we did using American state data directly in JavaScript
