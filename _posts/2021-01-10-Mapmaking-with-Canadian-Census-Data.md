@@ -217,7 +217,7 @@ saveWidget(m, file=paste0( getwd(), "/data/income-choropleth.html"), selfcontain
 
 <center><iframe
   src="/data/income-choropleth.html"
-  style="width:80%; height:300px;"
+  style="width:80%; height:400px;"
 ></iframe></center>
 
 That's it! Now you have an incredibly intuitive map that anyone can interact with. 
