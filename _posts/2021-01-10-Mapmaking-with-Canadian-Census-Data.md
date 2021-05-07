@@ -10,7 +10,7 @@ _Prerequisite Math: None_
 
 _Prerequisite Coding: R, Leaflet_
 
-When I worked for the Government of Canada, one of the first big projects I was assigned was co-developing an open source GIS application. A __Geographic Information System__ is just a framework for analyzing spatial data (stuff you might see on a map), and being employed by the government meant that I had reasonably quick access to most Canadian census data. The application I'll show you how to build today is a bit more basic, however maps remain one of the most effective tools in communicating data insights to audiences without much data experience. Everyone sees visually, and while a picture is worth 1000 words, a map can have even more impact. Before we get started on the code, in order to use Mapbox like I do today, you'll need to create a free account. You can do so [here](https://account.mapbox.com/auth/signup/). After you sign up (and verify your email), you'll be able to log into the Mapbox Dashboard, which should present you with a public token. This token is what we will use to query the base layers of the map we create, using the JavaScript API. If you have no idea what I just said, don't worry - I'll explain more later. Today I'm going to show you how to create a map of income.
+When I worked for the Government of Canada, one of the first big projects I was assigned was co-developing an open source GIS application. A __Geographic Information System__ is just a framework for analyzing spatial data (stuff you might see on a map), and being employed by the government meant that I had reasonably quick access to most Canadian census data. The application I'll show you how to build today is a bit more basic, however maps remain one of the most effective tools in communicating data insights to audiences without much data experience. Everyone sees visually, and while a picture is worth 1000 words, a map can have even more impact. This post is based on a great similar post using US state data, which I encourage you to read [here](https://rstudio.github.io/leaflet/choropleths.html).
 
 
 ## Canadian Census Regions
@@ -212,10 +212,18 @@ m <- m %>% addPolygons(
 
 
 library(htmlwidgets)
-saveWidget(m, file=paste0( getwd(), "/data/income-choropleth.html"))
+saveWidget(m, file=paste0( getwd(), "/data/income-choropleth.html"), selfcontained = True)
 ```
 
 <center><iframe
-  src="./data/income-choropleth.html"
+  src="../data/income-choropleth.html"
   style="width:80%; height:300px;"
 ></iframe></center>
+
+That's it! Now you have an incredibly intuitive map that anyone can interact with. 
+
+# Further Reading
+
+- [Here](https://jayrobwilliams.com/posts/2020/09/jekyll-html) is a nice post using point data instead of polygons to produce a map in R with Leaflet
+- [Here](https://leafletjs.com/examples/choropleth/) is a similar post to what we did using American state data directly in JavaScript
+- [Here]() is the R Documentation for the `leaflet` package, which I encourage you to explore

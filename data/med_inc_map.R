@@ -13,8 +13,6 @@ income %>% ggplot() + geom_histogram(aes(x = med_income),
   ggtitle('Histogram of Median After-tax Income in the GTA') +
   labs(x = 'Median Income') + theme_classic()
 
-districts$pop
-
 districts$med_inc <- income$med_income
 names(districts)
 
