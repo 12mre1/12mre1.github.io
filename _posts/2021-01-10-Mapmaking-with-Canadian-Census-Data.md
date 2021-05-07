@@ -216,6 +216,6 @@ saveWidget(m, file=paste0( getwd(), "/data/income-choropleth.html"))
 ```
 
 <iframe
-  src="./data/income-map.html"
+  src="./data/income-choropleth.html"
   style="width:80%; height:300px;"
 ></iframe>
