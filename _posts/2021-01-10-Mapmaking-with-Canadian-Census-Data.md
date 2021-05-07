@@ -8,7 +8,7 @@ date: 2021-01-10
 
 _Prerequisite Math: None_
 
-_Prerequisite Coding: HTML, CSS, JavaScript_
+_Prerequisite Coding: R, Leaflet_
 
 When I worked for the Government of Canada, one of the first big projects I was assigned was co-developing an open source GIS application. A __Geographic Information System__ is just a framework for analyzing spatial data (stuff you might see on a map), and being employed by the government meant that I had reasonably quick access to most Canadian census data. The application I'll show you how to build today is a bit more basic, however maps remain one of the most effective tools in communicating data insights to audiences without much data experience. Everyone sees visually, and while a picture is worth 1000 words, a map can have even more impact. Before we get started on the code, in order to use Mapbox like I do today, you'll need to create a free account. You can do so [here](https://account.mapbox.com/auth/signup/). After you sign up (and verify your email), you'll be able to log into the Mapbox Dashboard, which should present you with a public token. This token is what we will use to query the base layers of the map we create, using the JavaScript API. If you have no idea what I just said, don't worry - I'll explain more later. Today I'm going to show you how to create a map of income.
 
@@ -60,3 +60,23 @@ income %>% ggplot() + geom_histogram(aes(x = med_income),
 This code generates the following plot:
 
 <center><img src="/img/med-inc-hist.png" alt = "IncomeHistogram"></center>
+
+We get some fairly standard results here - most of the weight of our distribution is near the middle, with a small number of districts on the lower end, and a larger number on the higher end. Why are we looking at this? Well, when making choropleth maps, where a continuous variable will be split into bins, how exactly we choose our split points will greatly change the map. There is no optimal way of choosing your splits based on the final product, but it is common to either A) split by quantile, so each color contains the same number of districts, or B) split evenly along the x-axis of the distribution, so each color contains the same amount of income. In this case, what I'll do is option B - this will present the data as truthfully as possible. But before we worry about splitting the data, we need to combine our datasets. 
+
+Depending on the datatype, this part may be quite difficult, as it can involve careful identification of exact locations within a complex index scheme for a large data structure, but here it's quite simple. I'll just add our renamed variable above to the `districts` dataset. It's important to confirm (either by hand, or with a test) that the length of the recipient data is identical to that of our income column. I already know it is here (in this case each has 36 districts), but in general you may be dealing with missing data, which would need to be dealt with before the map can be created. You should also make sure that the ordering of both sets is equal, otherwise you might be pairing the income of Whitby with the boundaries corresponding to Ajax (or similar errors). Sorting by both sets by id before combining data can solve this problem. In this case, the data already comes sorted, so no issues there.
+```R
+districts$med_inc <- income$med_income
+names(districts)
+[1] "a"       "t"       "dw"      "hh"      "id"      "pop"    
+[7] "name"    "pop2"    "rgid"    "rpid"    "ruid"    "med_inc"
+```
+Awesome! All we have left is to create the map with `leaflet`. One of the benefits of MapBox is that it will provide much of the finer details you might expect on a map. This includes things like coastlines, roads, waterways, and landmarks. All we have to do is add our district boundaries and the data associated with them. Now because MapBox maintains geographic information for the whole world, we have to tell our map 'where to look', so to speak, which can be accomplished by obtaining the latitude and longitude point for the town of Vaughan (which will be the center of our map). How did I know to choose Vaughan? In this case, I eyeballed it. I grew up in the GTA, so I had a good idea of where to look. As you'll see in the code below, the center of the map is a parameter that you may have to experiement with to get the position just right. Google Maps is your friend here; simply search Vaughan, and extract the lat and long from the url in your browser. In the code below, your lat and long obtained earlier. 
+
+```R
+require(leaflet)
+m <- leaflet(districts) %>% 
+  addTiles()  %>% 
+  setView( lat=43.8369994, lng=,-79.7060246 , zoom=8)
+```
+Note the third parameter in our `setView()` function, which controls the level of zoom. This is just an integer that mandates how granular our map is (a map of the would should zoom further out, but for our GTA scope, we want to be zoomed in quite a bit). The code above instantiates the leaflet map object along with the base layers provided by default in MapBox (Mapbox is the owner of leaflet). Here is the basic information leaflet provides:
+<center><img src="/img/leaflet-base.png" alt = "BaseMap"></center>
