@@ -215,7 +215,7 @@ library(htmlwidgets)
 saveWidget(m, file=paste0( getwd(), "/data/income-choropleth.html"))
 ```
 
-<iframe
+<center><iframe
   src="./data/income-choropleth.html"
   style="width:80%; height:300px;"
-></iframe>
+></iframe></center>
