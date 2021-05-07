@@ -4,7 +4,7 @@ title: "Map-making with Canadian Census Data"
 date: 2021-01-10
 ---
 
-## A Simple Choropleth Map with Mapbox JS API
+## A Simple Choropleth Map with R and Leaflet
 
 _Prerequisite Math: None_
 
@@ -98,3 +98,124 @@ The above code gives us the following map:
 
 <center><img src="/img/income-map.png" alt = "IncomeMap"></center>
 
+Not bad, right? But in the current form, it can be difficult to tell exactly which color means what, and which district you're actually looking at. So we can add a simple interactive pop up that displays the district name, and the exact median income whenever a user hovers over that district. Again, this is pretty simple, and we'll use some custom html labels to present the information in a visually pleasing way. This involves modifying our existing code slightly:
+
+```R
+# Add Labels
+labels <- sprintf(
+  "<strong>%s</strong><br/>$ %g",
+  districts$name, districts$med_inc
+) %>% lapply(htmltools::HTML)
+
+m <- m %>% addPolygons(
+  fillColor = ~pal(med_inc),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7)#,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = FALSE),
+  label = labels,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"))
+```
+I won't show you exactly how this looks yet, but you'll see the finished version at the end of the post. A couple of parameters in the above code are quite important: `Opacity` indicates how transparent the polygons will be - I set the transparency to be low, but that's a matter of preference, and depends on how much information from the base layers you might want users to see. Also note the `bringToFront` parameter, which will place our information at the top of the stack if set to `TRUE`.
+
+The last thing I will do (which is good practice for any map) is to add a legend. This can be chained onto our existing code as well, and I use the color bins we defined earlier:
+
+```R
+m <- m %>% addPolygons(
+  fillColor = ~pal(med_inc),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>%
+  addLegend(pal = pal, values = districts$med_inc, opacity = 0.7, title = "Median Income in Toronto",
+             position = "bottomright")          
+```
+
+And we're done! Fairly short in terms of code, we now have an interactive map that anyone can look at if they have the html file. One thing you'll see in the complete code below is that I use the HTMLtools package in R to save the widget as a stand-alone file, that can easily be opened in your browser. Below is the complete code, along with the resulting widget:
+
+```R
+#### Simple Choropleth of Income ####
+require(tidyverse)
+require(geojsonio)
+districts <- geojson_read('./data/map.geojson')
+income <- read_csv('./data/data.csv')
+
+names(districts)
+
+income <- income %>% rename(med_income = `v_CA16_2213: Median after-tax income in 2015 among recipients ($)`)
+
+income %>% ggplot() + geom_histogram(aes(x = med_income), 
+                                     binwidth = 500, fill = 'red') +
+  ggtitle('Histogram of Median After-tax Income in the GTA') +
+  labs(x = 'Median Income') + theme_classic()
+
+districts$med_inc <- income$med_income
+names(districts)
+
+m <- leaflet(districts) %>% 
+  addTiles()  %>% 
+  setView( lat=43.8369994, lng=,-79.7060246 , zoom=8) 
+
+bins <- c(25000, 27500, 30000, 32500, 35000, 37500, 40000, Inf)
+pal <- colorBin("YlOrRd", domain = districts$med_inc, bins = bins)
+
+
+# Add Labels
+labels <- sprintf(
+  "<strong>%s</strong><br/>$ %g",
+  districts$name, districts$med_inc
+) %>% lapply(htmltools::HTML)
+
+m <- m %>% addPolygons(
+  fillColor = ~pal(med_inc),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>%
+  addLegend(pal = pal, values = districts$med_inc, opacity = 0.7, title = NULL,
+             position = "bottomright")
+
+
+
+library(htmlwidgets)
+saveWidget(m, file=paste0( getwd(), "/data/income-choropleth.html"))
+```
+
+<iframe
+  src="./data/income-map.html"
+  style="width:80%; height:300px;"
+></iframe>
