@@ -13,9 +13,21 @@ In today's post, I'll talk about one of the oldest and simplest Machine Learning
 
 ## The Algorithm
 
-As mentioned above, the key idea behind KNNs is that points of the same label should be near each other in feature space. To measure nearness, it is common to use a specific distance measure between any two points. So suppose we have a set of features, \\( X_{n \times m}\\), where \\( n \\) is the number of data points (rows), and \\( m \\) is the number of features (columns). You can think of this as a __training set__, although in K Nearest Neighbors classification, there really is not much training; we just use the existing data to classify new points. Along with our features, we also have class labels, \\( y_{n \times 1} \\). 
+As mentioned above, the key idea behind KNNs is that points of the same label should be near each other in feature space. To measure nearness, it is common to use a specific distance measure between any two points. So suppose we have a set of features, \\( X_{n \times m}\\), where \\( n \\) is the number of data points (rows), and \\( m \\) is the number of features (columns). You can think of this as a __training set__, although in K Nearest Neighbors classification, there really is not much training; we just use the existing data to classify new points. Along with our features, we also have class labels, \\( y_{n \times 1} \\). Suppose we have a new query point (ie one observation of a set of features, or an \\( 1 \times m \\) vector), and we want to predict it's class label. The K-Nearest Neighbors classification algorithm does the following:
+
+1. Compute the distance between our query point, and each point in the training set (n distances total).
+2. Select the k-closest points; in other words, select the points corresponding to the k smallest distances.
+3. Assign to our query point the label that occurs most frequently among the k nearest neighbors.
+
+At its core, that is essentially all there is too it. Simple right? In fact, it's surprisingly effective despite its simplicity, as we'll soon see.
 
 ## The Distance Metric Matters
+
+Now I've told you that the K-Nearest Neighbors are chosen by distance to the query point, but I've not specified exactly which distance you should use. There's no right answer here; no distance is proven to be consistently better than any other, but there are a few common choices you might consider. For query point \\( w \\):
+
+__Manhattan Distance__ (also called L1 Norm):
+
+$$  \sum_{k=1}^{m} \abs{x_k - w_k } $$
 
 ## Don't Forget to Scale
 
