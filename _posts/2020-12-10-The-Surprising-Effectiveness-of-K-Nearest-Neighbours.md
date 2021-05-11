@@ -39,7 +39,7 @@ $$ ( \sum_{k=1}^{m} (x_k - w_k )^p )^{1/p} $$
 
 __Cosine Similarity__. This measures the angle between the two data points (as vectors from the origin):
 
-$$ cos(\theta) = \frac{ X \dot W }{ \norm{X} \norm{W} } $$
+$$ cos(\theta) = \frac{ X \dot W }{ \| X \| \| W \| } $$
 
 ## Don't Forget to Scale
 
