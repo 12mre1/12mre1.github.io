@@ -27,7 +27,19 @@ Now I've told you that the K-Nearest Neighbors are chosen by distance to the que
 
 __Manhattan Distance__ (also called L1 Norm):
 
-$$  \sum_{k=1}^{m} \abs{x_k - w_k } $$
+$$  \sum_{k=1}^{m} \mid x_k - w_k \mid $$
+
+__Euclidean Distance__ (also called L2 Norm):
+
+$$ ( \sum_{k=1}^{m} (x_k - w_k )^2 )^{1/2} $$
+
+__Minkowski Distance__ (a generalization of the two distances above). Note that when \\( p \rightarrow \infty \\), we simply get the maximum.
+
+$$ ( \sum_{k=1}^{m} (x_k - w_k )^p )^{1/p} $$
+
+__Cosine Similarity__. This measures the angle between the two data points (as vectors from the origin):
+
+$$ cos(\theta) = \frac{ X \dot W }{ \norm{X} \norm{W} } $$
 
 ## Don't Forget to Scale
 
