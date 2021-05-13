@@ -200,15 +200,58 @@ The follow plot shows our predictions, along with which points were correctly cl
 <center><img src="/img/titanic-preds.png" width = "40%" alt = "Titanic Preds">
 <img src="/img/titanic-preds2.png" width = "40%" alt = "Titanic Preds 2"></center>
 
+There are two things that I notice immediately when looking at these plots (and you should too). The first is that lower fare passengers tended to be the ones who did not survive. We can see that in our test set, virtually every individual labelled as 0 (Did not survive) has a fare below 200. However, the other aspect, which is clearly visible from the right plot, is that our algorithm does not peform very well; very rarely does our prediction match the gold label. So it would be a mistake to conclude that lower fare passengers comprised the majority of those who did not survive, since our predictions are not accurate. How to fix this? Well it could be that the KNN algorithm is simply not a good fit for this dataset. This does happen, and more often than you might think. However, one obvious approach we have not tried is adjusting the size of the neighbourhood in our algorithm. Recalling that k = 3 was the default, how might we determine whether there is a better choice? 
+
 ## How to Choose K?
 
-The decision boundary we imply for new points depends on our choice of K. Thus K is considered a __hyperparameter__. How many nearest neighbors do we want? If we choose K to be small, then the boundary will be more flexible. This means that
+The decision boundary we imply for new points depends on our choice of K. Thus K is considered a __hyperparameter__. How many nearest neighbors do we want? If we choose K to be small, then the boundary will be more flexible. This means that the labels of data points can vary greatly from point to point, and our decision boundary will be very complex (think wiggly). Unfortunately, this also increases our chances of __overfitting__, where our algorithm may detect patterns that are unique to our data, and have no impact on the true relationship between age, fare and survival status. In statistical terms, we would say that a low value of K leads to high variance, but low bias. Conversely, if we choose a large value of K, then the decision boundary will be much less flexible (closer to a straight line). It will have lower variance, but higher bias, and may underfit (ie be an oversimplification). The key to tuning our model then, is to find the Goldilocks value of K, flexible enough to allow the training data to inform our decision, but not so flexible as to overfit. To find this value, we can simply generate test predictions for a number of values of K, and choose the one that gives the lowest test error. Note that in practice, I would use a third portion of our overall data called a __validation set__ to tune such hyperparameters, but in this case, I'll just use the test data.
+```python
+# Choosing K
+from sklearn.metrics import accuracy_score
+
+K = [1,2,3,4,5,8,10,15,20,25,30,40,50]
+# Instantiate list to hold accuracy scores
+A = []
+for k in K:
+  y_pred = KNN_pred_multi(X_train, y_train, X_test, k)
+  acc = accuracy_score(y_test, y_pred)
+  A.append(acc)
+
+scores = np.array(A)
+# Plot results
+plt.scatter(K, scores)
+plt.xlabel('K')
+plt.ylabel('Test Accuracy')
+plt.show()
+```
+The above code produces the following plot:
+<center><img src="/img/titanic-neighbor.png" width = "40%" alt = "Titanic K"></center>
+
+We can see from the plot that the optimal choice of K is near 15. Notice too that there is another maximum at around 60, but this is unlikely to be the best choice, given that our test size is only 53 observations. In fact, choosing a K equal to the size of your data will essentially classify every new query point as the label that most frequently occurs in your data. 
+
 
 ## Computational Concerns
 
+In terms of computational complexity, the KNN algorithm can be slower than some. Because we have to compute distances between each query point and each training point, the calculation becomes much slower for larger datasets, both in terms of data points (N) and feature space (D). Thus, it is common practice to reduce the dimension of your features before applying such an algorithm. Another option, if you have sufficient data, is to choose a reasonably good label, but not necessarily the exact optimum. In the case above, for binary classification, this is not feasible, but in the regression setting this has been shown to work quite well.
+
+Another option is simply to avoid including large numbers of data points that are both near to each other and identically labelled (this is seen as redundant to a certain extent). Algorithms such as the __Condensed Nearest Neighbor__ use this idea to reduce the size of the training set, and thus speed up the computation.
+
 ## Watch out for Imbalanced Classes
 
+For a reasonably large choice of K (say 10), it follows that, in order to obtain a reasonably good solution, there should be a non-significant amount of datapoints belonging to each class at any, or at least most locations in feature space. If this is not the case, then the one majority class will dominate predictions of new query point labels even though there significant numbers of other points overall. Thus, for KNN to work well, you should try to aim for as close to perfect class balance in your training set as possible. Obviously this is quite difficult, but there are a number of strategies you might use to try and mitigate class imbalance:
+
+1. Try to collect more data
+2. Make sure you analyze more than just accuracy (e.g. precision, recall)
+3. Use resampling (targeted to the smaller class)
+4. Use simulation (approximate real data) to even the classes
+
+Any one of the methods above will give you new data to try and combat the problem of class imbalance. Let me be clear here - a slight imbalance is fine, especially if you have a large dataset. For example, it's ok if your positive class is one percent of you data if you have over a million observations. But when class imbalance is combined with small sample size, you can get very misleading results if you're not careful.
+
 ## The Curse of Dimensionality
+
+So far I've shown you a number of ways of computing distances, but the concept of _nearness_ is still somewhat subjective. How can we guarantee that we will have close points in a given dataset? The short answer is you can't. And it gets worse. The __Curse of dimensionality__ says that the more dimensions you have (more features means more components to your distance), the more likely it will be that any two points you could choose will be far apart along at least one dimension. In other words, the more features we use, the less likely it is that any two features have points close to each other. This is a huge problem for the underlying KNN assumption, since in high dimensions, we may not have any similar points. To show you what I mean, let's walk through an exercise (this is based on the arguent from _Elements of Statistical Learning_).
+
+Suppose our data are generated randomly in a uniform hypercube of dimension \\( D \\). Suppose now we want set our neighborhood to capture some fraction \\( r \\) of all observations. Since this corresponds to \\(r \\) percentage of the unit volume, we have that the expected edge length of that neighborhood (in other words, the relative interval of any given feature) is \\( r^{1/p} \\).
 
 ## Further Reading
 
