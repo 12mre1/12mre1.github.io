@@ -251,7 +251,19 @@ Any one of the methods above will give you new data to try and combat the proble
 
 So far I've shown you a number of ways of computing distances, but the concept of _nearness_ is still somewhat subjective. How can we guarantee that we will have close points in a given dataset? The short answer is you can't. And it gets worse. The __Curse of dimensionality__ says that the more dimensions you have (more features means more components to your distance), the more likely it will be that any two points you could choose will be far apart along at least one dimension. In other words, the more features we use, the less likely it is that any two features have points close to each other. This is a huge problem for the underlying KNN assumption, since in high dimensions, we may not have any similar points. To show you what I mean, let's walk through an exercise (this is based on the arguent from _Elements of Statistical Learning_).
 
-Suppose our data are generated randomly in a uniform hypercube of dimension \\( D \\). Suppose now we want set our neighborhood to capture some fraction \\( r \\) of all observations. Since this corresponds to \\(r \\) percentage of the unit volume, we have that the expected edge length of that neighborhood (in other words, the relative interval of any given feature) is \\( r^{1/p} \\).
+Suppose our data are generated randomly in a uniform hypercube of dimension \\( D \\). Suppose now we want set our neighborhood to capture some fraction \\( r \\) of all observations. Since this corresponds to \\(r \\) percentage of the unit volume, we have that the expected edge length of that neighborhood (in other words, the relative interval of any given feature) is \\( r^{1/D} \\). In 10 dimensions ( \\( D = 10 \\)), to capture 1 percent of all points would require an edge length of 0.63, and to capture 10 \% would require a length of 0.8. Think about what this means. Given that each feature has a domain of length one in this scenario, we would essentially need to cover 80 percent of the range of each feature to ensure we include just ten percent of our data (on average). Moreover, unless our neighborhood is centered exactly in the middle of the unit hypercube, it is likely that many points will be closer to the boundary than to the middle of the neighborhood, and the distance between two points within a neighbourhood can easily exceed 0.5 (which is half the range of each feature!). This demonstration was just for 10 features, which is actually quite low compared to most industry datasets. The problem gets much worse as D grows.
+
+So what do we make of this? I showed this not to suggest that KNNs or other distance algorithms are bad, but rather to encourage you to take caution in using them. They can perform exceptionally well in certain situations, but are unlikely to in high dimensions without the use of other tricks or complex preprocessing. As with any dataset, you should fit more than one algorithm when attempting to find the best model. Just be aware that for distance-based algorithms, there will almost always be some portion of your data that are far apart along at least one axis of variation.
+
+## Conclusion
+
+K-Nearest Neighbors is one of the simplest, most intuitive algorithms there is. As with many of the most popular model choices, there are endless extensions that can be used to improve performance, though I will not go through them here. Overall, here are the key takeways:
+
+1. KNNs assumes that points with the same label are near each other
+2. The Distance Metric Matters
+3. It can be computationally expensive
+4. KNNs suffers from Curse of Dimensionality
+5. Beware class imbalance
 
 ## Further Reading
 
