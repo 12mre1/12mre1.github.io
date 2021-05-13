@@ -13,7 +13,7 @@ In today's post, I'll talk about one of the oldest and simplest Machine Learning
 
 The dataset I'll be using today is the famous (at least among data scientists) __Titanic Dataset__, which you can find [here](https://www.kaggle.com/c/titanic). The entire dataset contains some data on each passenger (thousands of observations), but since I just want to illustrate the algorithm, I won't spend much time analyzing or cleaning it. Note than, in practice and in competition, cleaning and engineering your data is probably the most important step, and you should take great care in doing so. To start, I load in the data (I'm using a colab notebook, but any IDE or even the command line would work):
 
-```Python 
+```python
 # Load in the data
 import numpy as np
 import matplotlib.pyplot as plt
@@ -118,7 +118,7 @@ def scale_features(x):
 ```
 Notice that the code above also returns the mean and sample standard deviation of the input dataset. This is intentional - when we split our data into training and test sets later, we want to scale the training and test sets based on the mean and standard deviation of the training set only. This is to avoid what is called __data leakage__. We do not want any information from our 'unknown' data entering the training stage of the algorithm, since this would be equivalent to having access to the future, and we might mistakenly believe our algorithm is better than in reality.
 
-# Implementing Prediction
+## Implementing Prediction
 
 To start, I'm going to consider the case I described above, where we have a single query point. You can think of this as a test set of size one, although later we'll expand our code to include any arbitrary test set. Our goal here is to product a prediction given the training features and labels, and a query point. The following code accomplishes this:
 ```python
@@ -162,6 +162,43 @@ def KNN_pred_multi(X_train, y_train, X_test, k = 3):
   y_hat = np.asarray(preds).reshape((M,1))
   return y_hat
 ```
+Now we're able to generate an entire vector of predictions. Thus we're able to analyze the performance of our algorithm on a larger dataset. If you recall earlier, we have such a dataset. I'll use one of Scikit-learn's built in splitting functions to split our titanic data into training and test sets. And lastly, I'll define a simple function that plots our results:
+```python
+# Plotting Results
+from matplotlib.colors import ListedColormap
+
+def plot_classes(features, labels, hues = ['r','b'], classes = ['Died', 'Survived']):
+  X = features
+  y = labels
+  # Color Choices
+  colors = ListedColormap(hues)
+  scatter = plt.scatter(x = X[:,0], y = X[:,1], c = y[:,0], cmap = colors)
+  # Label Axes
+  plt.xlabel('Age')
+  plt.ylabel('Fare')
+  # Generate legend and show plot
+  plt.legend(handles=scatter.legend_elements()[0], labels=classes)
+  plt.show()
+```
+So now we have everything we need to run our algorithm. The following code simply executes the functions I wrote earlier:
+```python
+from sklearn.model_selection import train_test_split
+# Train test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 53)
+
+# Generate predictions
+y_pred = KNN_pred_multi(X_train, y_train, X_test, k = 3)
+
+# Plot test data and predictions
+plot_classes(features = X_test, labels = y_pred)
+# Plot Correctness
+correct_class = (y_pred == y_test).astype(float)
+plot_classes(features = X_test, labels = correct_class, hues = ['m','y'], classes = ['Incorrect','Correct'])
+```
+The follow plot shows our predictions, along with which points were correctly classified.
+
+<center><img src="/img/titanic-preds.png" alt = "Titanic Preds">
+<img src="/img/titanic-preds2.png" alt = "Titanic Preds 2"></center>
 
 ## How to Choose K?
 
