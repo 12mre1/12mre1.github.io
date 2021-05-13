@@ -197,8 +197,8 @@ plot_classes(features = X_test, labels = correct_class, hues = ['m','y'], classe
 ```
 The follow plot shows our predictions, along with which points were correctly classified.
 
-<center><img src="/img/titanic-preds.png" alt = "Titanic Preds">
-<img src="/img/titanic-preds2.png" alt = "Titanic Preds 2"></center>
+<center><img src="/img/titanic-preds.png" width = "40%" alt = "Titanic Preds">
+<img src="/img/titanic-preds2.png" width = "40%" alt = "Titanic Preds 2"></center>
 
 ## How to Choose K?
 
