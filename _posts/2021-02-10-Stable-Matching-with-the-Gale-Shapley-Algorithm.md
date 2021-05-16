@@ -21,6 +21,7 @@ Suppose that every hospital sends out their initial job offer at the exact same 
 In terms of the sets we defined above, a __Matching__ is a set of ordered pairs \\( S \\) such that each \\( r \in R, \ h \in H \\)
 appears at most once in \\( S \\). A __Perfect Matching__ is a similar set, where each \\( r \in R, \ h \in H \\) appears _exactly once_. In terms of our example, a perfect matching only happens if every resident is placed in exactly one hospital, and every hospital has exactly one resident. But we don't just want to find a perfect matching. We also want to find one that is stable. A matching is __stable__
 if:
+
 (i) It is perfect, and 
 (ii) There is no instability with respect to \\( S \\). In other words, given some matching \\( S \\), no unmatched pair wishes to deviate to a different matching. More on this later.
 
