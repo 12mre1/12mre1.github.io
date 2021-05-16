@@ -23,6 +23,7 @@ appears at most once in \\( S \\). A __Perfect Matching__ is a similar set, wher
 if:
 
 (i) It is perfect, and 
+
 (ii) There is no instability with respect to \\( S \\). In other words, given some matching \\( S \\), no unmatched pair wishes to deviate to a different matching. More on this later.
 
 Given our definition of stable, is it possible to construct an algorithm that guarantees a stable matching? Yes - The GS algorithm does just that (we will prove so shortly)
