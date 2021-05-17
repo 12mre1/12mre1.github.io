@@ -26,9 +26,108 @@ if:
 
 (ii) There is no instability with respect to \\( S \\). In other words, given some matching \\( S \\), no unmatched pair wishes to deviate to a different matching. More on this later.
 
-Given our definition of stable, is it possible to construct an algorithm that guarantees a stable matching? Yes - The GS algorithm does just that (we will prove so shortly)
+Given our definition of stable, is it possible to construct an algorithm that guarantees a stable matching? Yes - The GS algorithm does just that (we will prove so shortly).
 
 ## The Algorithm
+
+First, i'll walk through the algorithm at a high level. Then I present the python code. It works as follow. Initially, every resident and every hospital is unmatched. An unmatched hospital \\( h \\) chooses the resident \\( r \\) that ranks highest on their preference list, and sends them a job offer. At some point, another hospital \\( h' \\) might also offer \\( r \\) a residency spot, but in the mean time, \\( r \\) _verbally commits_ to \\( h \\). This verbal agreement represents an intermediate state that is necessary for the algorithm to produce a stable matching. You can think of it like an engagement between a couple that usually turns into marriage.
+
+While some hospitals and residents are free (not matched), an arbitrary free hospital \\( h \\) chooses their highest ranked resident \\( r \\) to whom they have not already sent an offer, and sends them a residency offer. If that resident is free, the two enter a verbal commitment. Otherwise, \\( r \\) has already committed to the residency at \\( h' \\), and decides based on preferences whether to abandon that commitment in favor of matching with \\( h \\). If \\( r \\) decides to remain in current commitment, then \\( h \\) simply sends an offer to their next highest-rated resident, and the process repeats itself. The algorithm terminates when there are no free hospitals or residents.
+
+Here is the python code for this algorithm:
+
+```python
+### Gale-Shapley Algorithm ###
+import numpy as np
+import json
+N = 10 # Number of Ordered Pairs/ Hospitals/ Residents
+
+# Define freedom lists (initially everyone is free)
+r_free = ['f' for key in range(N)]
+h_free = ['f' for key in range(N)]
+
+# Define Preference Lists (10 x 10 array for both R and H)
+h_pref = [np.random.choice(range(N),(1,N), replace = False).flatten().tolist() for i in range(N)]
+r_pref = [np.random.choice(range(N),(1,N), replace = False).flatten().tolist() for i in range(N)]
+
+# Define list to track proposals
+h_offers = [[] for i in range(N)]
+
+# Define list to store pairs
+pairs = {}
+```
+To start, I define several data structue. Lists keep track of which hospitals and residents are unmatched. I use `numpy`'s random number generation to instantiate preferences, which I then convert to nested lists. I also use a nested list to keep track of offers made by hospitals to residents. Finally a dictionary stores the resident-hospital pairings as key-value pairs. This is intentional - knowing that in our algorithm, and existing pair can only be broken if the resident decides so, access by resident was easier than by hospital. Hence the use of residents, and not hospitals as keys for the dictionary. Here is the main algorithm:
+
+```python
+# Track the number of offers to terminate the loop below
+n_offers = len([item for sublist in h_offers for item in sublist])
+
+# While there is a free hospital that hasn't proposed to everyone
+while 'f' in h_free and n_offers < N*N:
+  # Find an available hospital
+  h = h_free.index('f') # index method finds first occurence
+  # Define r as highest ranked resident in h's preferences to whom h has not offered
+  opts = [pref for idx, pref in enumerate(h_pref[h]) if idx not in h_offers[h]]
+  r = np.argmax(opts)
+  # If r is free
+  if r_free[r] == 'f':
+    # h and r match
+    print('Pair ({},{}) Created'.format(h,r))
+    pairs[r] = h
+    r_free[r] = 'm'
+    h_free[h] = 'm'
+    # h can only propose to r once
+    h_offers[h].append(r)
+  # Else if r is already committed to h'
+  else:
+    # Find r's current partner
+    h_prime = pairs[r]
+    # If r prefers h' to h
+    if r_pref[r][h_prime] >= r_pref[r][h]:
+      # h remains free, but still can only propose to this r once
+      h_offers[h].append(r)
+    # Else r prefers h to h'
+    else:
+      # r and h commit
+      print('Pair ({},{}) Created'.format(h,r))
+      pairs[r] = h
+      # h is no longer free
+      h_free[h] = 'm'
+      h_free[h_prime] = 'f'
+      # h can only propose to r once
+      h_offers[h].append(r)
+  # Update number of offers
+  n_offers = len([item for sublist in h_offers for item in sublist])
+```
+I've provided clear comments at each step, but I'll walk through what happens again:
+1. All residents and hospitals begin free (unmatched)
+2. While there is a hospital that is unmatched and has not sent offers to every resident: do
+3. Choose such a hospital \\(h \\) (the first in the array by default)
+4. Find the highest-ranked resident in \\( \\)'s preferences \\( r \\) to whom \\( h \\) has not sent an offer
+5. If \\( r \\) is free, then (\\( h, r \\)) become partners
+6. Else \\( r \\) is committed to \\( h' \\)
+7. If \\( r \\) prefers \\( h' \\) to \\( h \\):
+8. \\( h \\) remains free
+9. Else (\\( h, r \\)) become partners, and (\\( h' \\) goes free
+10. Return the set of matched pairs.
+
+Notice above, i've defined the algorithm for a general number of pairings, N. Above, I set this to 10, and we get the following output:
+```python
+Pair (0,0) Created
+Pair (1,9) Created
+Pair (2,5) Created
+Pair (3,8) Created
+Pair (4,1) Created
+Pair (5,1) Created
+Pair (4,3) Created
+Pair (6,6) Created
+Pair (7,7) Created
+Pair (8,9) Created
+Pair (1,2) Created
+Pair (9,4) Created
+{0: 0, 9: 8, 5: 2, 8: 3, 1: 5, 3: 4, 6: 6, 7: 7, 2: 1, 4: 9}
+```
+Note that, due to the randomness in preference generation, your output may look slightly different.
 
 ## The Pros And Cons
 
