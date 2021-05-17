@@ -108,7 +108,7 @@ I've provided clear comments at each step, but I'll walk through what happens ag
 6. Else \\( r \\) is committed to \\( h' \\)
 7. If \\( r \\) prefers \\( h' \\) to \\( h \\):
 8. \\( h \\) remains free
-9. Else (\\( h, r \\)) become partners, and (\\( h' \\) goes free
+9. Else (\\( h, r \\)) become partners, and \\( h' \\) goes free
 10. Return the set of matched pairs.
 
 Notice above, i've defined the algorithm for a general number of pairings, N. Above, I set this to 10, and we get the following output:
@@ -131,6 +131,35 @@ Note that, due to the randomness in preference generation, your output may look 
 
 ## The Pros And Cons
 
+It is fairly straightforward to show that the GS Algorithm returns a stable and perfect matching (I will not run through proofs here, but you can see Kleinberg and Tardos in the Further Reading Section for a great proof). But even so, there are a number of interesting consequences that may not be so obvious:
+
+__1. Given a specific set of preferences, all executions of this algorithm will yield the same matching.__
+
+This may not be obvious, but let's think about it further. Suppose a given hospital would prefer resident \\( r_1 \\) to all others. Since the hospitals make the offer, but the residents decide whether to remain committed, the only way \\( r_1 \\) does not end up completing his/her residency at the given hospital is if \\( r_1 \\) prefers another hospital __and gets an offer from that hospital__. If this happens, then clearly the current hospital resident pairing is not a stable matching. Using the same logic for the other hospitals, in order for the algorithm to terminate, it must be the case that none of the other hospitals are unhappy with their residents (no hospitals want to trade). Since the ordering of offers and committments is based on a fixed set of preferences, offers go out in an identical order, and thus, the eventual matchings are constant (as long as preferences do not change).
+
+__2. The runtime of the Gale-Shapley algorithm is \\( O(N^2) \\)__.
+
+This one makes sense. In the worst-case scenario, each of N hospitals has to send offers to each of N different residents. This results in N offers for each resident, or \\( N^2 \\) iterations of our while loop. Note that the algorithm is often faster than this, but it serves as the best known upper bound.
+
+__3. The algorithm above yields a stable matching that is the best for all hospitals among all stable matchings__.
+
+This point is subtle, but has tremendous consequences. What is says is that each hospital receives the best resident they can hope to have after all offers are settled. To see why this is true, let's assume the opposite, and show a contradiction. Suppose some hospital is paired with a resident who is not their _best valid partner_ (highest preference among stable outcomes). Since hospitals send offers in decreasing order of preference, this would mean that the hospital was rejected by some valid partner earlier (a resident who received a better offer). But in order for this to have happened, the earlier resident must have received an offer from a hospital they prefer, meaning the pairing of current hospital to earlier resident is not a stable matching. Thus the algorithm could not have returned it, and that earlier resident is not a valid partner of the current hospital (contradiction). This we have that every hospital gets the best possible resident they could hope for in a stable outcome. Note that if the residents were sending offers instead of hospitals, the same property would hold for the residents. In this algorithm, the proposing side gets an advantage.
+
+__4. The algorithm above yields a stable matching that is the worst for all residents among all stable matchings__.
+
+Using similar logic to that above, we can see that the residents are at a disadvantage for having to wait for offers from the hospitals. Among all possible hospitals who might send them offers, they end up with the worst possible option. In this sense, the algorithm displays __unfairness__.
+
 ## Conclusion
 
+This is a key algorithm in the fields of economics and computer science, with many applications like scheduling, facility location, social media recommendations, and urban planning. I recommend you look more into some of these use cases. I may write a later post on the more general problem of Stable Matching, which goes into more detail about Graph Theory (don't worry if you don't know what that is). For now, here are the key takeaways:
+
+- The GS algorithm is designed to compute stable matchings between two sets of elements, based on preferences of individual elements
+- A stable matching is one where no pairs wish to deviate from their current mapping
+- The algorithm runs fairly quickly, with a polynomial-time upper bound
+- The GS algorithm is biased towards the set that proposes partnership
+
 ## Further Reading
+
+- I recommend the first chapter of _Algorithm Design_ by Kleinberg and Tardos. It has an excellent runthrough of GS.
+- The Wikipedia page on the Gale-Shapley Algorithm is actually quite helpful, especially in placing the Stable Matching problem in a larger context
+- There is a great set of slides by Kevin Wayne (though a bit old now), who teaches algorithms at Princeton. Just google these slides, they should be publically available.
