@@ -59,8 +59,10 @@ Both work well, but agglomerative has been more popular in recent years. Once th
 1. Create \\( N \\) clusters, one for each data point. 
 2. Compute the __proximity matrix__, which measures the distances between each cluster and every other cluster
 3. Repeat until \\( K = 1\\):
+
     i) Merge the two closest clusters
     ii) Update the proximity matrix, storing the old version
+    
 4. Return all cluster assignments
 
 Like K-Means, the above algorithm is surprisingly simple. But there are a couple of questions that come to mind. What distance metric should be used? Also, two clusters have multiple points, how do we measure the distance between them? The first question does not have a best answer. Depending on the application, you may find different metrics do better. Some examples include euclidean distance, manhattan distance, and cosine similarity (I encourage you to read my post on K-Nearest Neighbors to see more information on such metrics). However the second question has garnered a number of different approaches, and it too does not have one best answer. There are several ways of computing distances between multipoint clusters, such as:
