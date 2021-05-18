@@ -139,9 +139,38 @@ plt.show()
 ```
 
 <center><img src="/img/k-means-2.png" alt = "faithfuldata">
-<img src="/img/k-means-2.png" alt = "faithfuldata"></center>
+<img src="/img/k-means-4.png" alt = "faithfuldata"></center>
 
-You can clearly see that 2 clusters seems a more natural fit than 4. But be careful when using a subset features in a high-dimensional dataset - what looks like a bad fit when projected down to 2 or three dimensions might actually be appropriate with a different subset of features. Now you might ask, is there a more empirical way of determining the best value of K? Yes there is. We can use the __scree plot__ I mentioned above. And thanks to scikit-learn, this is less painful than you might expect. Let's try fitting the model to several values of K, and seeing which one give the best average distance between points and their cluster centroids.
+You can clearly see that 2 clusters seems a more natural fit than 4. But be careful when using a subset features in a high-dimensional dataset - what looks like a bad fit when projected down to 2 or three dimensions might actually be appropriate with a different subset of features. Now you might ask, is there a more empirical way of determining the best value of K? Yes there is. We can use the __scree plot__ I mentioned above. And thanks to scikit-learn, this is less painful than you might expect. The `fit_transform()` method will transform our data into the point-cluster distances we're after. All I have to do is convert the square distances (as is convention in scikit-learn) into ordinary Euclidean distance, and compute the mean. Let's try fitting the model to several values of K, and seeing which one give the best average distance between points and their cluster centroids.
+
+```python
+# Store the mean distances
+mean_dists = []
+# Number of observations
+N = X.shape[0]
+# Values of K we want to try
+K = np.arange(1,10)
+
+for k in K:
+  k_means = KMeans(init = "k-means++", n_clusters = k, n_init = 12)
+  # Extract point-cluster squared distances
+  d_point_clusters = k_means.fit_transform(X)
+  # Add the mean of the root of the distances to our list
+  mean_dists.append(np.mean(np.sqrt(d_point_clusters)))
+
+## Plot our results
+mean_dists = np.array(mean_dists)
+
+plt.plot(K, mean_dists)
+plt.xlabel('Number of Clusters (K)')
+plt.ylabel('Mean Point-Cluster Distance')
+plt.show()
+```
+
+<center><img src="/img/kmeans-scree.png" alt = "faithfuldata"></center>
+
+Keep in mind that the distance on the Y-axis is something we want to minimize, however simply using 1 cluster doesn't really give us much useful information. We can see a clear _kink_ or _elbow_ at \\( K=2 \\), which indicates that a choice of two clusters is appropriate. This matches what we see visually, and also matches intuition. The Geyser appears to have roughly two kinds of eruptions. Those that do not last very long (low duration), but occur in frequent succession (low waiting time), and those that last longer, but occur more infrequently.
+
 
 ## Hierarchical Clustering
 
