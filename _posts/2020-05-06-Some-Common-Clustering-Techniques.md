@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Some Common Clustering Techniques"
-date: 2020-11-09
+date: 2021-05-06
 ---
 
 ## Some Common Clustering Algorithms
@@ -198,8 +198,57 @@ Like K-Means, the above algorithm is surprisingly simple. But there are a couple
 - __Average Linkage Clustering__: Uses the average point-to-point distance between clusters.
 - __Centroid Linkage Clustering__: Uses the distance between cluster centroids.
 
+Whatever the choice of linkage, notice that the construction of clusters will always be entirely dependent on the dataset. Unlike with KMeans, that may return different clusters with different random initializations, the Hierarchical Clustering algorithm will always return the same clusters. Moreover, there is no hyperparameter choice, like the K we had before. Is this a good thing? It depends on the data and the application. One clear advantage to hierarchical clustering is that it gives many possible clustering assignments to the user after only one execution. Just be careful - in large datasets, training can be very slow because of the proximity computation in each iteration.
+
+So does this algorithm work better for the Old Faithful dataset specifically? We can find out rather quickly. Scikit-learn has an easy method for fitting Agglomerative Clustering, and the `scipy` package has some very helpful plotting functions. In the code below, I will use average linkage, but you could easily change this. I'll first plot the resulting assignment for 2 clusters, then create a dendrogram using all possible assignments.
+
+```python
+from sklearn import manifold, datasets 
+from sklearn.cluster import AgglomerativeClustering
+from scipy import ndimage 
+from scipy.cluster import hierarchy 
+from scipy.spatial import distance_matrix
+
+agglom = AgglomerativeClustering(n_clusters = 2, linkage = 'average')
+agglom.fit(X)
+
+## Plot with 2 clusters
+
+#Initialize the plot with the specified dimensions.
+fig = plt.figure(figsize=(6, 4))
+
+colors = plt.cm.Spectral(np.linspace(0, 1, len(set(agglom_labels))))
+# Create a plot
+ax = fig.add_subplot(1, 1, 1)
+# Plots the datapoints with color col.
+ax.scatter(X[:,0], X[:,1], c=agglom_labels)
+
+# Title and axesof the plot
+ax.set_title('Agglomerative Clustering (K=2)')
+plt.xlabel('Eruption Duration (Seconds)')
+plt.ylabel('Waiting Time Between Eruptions')
+
+# Show the plot
+plt.show()
+
+## Plot a dendrogram
+fig = plt.figure(figsize=(12, 8))
+dist_matrix = distance_matrix(X,X)
+Z = hierarchy.linkage(dist_matrix, 'average')
+dendro = hierarchy.dendrogram(Z, leaf_rotation=0, orientation = 'right', leaf_font_size =6)
+```
+This code produces the following 2 plots:
+
+<center><img src="/img/agglom-2.png" alt = "faithfuldata">
+<img src="/img/dendrogram.png" alt = "faithfuldata"></center>
+
+You may notice the `n_clusters` parameter passed to the `agglom` object early in the code. Didn't I say that there was no prespecified number of clusters in hierarchical clustering? Well don't worry, this is still true. The hyperparameter in this case is not constraining the algorithm in any way, but is just telling scikit-learn how many labels it should use to produce the output we extract. The algorithm itself still computes any number of clusters, as you can see in the dendrogram. So how exactly do we interpret this tree-like graph? Well first of all, let me say clearly that __dendrograms do not tell you the optimal number of clusters__. They simply provide all possible options in a hierarchical fashion. What they do tell us is how far apart our clusters are. For example, suppose I was considering using 2 clusters. Which points belong in each cluster can be found by cutting our dendrogram vertically at around 250 (see the above plot), and following the tree structure to the left until we can see which points go where. What this means is that (assuming average linkage between clusters), if we use two clusters, the average distance between them is 250. This information is very useful in determining data sparsity. One downside is that, with many clusters, it can be difficult to actually untangle the lower levels of the dendrogram.
+
+
 ## DBSCAN
 
 ## Conclusions
+
+## Further Reading
 
 
