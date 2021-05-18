@@ -18,6 +18,48 @@ Sometimes, when building a ML model, we don't want have a target value or class 
 
 We'll look at how each is implemented, then we'll run each algorithm on the same dataset. Finally, we'll walk through the tradeoffs associated with each type of algorithm. Though I will go into depth on how each algorithm works, the code itself will be highly abstracted, coming from python's `scikit-learn` ML API. 
 
+## Today's Dataset
+
+To demonstrate each of the above algorithms, I'll use the _Old Faithful_ dataset, which contains data on the eruptions from the Old Faithful Geyser in Yellowstone National Park. This dataset has no labels (as you might expect), and has just two features: duration of eruption, and waiting time between current and next eruption. This data has been used in a Kaggle competition, and thus is already available fully cleaned. You can download it as a csv file [here](https://www.kaggle.com/janithwanni/old-faithful).
+
+I'll start by loading in the data, then I print a few observations so you can see what we're working with.
+
+```python
+# Load in the data
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.cluster import KMeans
+import io
+
+% matplotlib inline
+
+from google.colab import files
+uploaded = files.upload()
+
+df = pd.read_csv(io.StringIO(uploaded['faithful.csv'].decode('latin-1')))
+print(df.head(5))
+
+#---------------------------------------------------------------------------
+
+   Unnamed: 0  eruptions  waiting
+0           1      3.600       79
+1           2      1.800       54
+2           3      3.333       74
+3           4      2.283       62
+4           5      4.533       85
+```
+It's always a good idea to plot your features, so you can get a sense of how the data look, and whether clustering is appropriate.
+```python
+X = np.array(df[['eruptions', 'waiting']])
+plt.scatter(X[:, 0], X[:, 1], marker='.')
+plt.xlabel('Eruption Duration')
+plt.ylabel('Waiting Time Between Eruptions')
+plt.show()
+```
+
+<center><img src="/img/faithful-data.png" alt = "faithfuldata"></center>
+
 ## Clustering
 
 I've talked about _clustering_ in previous posts, but I'll review it again here. Recall that in Machine Learning, __clusters__ are just groups of unlabelled data points that share feature similarity. In other words, these collections of points are close together in feature space. The goal of clustering algorithms then, is to take an arbitrary set of points, and identify these hidden groups. Unlike in the __supervised learning__ setting, where our dataset has labels with which to evaluate the performance of our algorithm using some kind of loss, clustering is almost always __unsupervised__, so it can be difficult to find a _correct_ answer. However most examples rely on domain knowledge to inform what constitutes a reasonable clustering assignment. Visualization can also be extremely helpful - you should be able to see the different groups clearly. 
@@ -47,6 +89,8 @@ Sounds impossibly simple right? Well most great ML algorithms are. This one has 
 
 Recall that I mentioned we typically do not have labels. Though this is true, we can still use a __cost function__ which will tell us which assignments are better than others. Typically we use the average distance between a point and its cluster centroid. Notice that, the more clusters we choose to identify (the higher K we pick), the smaller that average distance will be. Note also that as the algorithm iterates, this cost will decrease. In the extreme, if \\( K = N \\), we end up with a cost of zero, since each data point represents its own cluster (and cluster centroid). One corollary of this is that we can run the algorithm for a number of different values of \\( K \\), and plot cost against \\( K \\). This is called a __scree plot__, and the natural choice of K would present itself as an elbow, or a kink in this plot.
 
+Now let's actually run this algorithm with our dataset. `scikit-learn` has a very convenient transformer that will allow us to generate clusters very quickly. 
+
 ## Hierarchical Clustering
 
 Hierarchical clustering is a newer, and very different approach. Unlike in K-Means where clusters were non-overlapping, the goal of __hierarchical clustering__ is to generate a series of clusters that have a hierarchical (tree-like) relationship. In this tree, each node is a cluster that consist of the clusters of its daughter nodes. Essentially what this algorithm does is start from raw data points, and build a tree of hierarchical clustering assignments. There are two main ways to build such a tree:
@@ -61,8 +105,9 @@ Both work well, but agglomerative has been more popular in recent years. Once th
 3. Repeat until \\( K = 1\\):
 
     i) Merge the two closest clusters
-    ii) Update the proximity matrix, storing the old version
     
+    ii) Update the proximity matrix, storing the old version
+
 4. Return all cluster assignments
 
 Like K-Means, the above algorithm is surprisingly simple. But there are a couple of questions that come to mind. What distance metric should be used? Also, two clusters have multiple points, how do we measure the distance between them? The first question does not have a best answer. Depending on the application, you may find different metrics do better. Some examples include euclidean distance, manhattan distance, and cosine similarity (I encourage you to read my post on K-Nearest Neighbors to see more information on such metrics). However the second question has garnered a number of different approaches, and it too does not have one best answer. There are several ways of computing distances between multipoint clusters, such as:
