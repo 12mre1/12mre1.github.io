@@ -76,7 +76,7 @@ In all of these cases, and in virtually all clustering algorithms, the points ar
 
 ## K-Means
 
-The K-Means algorithm is an iterative process that splits the dataset into K non-overlapping subsets without any cluster-internal structure. Each group has an associated __center of mass__ (centroid), and it is the distance from these centroids that determines whether a point belongs to a given cluster. The goal of this algorithm in particular is two-fold: to determine the optimal assignment of points for a given collection of clusters, and to determine the optimal placement of cluster centres given the collection of points. This brings up a curious chicken egg problem - if we knew the true cluster assignments, we could easily compute the cluster centres; But if we knew the true cluster centres, finding the optimal assignment would be just as easy. So how do we deal with this problem? We use the following iterative approach:
+The K-Means algorithm is an iterative process that splits the dataset into K non-overlapping subsets without any cluster-internal structure. Each group has an associated __center of mass__ (centroid), and it is the distance from these centroids that determines whether a point belongs to a given cluster. The goal of this algorithm in particular is two-fold: to determine the optimal assignment of points for a given collection of clusters, and to determine the optimal placement of cluster centres given the collection of points. This brings up a curious chicken egg problem -  if we knew the true cluster assignments, we could easily compute the cluster centres; But if we knew the true cluster centres, finding the optimal assignment would be just as easy. So how do we deal with this problem? We use the following iterative approach:
 
 1. Randomly initialize K cluster centres in feature space (K is a hyperparameter - more on this later).
 2. Compute the distances between each point and each cluster center.
@@ -244,10 +244,75 @@ This code produces the following 2 plots:
 
 You may notice the `n_clusters` parameter passed to the `agglom` object early in the code. Didn't I say that there was no prespecified number of clusters in hierarchical clustering? Well don't worry, this is still true. The hyperparameter in this case is not constraining the algorithm in any way, but is just telling scikit-learn how many labels it should use to produce the output we extract. The algorithm itself still computes any number of clusters, as you can see in the dendrogram. So how exactly do we interpret this tree-like graph? Well first of all, let me say clearly that __dendrograms do not tell you the optimal number of clusters__. They simply provide all possible options in a hierarchical fashion. What they do tell us is how far apart our clusters are. For example, suppose I was considering using 2 clusters. Which points belong in each cluster can be found by cutting our dendrogram vertically at around 250 (see the above plot), and following the tree structure to the left until we can see which points go where. What this means is that (assuming average linkage between clusters), if we use two clusters, the average distance between them is 250. This information is very useful in determining data sparsity. One downside is that, with many clusters, it can be difficult to actually untangle the lower levels of the dendrogram.
 
-
 ## DBSCAN
 
+Both K-Means and Hierarchical Clustering rely mainly on the computation of distances, and consequently they produce clusters defined by perfect hyperspheres. This makes the math easier to deal with, but very few natural groupings are defined so cleanly in reality. It might make more sense to try and find a method of clustering that accounts for more arbitrary shapes. Moreover, the K-Means and Hierarchical approaches have no notion of outliers - that is, every point gets assigned to a cluster, regardless of where that point lies relative to the rest of the training set. This is a problem for unsupervised approaches used for __anomaly detection__, wherein we may want to find clusters while flagging points that are extreme or rare. __DBSCAN__ is designed to assign clusters by locating regions with high densities of points, while separating outliers. Here's how it works.
+
+__Density Based Spatial Clustering of Applications with Noise__ (DBSCAN) has two basic hyperparameters:
+
+- __R__(Radius of Neighborhood): . This radius defines what we mean by _neighborhood_. If this radius includes a large enough number of points, we call that neighborhood a __dense area__.
+- __M__(Minimum number of neighbors): This is the minimum number of points we need to define a cluster.
+
+Unlike the other approaches, this one further labels points within clusters. Each point in the training set can be a _core_, _border_, or _outlier_ point (these are mutually exclusive). These sublabels are defined in the following way:
+
+- __Core Point__: Has at least M other points within its neighborhood.
+- __Border Point__: Has fewer than M other points in its neighborhood, but is reachable from some core point (meaning the border point is within distance R of some core point).
+- __Outlier Point__: A point that is neither a core nor a border point. These points sit in low-density areas.
+
+What ends up happening is that a core point will form a cluster with all points reachable from it (including points reachable only from another reachable core point). Thus, these clusters end up arbitrarily shaped, and we have no way of knowing _a priori_ how many clusters we will get. Non-core points can still be part of a cluster, but since there are no reachable points beyond them, they form the _edge_ or _perimeter_ of a cluster. More formally, the algorithm takes the following steps:
+
+1. Find the points in the \\( R \\) neighborhood of every point in the training set
+2. Identify those points with more than \\( M \\) neighbors as core points
+3. Find the connected components of core points on the neighbor graph, ignoring non-core points. This amounts to forming connected graphs among core points that are reachable to each other. The number of independent connected sets is our number of clusters (not specified in advance).
+4. Assign each point to a nearby cluster if that cluster is within \\( R \\) distance, otherwise it is an outlier.
+
+Just like the other methods, this technique is surprisingly simple. And just like the others, we don't have to worry about coding it from scratch. Scikit-learn has a transformer for this too. The following code shows how to use it:
+
+```python
+from sklearn.cluster import DBSCAN
+from sklearn.preprocessing import StandardScaler
+
+X_scaled = StandardScaler().fit_transform(X) 
+dbscan = DBSCAN(eps = 0.3, min_samples = 10)
+dbscan.fit(X_scaled)
+
+labels = dbscan.labels_
+
+#Initialize the plot with the specified dimensions.
+fig = plt.figure(figsize=(6, 4))
+
+# Colors uses a color map, which will produce an array of colors based on
+# the number of labels there are. We use set(k_means_labels) to get the
+# unique labels.
+colors = plt.cm.Spectral(np.linspace(0, 1, len(set(labels))))
+# Create a plot
+ax = fig.add_subplot(1, 1, 1)
+# Plots the datapoints with color col.
+ax.scatter(X[:,0], X[:,1], c=labels)
+
+# Title and axesof the plot
+ax.set_title('DBSCAN (R = 0.3, M = 10)')
+plt.xlabel('Eruption Duration (Seconds)')
+plt.ylabel('Waiting Time Between Eruptions')
+
+# Show the plot
+plt.show()
+```
+Note that the `DBSCAN` transformer does not scale the data for you (unlike the KMeans and Hierarchical versions), so above I scale the data first. Keep in mind the data have been standardized when choosing the hyperparameters for DBSCAN. One other thing to note is that the algorithm in scikitlearn assigns cluster labels automatically, but assigns a label of -1 to all outlier points. These points appear as black in the plot, which is shown below.
+
+<center><img src="/img/dbscan-faithful.png" alt = "faithfuldata"></center>
+
 ## Conclusions
+
+I presented a lot of information about 3 main clustering techniques in this post: K-Means Clustering, Hierarchical Clustering, and DBSCAN. It can be difficult to remember all the little details, but here are some key takeaways:
+
+- K-Means iteratively splits the data into K non-overlapping subsets with K centroids, where K is specified by the user.
+- K-Means can get stuck in a local optimum, so running several iterations or random cluster breaks can give a more robust assignment
+- Hierarchical Clustering gives a hierarchy of possible cluster assignments, and the user can choose which assignment to use.
+- The Dendrogram is an excellent way of representing the hierarchical relationship between clusters
+- DBSCAN allows for outliers by labelling each point as core, border or noise
+- DBSCAN allows for an arbitrary number and shape of clusters, whereas the other two methods define clusters as perfect hyperspheres.
+- All three methods are unsupervised, meaning they have no ground truth cluster labels. 
 
 ## Further Reading
 
