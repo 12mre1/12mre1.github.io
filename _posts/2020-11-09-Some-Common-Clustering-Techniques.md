@@ -60,9 +60,11 @@ plt.show()
 
 <center><img src="/img/faithful-data.png" alt = "faithfuldata"></center>
 
+We can see that the data separates somewhat cleanly into at least two groups, which makes it ideal for clustering algorithms. Let's discuss exactly what this means, and why it matters.
+
 ## Clustering
 
-I've talked about _clustering_ in previous posts, but I'll review it again here. Recall that in Machine Learning, __clusters__ are just groups of unlabelled data points that share feature similarity. In other words, these collections of points are close together in feature space. The goal of clustering algorithms then, is to take an arbitrary set of points, and identify these hidden groups. Unlike in the __supervised learning__ setting, where our dataset has labels with which to evaluate the performance of our algorithm using some kind of loss, clustering is almost always __unsupervised__, so it can be difficult to find a _correct_ answer. However most examples rely on domain knowledge to inform what constitutes a reasonable clustering assignment. Visualization can also be extremely helpful - you should be able to see the different groups clearly. 
+I've talked about _clustering_ in previous posts, but I'll review it again here. Recall that in Machine Learning, __clusters__ are just groups of unlabelled data points that share feature similarity. These collections of points are close together in feature space. The goal of clustering algorithms then, is to take an arbitrary set of points and identify these hidden groups. Unlike in the __supervised learning__ setting, where our dataset has labels with which to evaluate the performance of our algorithm using some kind of loss, clustering is almost always __unsupervised__, so it can be difficult to find a _correct_ answer. However most examples rely on domain knowledge to inform what constitutes a reasonable clustering assignment. Visualization can also be extremely helpful - you should be able to see the different groups clearly. 
 
 There are many different examples of clustering, but here are some common applications:
 
@@ -89,7 +91,57 @@ Sounds impossibly simple right? Well most great ML algorithms are. This one has 
 
 Recall that I mentioned we typically do not have labels. Though this is true, we can still use a __cost function__ which will tell us which assignments are better than others. Typically we use the average distance between a point and its cluster centroid. Notice that, the more clusters we choose to identify (the higher K we pick), the smaller that average distance will be. Note also that as the algorithm iterates, this cost will decrease. In the extreme, if \\( K = N \\), we end up with a cost of zero, since each data point represents its own cluster (and cluster centroid). One corollary of this is that we can run the algorithm for a number of different values of \\( K \\), and plot cost against \\( K \\). This is called a __scree plot__, and the natural choice of K would present itself as an elbow, or a kink in this plot.
 
-Now let's actually run this algorithm with our dataset. `scikit-learn` has a very convenient transformer that will allow us to generate clusters very quickly. 
+Now let's actually run this algorithm with our dataset. `scikit-learn` has a very convenient transformer that will allow us to generate clusters very quickly. In the following code, I run a typical scikit-learn workflow: I instatiate our model object, passing as arguments the necessary hyperparameters. Then I fit the data to our model, which in this case generates our cluster assignments. Lastly, I extract the resulting cluster labels and cluster centroids. Recall our plot above. To begin, let's try finding only 2 clusters (\\( K=2 \\)). 
+
+```python
+## Fit KMeans
+k_means = KMeans(init = "k-means++", n_clusters = 2, n_init = 12)
+k_means.fit(X)
+
+k_means_labels = k_means.labels_
+k_means_cluster_centers = k_means.cluster_centers_
+print(k_means.cluster_centers_)
+#-------------------------------------
+[[ 4.29793023 80.28488372]
+ [ 2.09433    54.75      ]]
+```
+Voila! Just 2 lines of code to fit the model, and a few more to extract the relevent estimates. Before we inspect the results, take note of the two additional hyperparameters in the call to instantiate `k_means`. `k-means++` is a special initialization algorithm used with K-Means clustering to speed up convergence. Don't worry about how it works exactly, just know that it's saving you time. The other hyperparameter is called `n_init`, and it simply controls the number of initializations we run. If you remember earlier, this is how we avoid getting stuck in a local optimum. Scikit-learn takes the best of our 12 runs and returns that. We can see that the resulting cluster centers take the form of a numpy array whose columns represent coordinate values in our feature space. But how well do these clusters actually reflect our data? Just like before, we can create a plot to find out. To show you the difference, I also plot the assignments when we use 4 clusters instead of 2.
+
+```python
+#Initialize the plot with the specified dimensions.
+fig = plt.figure(figsize=(6, 4))
+# Colors uses a color map, which will produce an array of colors based on
+# the number of labels there are. We use set(k_means_labels) to get the
+# unique labels.
+colors = plt.cm.Spectral(np.linspace(0, 1, len(set(k_means_labels))))
+# Create a plot
+ax = fig.add_subplot(1, 1, 1)
+# For loop that plots the data points and centroids.
+# k will range from 0-3, which will match the possible clusters that each
+# data point is in.
+for k, col in zip(range(len([[4,4], [-2, -1], [2, -3], [1, 1]])), colors):
+    # Create a list of all data points, where the data poitns that are 
+    # in the cluster (ex. cluster 0) are labeled as true, else they are
+    # labeled as false.
+    my_members = (k_means_labels == k) 
+    # Define the centroid, or cluster center.
+    cluster_center = k_means_cluster_centers[k]  
+    # Plots the datapoints with color col.
+    ax.plot(X[my_members, 0], X[my_members, 1], 'w', markerfacecolor=col, marker='.')   
+    # Plots the centroids with specified color, but with a darker outline
+    ax.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,  markeredgecolor='k', markersize=6)
+# Title and axesof the plot
+ax.set_title('KMeans (K=4)')
+plt.xlabel('Eruption Duration (Seconds)')
+plt.ylabel('Waiting Time Between Eruptions')
+# Show the plot
+plt.show()
+```
+
+<center><img src="/img/k-means-2.png" alt = "faithfuldata">
+<img src="/img/k-means-2.png" alt = "faithfuldata"></center>
+
+You can clearly see that 2 clusters seems a more natural fit than 4. But be careful when using a subset features in a high-dimensional dataset - what looks like a bad fit when projected down to 2 or three dimensions might actually be appropriate with a different subset of features. Now you might ask, is there a more empirical way of determining the best value of K? Yes there is. We can use the __scree plot__ I mentioned above. And thanks to scikit-learn, this is less painful than you might expect. Let's try fitting the model to several values of K, and seeing which one give the best average distance between points and their cluster centroids.
 
 ## Hierarchical Clustering
 
