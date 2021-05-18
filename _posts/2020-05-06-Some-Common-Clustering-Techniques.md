@@ -302,6 +302,8 @@ Note that the `DBSCAN` transformer does not scale the data for you (unlike the K
 
 <center><img src="/img/dbscan-faithful.png" alt = "faithfuldata"></center>
 
+Notice that we still get 2 clusters, although I must admit that these results are largely a consequence of the hyperparameter settings, which I have not tuned properly. But this is a good sign. Notice also that unlike the first two algorithms, this technique identifies a large number of potential outliers. For Geyser data, finding such outliers is not particularly important, though recognizing such points is good practice for any data science project. However imagine if instead the data were financial transactions. You can see that considering outliers is very important for fraud detection, which is why DBSCAN is one of the most popular clustering techniques available, and has withstood the test of time since its invention in 1996. 
+
 ## Conclusions
 
 I presented a lot of information about 3 main clustering techniques in this post: K-Means Clustering, Hierarchical Clustering, and DBSCAN. It can be difficult to remember all the little details, but here are some key takeaways:
@@ -314,6 +316,11 @@ I presented a lot of information about 3 main clustering techniques in this post
 - DBSCAN allows for an arbitrary number and shape of clusters, whereas the other two methods define clusters as perfect hyperspheres.
 - All three methods are unsupervised, meaning they have no ground truth cluster labels. 
 
+There are strengths and weaknesses associated with each approach, but if you have the time during your own project, I encourage you to try all three for robustness.
+
 ## Further Reading
 
-
+- [Here](https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf) is the link to the original DBSCAN paper from AAAI 1996.
+- One of the earliest papers to use K-Means clustering (at least that I could find) can be found [here](https://projecteuclid.org/ebooks/berkeley-symposium-on-mathematical-statistics-and-probability/Proceedings%20of%20the%20Fifth%20Berkeley%20Symposium%20on%20Mathematical%20Statistics%20and%20Probability,%20Volume%201:%20Statistics/chapter/Some%20methods%20for%20classification%20and%20analysis%20of%20multivariate%20observations/bsmsp/1200512992)
+- [This article](https://www.analyticsvidhya.com/blog/2019/08/comprehensive-guide-k-means-clustering/) has a great explanation of K-Means.
+- The book _Information Retrieval_ by Manning et al. has a great chapter on hierarchical clustering.
