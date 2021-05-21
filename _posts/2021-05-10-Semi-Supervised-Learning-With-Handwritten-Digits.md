@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Semi-Supervised Learning with Handwritten Digits"
-date: 2021-05-06
+date: 2021-05-10
 ---
 _Prerequisite Math: None_
 
