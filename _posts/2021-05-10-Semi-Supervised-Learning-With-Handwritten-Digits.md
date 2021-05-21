@@ -7,8 +7,8 @@ _Prerequisite Math: None_
 
 _Prerequisite Coding: Python (Numpy, Scikit-learn)_
 
-# Semi-supervised Learning with Olivetti Faces
-In my last post on __Clustering__, which you can find [here](https://12mre1.github.io/blog/2021/05/06/Some-Common-Clustering-Techniques), I mentioned that sometimes unsupervised learning can be used as a preprocessing step before ultimately running a supervised learning algorithm. In this post, I'm going to walk through such an example using the famous __Digits__ dataset, which contains 1797 grayscale images, each 8 x 8 pixels. The dataset consists of 10 different digits (0-9), each drawn around 180 times. Our goal today is to predict, based only on the picture, which digit we're looking at. No cleaning is necessary here - `scikit-learn` provides the dataset freely, and it already comes with labels associated with the digit (integers 0-9 are used, since python is zero-indexed). Each pixel value ranges between 0 and 15.
+# Semi-supervised Learning with Handwritten Digits
+In my last post on __Clustering__, which you can find [here](https://12mre1.github.io/blog/2021/05/06/Some-Common-Clustering-Techniques), I mentioned that sometimes unsupervised learning can be used as a preprocessing step before ultimately running a supervised learning algorithm. In this short post, I'm going to walk through such an example using the famous __Digits__ dataset, which contains 1797 grayscale images, each 8 x 8 pixels. The dataset consists of 10 different digits (0-9), each drawn around 180 times. Our goal today is to predict, based only on the picture, which digit we're looking at. No cleaning is necessary here - `scikit-learn` provides the dataset freely, and it already comes with labels associated with the digit (integers 0-9 are used, since python is zero-indexed). Each pixel value ranges between 0 and 15.
 
 Although we do have labels for each of the 1797 images here, it is almost always the case in practice that you will have at least some unlabelled data. More often than not, you will see a large amount of unlabelled data and a fairly small number of labels. We call this scenario __semi-supervised learning__, because it combines supervised and unsupervised techniques. This is because labelling is costly, both in terms of time and labor-hours. One of the greatest open problems in machine learning is how to train an algorithm using only a small number of training observations, such that the algorithm still generalizes to perform well on new and unseen data. Today we'll use clustering to try and find __representative images__. Why would we want to do this? Well knowing that labelling is costly, it can often be helpful to use our features to try and figure out which observations will yield the highest return with regards to performance when we label them. I'll explain in more detail later, but just know that we'll be 'pretending' that not all of our data have labels.
 
@@ -58,8 +58,9 @@ plt.show()
 ```
 This code results in the following plot:
 
-<center><img src="/img/digits-10-1.png" alt = "digits"> </br>
-<img src="/img/digits-10-2.png" alt = "digits"></center>
+<center><img src="/img/digits-10-1.png" alt = "digits"></center>
+
+<center><img src="/img/digits-10-2.png" alt = "digits"></center>
 
 Notice how grainy these images are - this is just a consequence of the small number of features (8 x 8 = 64). Now, remember how I said we were 'pretending' that not all of our data is labelled? Well in practice, if you're going to label observations, the best place to start would be to create a labelled test set, so we can ultimately get some measure of performance for whatever algorithm we choose. So of the 1797 observations we have, I'll set aside 200 of them for testing. I'll set aside another 200 for validation, which will determine which values of the hyperparameters we use. . In both splits, I stratify by label, so we know we have a good number of observations from each class. Here is the code for both splits:
 
