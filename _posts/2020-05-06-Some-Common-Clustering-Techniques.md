@@ -169,7 +169,7 @@ plt.show()
 
 <center><img src="/img/kmeans-scree.png" alt = "faithfuldata"></center>
 
-Keep in mind that the distance on the Y-axis is something we want to minimize, however simply using 1 cluster doesn't really give us much useful information. We can see a clear _kink_ or _elbow_ at \\( K=2 \\), which indicates that a choice of two clusters is appropriate. This matches what we see visually, and also matches intuition. The Geyser appears to have roughly two kinds of eruptions. Those that do not last very long (low duration), but occur in frequent succession (low waiting time), and those that last longer, but occur more infrequently.
+Keep in mind that the distance on the Y-axis is something we want to minimize, however simply using 1 cluster doesn't really give us much useful information. We can see a clear _kink_ or _elbow_ at \\( K=3 \\), which indicates that a choice of three clusters is appropriate. This matches what we see visually, and also matches intuition. The Geyser appears to have roughly three kinds of eruptions. Those that do not last very long (low duration), but occur in frequent succession (low waiting time), and those that last longer, but occur more infrequently. Lastly, we have those that sit in the middle.
 
 
 ## Hierarchical Clustering
