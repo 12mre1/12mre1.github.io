@@ -5,7 +5,7 @@ date: 2021-05-12
 ---
 _Prerequisite Math: Calculus_
 
-_Prerequisite Coding: Python (basic)_
+_Prerequisite Coding: Python (Numpy)_
 
 ## Building a Neural Net Using Just Numpy
 
@@ -29,8 +29,11 @@ $$ n_h $$ is the number of nodes in our hidden layer. This is the middle layer o
 As I mentioned above, we have only one hidden layer. Here are the equations that govern the network, with \\( X_0 \\) representing our raw data, which has dimension (\\( N, D \\) ):
 
 $$ Z_1 = X_0 W_1 $$
+
 $$ X_1 = Relu(Z_1) $$
+
 $$ y = X_1 W_2 $$
+
 $$ L = \frac{1}{2} (y - t)^2 $$
 
 Pretty simple right? Note that I have removed any bias terms that you might see in other networks (just for simplicity). Now in order to derive the dimensions for the weights, we can first get the dimensions of our inputs and outputs, then work between them. Let me show you what I mean. I know (by definition) that our data must have dimension equal to the number of observations (rows) by the number of features (columns). Thus, \\( X_0 \in (N, D) \\). I also know that the dimension of the hidden layer's input just converts from feature space (3) to hidden-layer space (4), so it must be that \\( X_1 \in (N, n_h) \\). Knowing that the Relu activation works elementwise (does not change the dimension), it must be that \\( W_1 \in (D, n_h) \\), otherwise the dimensions would not match. In any dot product, the columns of the left matrix must equal the rows of the right matrix.
