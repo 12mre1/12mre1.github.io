@@ -26,6 +26,26 @@ $$ n_h $$ is the number of nodes in our hidden layer. This is the middle layer o
 
 ## Our Data
 
+Today is less about achieving state of the art results, and more about building the network. With this in mind, I'll use the famous [Boston Housing Dataset](https://www.cs.toronto.edu/~delve/data/boston/bostonDetail.html), which uses 13 different features to try and predict median home value in 506 different suburbs of Boston. For this demonstration, I'll just use three features: Property tax per 10,000 dollars, average pupil-teacher ratio, and crime-rate per capita. The labels are listed in thousands of dollars. Here is the code for loading and extracting the features and labels. I also define some parameters we'll use shortly.
+
+```python
+mport numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_boston
+
+features, labels = load_boston(return_X_y = True)
+
+# Take only three features, and the labels
+X0 = features[:,[0,9,10]]
+t = labels
+
+# Define parameters
+N = X0.shape[0]
+D = X0.shape[1]
+n_h = 4 
+```
+With the data prepped and parameters chosen, let's look at how to code the network itself.
+
 ## Vector Operations
 
 As I mentioned above, we have only one hidden layer. Here are the equations that govern the network, with \\( X_0 \\) representing our raw data, which has dimension (\\( N, D \\) ):
@@ -73,7 +93,7 @@ def forward_pass(X0, t, W1, W2):
   X1 = relu(Z1)
   y = np.dot(X1, W2)
   # Compute and print error (MSE)
-  error = 0.5*(y - t)**2
+  error = np.sum(0.5*(y - t)**2)
   print('Error: ', error)
   print('---------------')
   # Return values
