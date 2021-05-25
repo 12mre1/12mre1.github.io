@@ -50,7 +50,35 @@ $$ W_2 - (n_h, 1) \ , \ y - (N, 1) $$
 
 Now that we have the equations to follow, and the dimensions are computed, we can code the forward pass of our network. The code for this is below. I also include the random initialization of the weights:
 
+```python
+# Initialize weight matrices
+W1 = 2*np.random.random((D, n_h)) - 1
+W2 = 2*np.random.random((n_h, 1)) - 1
+
+# Create activation function
+def relu(x):
+  return (x > 0)*x
+
 ## Forward Propagation
+
+def forward_pass(X0, t, W1, W2):
+  '''Computes the forward propagation of the 
+  network and stores parameters.
+  X0: the training data (N,D)
+  t: the labels (N,1)
+  W1: 1st weight matrix (D,n_h)
+  W2: 2nd weight matrix (n_h, 1)'''
+  # Run through network per equations given
+  Z1 = np.dot(X0, W1)
+  X1 = relu(Z1)
+  y = np.dot(X1, W2)
+  # Compute and print error (MSE)
+  error = 0.5*(y - t)**2
+  print('Error: ', error)
+  print('---------------')
+  # Return values
+  return X1, y
+```
 
 ## Backward Propagation
 
@@ -76,10 +104,28 @@ $$ dw1 = \bar{W_1} = \bar{Z_1} \frac{\partial Z_1}{\partial W_1} = X_0^T \bar{Z_
 
 Perfect! We now have the derivatives we need to perform backpropagation. I typically use the 'bar' notation you see above to express pieces of the chain in a longer derivative. Notice also apart from the first two derivations, we never needed to express any of these derivatives in there full form. Not only is this easier when deriving these with pen and paper, but it is also faster computationally. I actually computed more derivatives than we needed here, but I just wanted to stress the advantage of using the computation graph.
 
-You might be wondering why I used the matrix transpose in certain places, and how I knew when to do this. One very helpful rule of thumb is that __the matrix of derivatives must have the same dimension as the variable itself__. For example dx1 must have the same shape as \\( X_1 \\), dw2 the same shape as \\( W_2 \\), and so on. So I use the transpose wherever it is needed to preserve the dimension.
+You might be wondering why I used the matrix transpose in certain places, and how I knew when to do this. One very helpful rule of thumb is that __the matrix of derivatives must have the same dimension as the variable itself__. For example dx1 must have the same shape as \\( X_1 \\), dw2 the same shape as \\( W_2 \\), and so on. So I use the transpose wherever it is needed to preserve the dimension. When we execute backprop, even though we only need the derivatives of the weights (since they are what is being updated as the network learns), preserving the shape across all intermediate variables is good practice.
 
-
-
+Here is the code for backpropagation:
+```python
+def backward_pass(X0, t, W1, W2, X1, y):
+  '''Computes the backward propagation of the
+  network and returns the updated weights.
+  X1: The data in the hidden layer (N, n_h)
+  y: The predicted target (N,1)'''
+  # Compute derivatives shown above
+  dy = (y - t)
+  dX1 = np.dot(dy, W2.T)
+  dW2 = np.dot(X1.T, dy)
+  dZ1 = (Z1 > 0)*dX1
+  dX0 = np.dot(dZ1, W1.T)
+  dW1 = np.dot(X0.T, dZ1)
+  # Update the weights
+  W1_new -= alpha*dW1
+  W2_new -= alpha*dW2
+  # Return updates
+  return W1_new, W2_new
+```
 
 ## Visualization
 
