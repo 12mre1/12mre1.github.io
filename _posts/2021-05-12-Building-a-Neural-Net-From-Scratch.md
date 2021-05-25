@@ -24,6 +24,8 @@ $$ D $$ is the number of features we have. This corresponds to the number of nod
 
 $$ n_h $$ is the number of nodes in our hidden layer. This is the middle layer of our network, and we can see from the picture that \\( n_h = 4\\). 
 
+## Our Data
+
 ## Vector Operations
 
 As I mentioned above, we have only one hidden layer. Here are the equations that govern the network, with \\( X_0 \\) representing our raw data, which has dimension (\\( N, D \\) ):
@@ -40,18 +42,45 @@ Pretty simple right? Note that I have removed any bias terms that you might see 
 
 Similarly, we can deduce the dimensions of the other variables:
 
-$$ X_0 - (N, D) \ \ W_1 - (D, n_h) $$
+$$ X_0 - (N, D) \ , \ W_1 - (D, n_h) $$
 
-$$ Z_1 - (N, n_h) \ \ X_1 - (N, n_h) $$
+$$ Z_1 - (N, n_h) \ , \ X_1 - (N, n_h) $$
 
-$$ W_2 - (n_h, 1) \ \ y - (N, 1) $$
+$$ W_2 - (n_h, 1) \ , \ y - (N, 1) $$
 
-## Our Data
+Now that we have the equations to follow, and the dimensions are computed, we can code the forward pass of our network. The code for this is below. I also include the random initialization of the weights:
 
 ## Forward Propagation
 
-## Dropout
-
 ## Backward Propagation
 
+The __backpropagation__ step requires that we attribute the overall change in our loss (error) to each of the weights. In order to do this, we need to know how sensitive is our loss to changes in each weight. In other words, we want to compute the derivatives with respect to our two weight matrices ( \\( W_1, W_2 \\) ). We do this by using the chain rule. But there are many relationships to keep track of, even in this simple network. To keep things organized, and to help with derivative computation, I like to turn our equations into a __computation graph__. This is a structure that identifies all the relationships in our network, and here is what ours looks like:
+
+<center><img src="/img/nngraph.png" alt = "basic-nn"></center>
+
+There aren't a lot of free computation graph illustrators, so I just drew this one by hand. But beyond showing the relationships in our network, such a graph is very useful for computing derivatives using the __chain rule__. One of the more interesting aspects of coding up a neural network is that __we don't need closed expressions for each derivative, we only need rules for computing the derivatives we care about__. What does this mean exactly? Well, suppose we want to compute the derivative of the loss with respect to the first weight matrix, \\( W_1 \\). You can see there are a lot of intermediate variables whose derivatives we would need to find first. Instead of combining all these individual relationships to get a closed-form expression for the derivative we want, we work backwords through the graph. Start with loss, and take its derivative only with respect to variables connected to it (ie the variables whose arrows point to it). Once we've computed those, we move one level backward, taking the derivative of y w.r.t the variables connected to it, and so on and so forth. Here's how this looks when done on the whole graph. Note that \\( t \\) is our labels, also called targets, which aren't really variables, since they will not change. So I don't bother with that derivative.
+
+$$ dL = \bar{L} = \frac{dL}{dL} = 1 $$
+
+$$ dy = \bar{y} = \frac{\partial L}{\partial y} = (y - t) $$
+
+$$ dx1 = \bar{X_1} = \frac{\partial L}{\partial y} \frac{\partial y}{\partial X_1} = (y - t) W_2^T  = \bar{y}  W_2^T $$
+
+$$ dw2 = \bar{W_2} = \frac{\partial L}{\partial y} \frac{\partial y}{\partial W_2} = X_1^T (y - t) = X_1^T \bar{y} $$
+
+$$ dz1 = \bar{Z_1} = \frac{\partial L}{\partial y} \frac{\partial y}{\partial X_1} \frac{\partial X_1}{\partial Z_1} = I(Z_1 > 0) \bar{X_1} $$
+
+$$ dx0 = \bar{X_0} = \frac{\partial L}{\partial y} \frac{\partial y}{\partial X_1} \frac{\partial X_1}{\partial Z_1} \frac{\partial Z_1}{\partial X_0}  = \bar{Z_1} W_1^T $$
+
+$$ dw1 = \bar{W_1} = \bar{Z_1} \frac{\partial Z_1}{\partial W_1} = X_0^T \bar{Z_1} $$
+
+Perfect! We now have the derivatives we need to perform backpropagation. I typically use the 'bar' notation you see above to express pieces of the chain in a longer derivative. Notice also apart from the first two derivations, we never needed to express any of these derivatives in there full form. Not only is this easier when deriving these with pen and paper, but it is also faster computationally. I actually computed more derivatives than we needed here, but I just wanted to stress the advantage of using the computation graph.
+
+You might be wondering why I used the matrix transpose in certain places, and how I knew when to do this. One very helpful rule of thumb is that __the matrix of derivatives must have the same dimension as the variable itself__. For example dx1 must have the same shape as \\( X_1 \\), dw2 the same shape as \\( W_2 \\), and so on. So I use the transpose wherever it is needed to preserve the dimension.
+
+
+
+
 ## Visualization
+
+## Dropout
