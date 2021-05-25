@@ -19,7 +19,9 @@ deep learning models is just a matter of typing a handful of lines of code. With
 You can see that I've used a single hidden layer with 4 nodes. Now before I write a single line of code, I'm going to make sure I have all the equations for the network mapped out. I'll also make sure I know the dimensions for each parameter (or parameter matrix), since dimension errors are one of the most frequent bugs found in deep learning code. To begin, let me define a few quantities of interest:
 
 $$ N $$ (note the capitalization) is the number of data points we have. When training the network, this will be the size of our training set.
+
 $$ D $$ is the number of features we have. This corresponds to the number of nodes in our input layer, and is also the number of columns in our training set.
+
 $$ n_h $$ is the number of nodes in our hidden layer. This is the middle layer of our network, and we can see from the picture that \\( n_h = 4\\). 
 
 ## Vector Operations
