@@ -38,6 +38,14 @@ $$ L = \frac{1}{2} (y - t)^2 $$
 
 Pretty simple right? Note that I have removed any bias terms that you might see in other networks (just for simplicity). Now in order to derive the dimensions for the weights, we can first get the dimensions of our inputs and outputs, then work between them. Let me show you what I mean. I know (by definition) that our data must have dimension equal to the number of observations (rows) by the number of features (columns). Thus, \\( X_0 \in (N, D) \\). I also know that the dimension of the hidden layer's input just converts from feature space (3) to hidden-layer space (4), so it must be that \\( X_1 \in (N, n_h) \\). Knowing that the Relu activation works elementwise (does not change the dimension), it must be that \\( W_1 \in (D, n_h) \\), otherwise the dimensions would not match. In any dot product, the columns of the left matrix must equal the rows of the right matrix.
 
+Similarly, we can deduce the dimensions of the other variables:
+
+$$ X_0 - (N, D) \ \ W_1 - (D, n_h) $$
+
+$$ Z_1 - (N, n_h) \ \ X_1 - (N, n_h) $$
+
+$$ W_2 - (n_h, 1) \ \ y - (N, 1) $$
+
 ## Our Data
 
 ## Forward Propagation
