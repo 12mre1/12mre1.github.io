@@ -116,7 +116,7 @@ $$ dx0 = \bar{X_0} = \frac{\partial L}{\partial y} \frac{\partial y}{\partial X_
 
 $$ dw1 = \bar{W_1} = \bar{Z_1} \frac{\partial Z_1}{\partial W_1} = X_0^T \bar{Z_1} $$
 
-Perfect! We now have the derivatives we need to perform backpropagation. I typically use the 'bar' notation you see above to express pieces of the chain in a longer derivative. Notice also apart from the first two derivations, we never needed to express any of these derivatives in there full form. Not only is this easier when deriving these with pen and paper, but it is also faster computationally. I actually computed more derivatives than we needed here, but I just wanted to stress the advantage of using the computation graph.
+Perfect! We now have the derivatives we need to perform backpropagation. I typically use the 'bar' notation you see above to express pieces of the chain in a longer derivative. Notice also apart from the first two derivations, we never needed to express any of these derivatives in their full form. Not only is this easier when deriving these with pen and paper, but it is also faster computationally. I actually computed more derivatives than we needed here, but I just wanted to stress the advantage of using the computation graph.
 
 You might be wondering why I used the matrix transpose in certain places, and how I knew when to do this. One very helpful rule of thumb is that __the matrix of derivatives must have the same dimension as the variable itself__. For example dx1 must have the same shape as \\( X_1 \\), dw2 the same shape as \\( W_2 \\), and so on. So I use the transpose wherever it is needed to preserve the dimension. When we execute backprop, even though we only need the derivatives of the weights (since they are what is being updated as the network learns), preserving the shape across all intermediate variables is good practice.
 
@@ -247,7 +247,7 @@ This gives the following plot:
 
 <center><img src="/img/boston-train-error.png" alt = "boston error"></center>
 
-We can see from the plot that error is indeed decreasing. I should that this plot is very volatile - normally we might expect to see smoother descent. What's going on here? Well, there are a number of reasons why the network has difficulty finding the minimum error. Here are a few:
+We can see from the plot that error is indeed decreasing. I should say that this plot is very volatile - normally we might expect to see smoother descent. What's going on here? Well, there are a number of reasons why the network has difficulty finding the minimum error. Here are a few:
 
 1. The median value variable appears to be truncated, meaning that its highest values have been artificially shrunk to some ceiling. Thus the network is not seeing the entire relationship between features and response.
 
@@ -382,7 +382,7 @@ for iteration in range(n_iter):
 
 plot_error(errors)
 ```
-Now I have some rather depressing news - apart from the code we used to import and preprocess the data, __this entire network can be written in about 4 lines of keras code__. Most of the nuts and bolts i've just shown you have been fully automated, and can be used right out of the box. __Automatic Differentiation__ now means we never actually have to compute derivatives or run backprop ourselves. This really makes you appreciate how far the machine learning community has come in bringing flexible ML APIs to most of the world. However, I'm a firm believer that although these frameworks are a great thing - most of my future deep learning posts will probably use one or more such frameworks - there is still tremendous value in knowing what's going on under the hood. I would argue that, until you can build a network like this from scratch, you'll never be able to get the most out of todays state-of-the-art software.
+Now I have some rather depressing news - apart from the code we used to import and preprocess the data, __this entire network can be written in about 4 lines of keras code__. Most of the nuts and bolts i've just shown you have been fully automated, and can be used right out of the box. __Automatic Differentiation__ now means we never actually have to compute derivatives or run backprop ourselves. This really makes you appreciate how far the machine learning community has come in bringing flexible ML APIs to most of the world. However, I'm a firm believer that although these frameworks are a great thing - most of my future deep learning posts will probably use one or more such frameworks - there is still tremendous value in knowing what's going on under the hood. I would argue that, just like building that BLT from scratch would give you much better insight, until you can build a network like this from scratch, you'll never be able to get the most out of todays state-of-the-art software.
 
 ## Further Reading
 
