@@ -19,7 +19,7 @@ Let's start with a metaphor. Suppose you and your friends are trying to find sea
 
 Why index every position? Well this makes it very easy to find any element in the array (by index). For example, what if we want to find the 5th element in the array? The general formula for finding the i-th element is:
 
-$$ array_address + elem_size \times (i - first_index) $$
+$$ array\_address + elem\_size \times (i - first\_index) $$
 
 The only information we need to completely specify the array is the address of the first element, and the array size. In the above formula we also need the element size, but this is usually 1 (1 item per slot in memory). Some rare applications may require you to sum up different sizes to find items later in the array, but for now we just assume, like the indices, that each item has 1 slot. So to find the 5th item, we look in position  0 + 1*(5-1) = 4. Thus, index 4 contains the 5th item in our array. In general, arrays are very good at __reading__ or retrieving items, thus the read operation using arrays is \\( O(1) \\). What about adding an element to an array? Typically items are added from left to right. Adding an item to a list is called __pushing__, and removing an item is called __popping__. 
 
@@ -87,13 +87,55 @@ class Array:
             new_array += [elem]
         self.array = new_array
         self.length -= 1
-
-
 ```
 Now, let's talk through each of the methods. The first three methods are sometimes refered to as __dunder__ (double-underscore) or __magic__ methods, and they are built into python's class definition procedures. I use two of them - the initialization method tells us what to include and declare when instances of the class are created, while the representation of the class specifies how instances of the class will be represented. In other words, we can customize what happens when we print an Array object. Notice also that I define a length parameter, which will track how many items are in the array, so we know when the array is full.
 
+The remaining methods use the operations we discuss earlier - pushing and popping, to both the front and back of the array. Notice that, whenever the operation deals with the front, all elements must be altered before the new array can be returned. Once we've defined such a class, we can test it. Here is how it works:
+
+```python
+my_array = Array(size=10)
+
+my_array.push_back(2)
+my_array.push_front(1)
+print(my_array)
+
+for elem in my_array.array:
+    print(elem)
+
+my_array.pop_back()
+my_array.pop_front()
+my_array.pop_back()
+
+print(my_array)
+```
+```console
+> python arrays-lists.py
+[1, 2], array of length 2
+1
+2
+Traceback (most recent call last):
+  File "arrays-lists.py", line 76, in <module>
+    my_array.pop_back()
+  File "arrays-lists.py", line 36, in pop_back
+    raise Exception('Sorry, nothing to pop')
+Exception: Sorry, nothing to pop
+```
+We can see that, after defining an array instance, and adding some items, the array displays in exactly the order you would think. The only trouble comes when we try to remove an item from an empty array. Per the code in the class definition, this raises an exception. I should mention that I ran this code directly from the command line, which produces the output you see here.
+
 ## The Linked List
+
+```console
+> python arrays-lists.py
+B -> A -> None
+B -> None
+```
 
 ## Conclusion
 
 ## Further Reading 
+
+- [This article](https://realpython.com/linked-lists-python/#how-to-remove-a-node) on linked lists is very good, and also includes a few other structures, like stacks and queues.
+
+- __Grokking Algorithms__ is an excellent book, with a chapter dedicated to arrays and linked lists.
+
+- __Algorithm Design__ by Kleinberg and Tardos is one of the leading texts on Algorithms and Data Structures.
