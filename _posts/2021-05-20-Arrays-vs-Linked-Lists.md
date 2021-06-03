@@ -23,7 +23,7 @@ $$ array\_address + elem\_size \times (i - first\_index) $$
 
 The only information we need to completely specify the array is the address of the first element, and the array size. In the above formula we also need the element size, but this is usually 1 (1 item per slot in memory). Some rare applications may require you to sum up different sizes to find items later in the array, but for now we just assume, like the indices, that each item has 1 slot. So to find the 5th item, we look in position  0 + 1*(5-1) = 4. Thus, index 4 contains the 5th item in our array. In general, arrays are very good at __reading__ or retrieving items, thus the read operation using arrays is \\( O(1) \\). What about adding an element to an array? Typically items are added from left to right. Adding an item to a list is called __pushing__, and removing an item is called __popping__. 
 
-What happens if we want to add an item to the back of an array? As long as the array is not full, that's no problem. We just assign our new item to the earliest open slot allocated to the array. Thus, back insertion is \\( O(1) \\). What about adding to the front? Remember, every item in our array is indexed, so adding to the front involves re-indexing (moving) every item already in the list. In the worst case, this operation is \\( O(N) \\). For deletion, we have a similar story. Deleting from the back is no problem - this is \\( O(1) \\). But from the front, we run into the same problem. When the first element is removed, all remaining elements drop one in index. This involves computation on every element in the array, which is \\( O \\). 
+What happens if we want to add an item to the back of an array? As long as the array is not full, that's no problem. We just assign our new item to the earliest open slot allocated to the array. Thus, back insertion is \\( O(1) \\). What about adding to the front? Remember, every item in our array is indexed, so adding to the front involves re-indexing (moving) every item already in the list. In the worst case, this operation is \\( O(N) \\). For deletion, we have a similar story. Deleting from the back is no problem - this is \\( O(1) \\). But from the front, we run into the same problem. When the first element is removed, all remaining elements drop one in index. This involves computation on every element in the array, which is \\( O(N) \\). 
 
 One last problem with arrays is that in order for them to be defined, there must be an available sequence of memory slots equal to or greater than the size you request. For an array of size 10, this is not likely to be an issue, but for arrays with hundreds of elements, it could be that the array just won't fit. So in some sense, this structure is only feasible in certain situations. So how can we implement this in python? Unfortunately python does not have its own version of an array (though the list data type is very similar), but we can define our own. Here is a simple array class, that accepts size as an initialization parameter:
 
@@ -250,8 +250,8 @@ center>
 <thead>
   <tr>
     <th>Operation \ Data Structure</th>
-    <th>Read</th>
-    <th>Push Front</th>
+    <th>Array</th>
+    <th>L-List</th>
     <th>Push Back</th>
     <th>Pop Front</th>
     <th>Pop Back</th>
@@ -259,12 +259,27 @@ center>
 </thead>
 <tbody>
   <tr>
-    <td>Array</td>
-    <td>1,-1</td>
-    <td>-1,1</td>
+    <td>Read</td>
+    <td>\\( O(1) \\)</td>
+    <td>\\( O(N) \\)</td>
   </tr>
   <tr>
-    <td>L-List<br></td>
+    <td>Push Front</td>
+    <td>O(N)</td>
+    <td>1,-1</td>
+  </tr>
+  <tr>
+    <td>Push Back</td>
+    <td>O(1)</td>
+    <td>1,-1</td>
+  </tr>
+  <tr>
+    <td>Pop Front</td>
+    <td>-1,1</td>
+    <td>1,-1</td>
+  </tr>
+  <tr>
+    <td>Pop Back</td>
     <td>-1,1</td>
     <td>1,-1</td>
   </tr>
