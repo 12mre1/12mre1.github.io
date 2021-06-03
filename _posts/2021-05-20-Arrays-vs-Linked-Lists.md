@@ -124,6 +124,99 @@ We can see that, after defining an array instance, and adding some items, the ar
 
 ## The Linked List
 
+Now let's look at a different structure - the __linked list__(more specifically, the single-linked list). Getting back to our baseball metaphor, suppose you could not find enough seats to sit side-by-side with your friends, so instead you each decide to find your own seat. How would you keep track of the group? Well first, everyone in the group should know who is first in your list. We call this first item/person the __head__, and no matter how many items are in the linked list, only one element can be the head. From there, each slot in memory contains 2 components: a __key__, which is just the person in that seat, and a __pointer__ which indicates who is next in the list. The person at the end of the list has a pointer that points to `None`. In this way, the list is held together like links in a chain, where each person knows who is next. In a __single linked list__, the pointers only go one way - you do not know who came before you.
+
+In a linked list, a single unit is called a __node__, and each node points to the next node in the list. So how does this affect the operations we described earlier? Well suppose you want to insert a node on the front of the list. Only three steps are necessary:
+
+1. Find the current head (front node).
+2. Make the inserted node the new head.
+3. Change the inserted node's pointer to the old front node.
+
+That's it! And those same three steps are all that are required __regardless of how big the list is__. So in this case, pushing to the front is \\( O(1) \\). Now what about inserting to the back? Unfortunately linked lists are not indexed like arrays, so just finding the last item requires us to start at the beginning, and work our way node-to-node until we find the node whose pointer is `None`. Once there, we can just change the penultimate node's pointer to None, and the list now excludes its last member. Because we had to traverse all the nodes, pushing to the back is \\( O(N) \\). Sometimes, we can speed this up by including a second indicator called a __tail__, which works just like the head, but tracks the last element in the list. In this case, the pushback operation would only be \\( O(1) \\).
+
+What about deletion? Just like insertion, deleting from the front requires \\( O(1) \\), for the same reasons. Also, popping from the back is \\( O(N) \\) without a tail, but \\( O(1) \\) with a tail. What about finding/reading elements in the middle. Well, in order to do this (even with a tail), we have to start at one end of the list, and work our way inward until we find the item we're searching for. This means that reading in linked lists is (at worst) \\( O(N) \\), tail or not.
+
+Python does not have a base data structure similar to the linked list, but just like for arrays, let's define our own. I'll first define a separate class for an individual node, then work that class into the larger linked list blueprint:
+
+```python
+class Node:
+    ''' A node with a key (integer) and a pointer '''
+    def __init__(self, key):
+        self.key = key
+        self.next = None
+
+    def __repr__(self):
+        return self.key
+
+
+class SingleLinkedList:
+    ''' A single linked list with nodes connected by pointers '''
+    def __init__(self):
+        self.head = None
+
+    def __repr__(self):
+        node = self.head
+        nodes = []
+        while node is not None:
+            nodes.append(node.key)
+            node = node.next
+        nodes.append("None")
+        return " -> ".join(nodes)
+
+    def __iter__(self):
+        node = self.head
+        while node is not None:
+            yield node
+            node = node.next
+
+    def get_first(self):
+        ''' Return the first node in the list '''
+        if self.head is not None:
+            return self.head.key
+        else: return None
+
+    def get_last(self):
+        ''' Return the last node in the list (no tail) '''
+        last_node = self.head
+        current_node = last_node
+        while current_node is not None:
+            last_node = current_node
+            current_node = current_node.next
+        return last_node.key
+    
+    def push_front(self, key):
+        ''' Add a new node to the front of the list '''
+        new_node = Node(key)
+        new_node.next = self.head
+        self.head = new_node
+
+    def push_back(self, key):
+        ''' Add a new node to the back of the list '''
+        new_node = Node(key)
+        old_last = self.get_last()
+        old_last.next = new_node
+
+    def pop_back(self):
+        ''' Remove and return the back node '''
+        current_node = self.head
+        next_node = current_node.next
+        # As long as the next node is not the last
+        while next_node.next is not None:
+            current_node = current_node.next
+            next_node = current_node.next
+        # Change Pointer on Current node to None
+        current_node.next = None
+        # Return next (last) node
+        return next_node.key
+            
+    def pop_front(self):
+        '''Remove and return the front node (key)'''
+        front_node = self.head
+        self.head = front_node.next
+        front_node.next = None
+        return front_node.key
+```
+
 ```console
 > python arrays-lists.py
 B -> A -> None
