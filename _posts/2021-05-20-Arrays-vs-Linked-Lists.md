@@ -245,48 +245,47 @@ Note that there are Double Linked lists, which contain pointers to both the next
 
 There was a lot of information in this post, but I think the differences between Arrays and Linked-lists are best summarized in a simple table:
 
-center>
+<center>
 <table>
 <thead>
   <tr>
     <th>Operation \ Data Structure</th>
     <th>Array</th>
     <th>L-List</th>
-    <th>Push Back</th>
-    <th>Pop Front</th>
-    <th>Pop Back</th>
   </tr>
 </thead>
 <tbody>
   <tr>
     <td>Read</td>
-    <td>\\( O(1) \\)</td>
-    <td>\\( O(N) \\)</td>
+    <td>O(1)</td>
+    <td>O(N)</td>
   </tr>
   <tr>
     <td>Push Front</td>
     <td>O(N)</td>
-    <td>1,-1</td>
+    <td>O(1)</td>
   </tr>
   <tr>
     <td>Push Back</td>
     <td>O(1)</td>
-    <td>1,-1</td>
+    <td>O(1)</td>
   </tr>
   <tr>
     <td>Pop Front</td>
-    <td>-1,1</td>
-    <td>1,-1</td>
+    <td>O(N)</td>
+    <td>O(1)</td>
   </tr>
   <tr>
     <td>Pop Back</td>
-    <td>-1,1</td>
-    <td>1,-1</td>
+    <td>O(1)</td>
+    <td>O(N)</td>
   </tr>
 </tbody>
 </table>
   <i>Figure 1: Run Time Comparison</i>
 </center>
+
+Overall, arrays are better at reading/retrieving elements, but can be difficult to fit in memory when they are large. Linked-lists are better for insertion/ deletion, but are not great at reading elements. Which one to use depends on your application. Just keep in mind there are always such tradeoffs, and no data structure is universally better than others.
 
 ## Further Reading 
 
