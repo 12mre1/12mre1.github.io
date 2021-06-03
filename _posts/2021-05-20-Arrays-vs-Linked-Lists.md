@@ -126,6 +126,8 @@ We can see that, after defining an array instance, and adding some items, the ar
 
 Now let's look at a different structure - the __linked list__(more specifically, the single-linked list). Getting back to our baseball metaphor, suppose you could not find enough seats to sit side-by-side with your friends, so instead you each decide to find your own seat. How would you keep track of the group? Well first, everyone in the group should know who is first in your list. We call this first item/person the __head__, and no matter how many items are in the linked list, only one element can be the head. From there, each slot in memory contains 2 components: a __key__, which is just the person in that seat, and a __pointer__ which indicates who is next in the list. The person at the end of the list has a pointer that points to `None`. In this way, the list is held together like links in a chain, where each person knows who is next. In a __single linked list__, the pointers only go one way - you do not know who came before you.
 
+<center><img src="/img/linked-list.png" alt = "digits"></center>
+
 In a linked list, a single unit is called a __node__, and each node points to the next node in the list. So how does this affect the operations we described earlier? Well suppose you want to insert a node on the front of the list. Only three steps are necessary:
 
 1. Find the current head (front node).
@@ -217,13 +219,59 @@ class SingleLinkedList:
         return front_node.key
 ```
 
+Notice how we have to follow the list from beginning to end (I use a `while` loop) whenever we want to operate on the end of the list. The magic methods for this class are almost identical to the ones I defined for the Array class, however I include a third one here. The iteration method turns our linked list into an iterable object, meaning we can now loop through nodes in the list if we want to. So how does the above code work? We can see by executing some of our methods on a class instance:
+
+```python
+my_list = SingleLinkedList()
+
+my_list.push_front("A")
+my_list.push_front("B")
+my_list.push_back("C")
+print(my_list)
+my_list.pop_back()
+print(my_list)
+```
 ```console
 > python arrays-lists.py
+B -> A -> C -> None
 B -> A -> None
-B -> None
 ```
 
+We can see that the output is now formatted very nicely, thanks to the `__repr__` method. Overall, the linked list is a very useful data structure, and a large linked-list is more likely to fit in memory than an array of similar size.
+
+Note that there are Double Linked lists, which contain pointers to both the next and previous nodes in the list. Reading in these types of lists becomes much faster, though there are a few more operations per node required by the machine (though in terms of big-O notation this has no effect). The use of nodes and pointers, which are also called __directed edges__, form the basis of a more general structure called a __graph__. I won't go into detail about how graphs work, but they are the basis for many of the most efficient discrete algorithms used today.
+
 ## Conclusion
+
+There was a lot of information in this post, but I think the differences between Arrays and Linked-lists are best summarized in a simple table:
+
+center>
+<table>
+<thead>
+  <tr>
+    <th>Operation \ Data Structure</th>
+    <th>Read</th>
+    <th>Push Front</th>
+    <th>Push Back</th>
+    <th>Pop Front</th>
+    <th>Pop Back</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>Array</td>
+    <td>1,-1</td>
+    <td>-1,1</td>
+  </tr>
+  <tr>
+    <td>L-List<br></td>
+    <td>-1,1</td>
+    <td>1,-1</td>
+  </tr>
+</tbody>
+</table>
+  <i>Figure 1: Run Time Comparison</i>
+</center>
 
 ## Further Reading 
 
