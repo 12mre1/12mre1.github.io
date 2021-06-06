@@ -29,7 +29,17 @@ Today's post is going to be a bit longer than usual, and a bit more theoretical 
 Within any industry, the firm must constantly make decisions in order to compete in the market. This note compares two of the earliest models of firm dynamics in a competitive market: __Cournot competition__, and __Bertrand competition__. In the former, firms compete on the basis of quantity produced, while in the latter, they compete on price.
 
 ## Cournot Competition
+
+Invented by __Antoine Augustin Cournot__ in the mid 17th century, this model relies primarily on the belief that firms compete on the basis of quantity of goods produced. In this setting, firms are treated solely as a producer (among other identical producers), so there are no demand-side considerations beyond the market price, which is solely a function of quantity demanded.
+
 ### Technical Assumptions
+
+This model is an obvious simplification of a true economy, but it does still yield useful properties. Under Cournot Competition, we assume the following rules:
+
+1. _There are a large number of firms, or at least enough for pure competition to be feasible._ Under this setting, any deviation from market demand would result in any one firm being priced out of the market. Thus, in equilibrium (more on this later), all firms will have the same price.
+
+2. _Firms choose their quantity of supply with the sole objective of profit maximization_. In reality, there are many other aspects that factor into a firm's governance, but in this setting, the only thing that matters to each firm is profit. Also behind the scenes here is the assumption that all firms behave rationally.
+
 ### Profit Maximization
 ### The Cournot Theorem
 ### Nash Equilibrium and Best Response Functions
