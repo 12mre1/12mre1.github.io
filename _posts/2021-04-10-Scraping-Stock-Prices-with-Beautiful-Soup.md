@@ -39,6 +39,35 @@ def get_url(stock_symbol):
 ```
 This function is designed to accept string-type symbols, so I also check for that.
 
+The next function I write is designed to do several steps. Most of these are pretty common:
+
+1. I construct the URL using the above function
+2. Using `requests`, I extract the full html content by specifying the URL.
+3. Notice that the table rows I want are marked up using `<tr>` tags. I use Beautiful Soup to extract only these tags and their associated information.
+4. There are likely other such tags somewhere on the site. To specify these data tags specifically, I pass the `class` argument to the parser. The particular class (as you can see on the image) is `"BdT Bdc($seperatorColor) Ta(end) Fz(s) Whs(nw)"`.
+5. After we extract the HTML, the text is sent to us as a single string (a soup, if you will). I use a list comprehension to select out the information between the relevant tags. The result is a list where every seven observations comprises a row from the table we want.
+
+Here is the function in its entirety. It's not very complicated, but take few moments to read through each line to see how the code maps to the steps I've just outlined.
+
+```python
+def get_data_as_list(stock_symbol):
+    '''Extracts tabular data as a single list of dates and variables.
+    Data is listed in order, L2R, reverse chronology'''
+    # Create URL and extract contents
+    url = get_url("DJI")
+    
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    # Find all table column tags with appropriate class
+    data = soup.find_all('tr', class_ = "BdT Bdc($seperatorColor) Ta(end) Fz(s) Whs(nw)")
+    # Create list of span tags containing information
+    data_as_list = [row.select('span') for row in data]
+    # Extract information
+    data_separate = [elem.text for row in data_as_list for elem in row]
+    return data_separate
+```
+
+
 ## Some Caveats
 
 ## Conclusion
