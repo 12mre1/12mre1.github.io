@@ -67,6 +67,128 @@ def get_data_as_list(stock_symbol):
     return data_separate
 ```
 
+Now we have all the information we need. There's just one problem - it's not very easy to work with. Here is what the current output looks like for Apple (AAPL):
+
+```python
+print(get_data_as_list('AAPL'))
+```
+```console
+['Jun. 04, 2021', '34,618.69', '34,772.12', '34,618.69', '34,756.39', '34,756.39', '270,050,000', 'Jun. 03, 2021', '34,550.31', '34,667.41', '34,334.41', '34,577.04', '34,577.04', '297,380,000', 'Jun. 02, 2021', '34,614.62', '34,706.65', '34,545.96', '34,600.38', '34,600.38', '263,810,000', 'Jun. 01, 2021', '34,584.19', '34,849.32', '34,542.87', '34,575.31', '34,575.31', '287,700,000']
+```
+The above output is just a fraction of the total return. The true list has about 700 elements. We can see that all the information we're after is in there, but it's not easy to see which number matches to which variable. The next function will be used to convert this list into a much more sensible data structure - the pandas dataframe. Such a structure will allow for observation indices and variable names, as well as datatype identifiers, which will make it much easier to subset and analyse the data.
+
+```python
+def plot_data(self):
+        '''Plot each variable'''
+        df = self.data_as_pandas()
+        variables = list(df.columns)
+        df.plot(x="date", y = [var for var in variables if var != "date"])
+```
+And that's it! Writing a series of functions like this is convenient for scraping the prices of different stock companies, but to analyze one company repeatedly, it's better to define our scraper as its own __class__. This is called __object-oriented programming__, and from an engineering perspective, many APIs use this style because it requires less code from the end-user. Here is the code presented as a class:
+
+```python
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+
+# This can be done for Yahoo Finance using only the Stock Code
+
+class YahooScraper:
+    '''Scraping Yahoo Finance Data'''
+    def __init__(self, stock_symbol):
+        self.stock_symbol = stock_symbol
+
+    def __repr__(self):
+        print('Historical Stock Data for %s' % self.stock_symbol)
+
+    def get_url(self):
+        assert(isinstance(self.stock_symbol, str))
+        base_url = "https://ca.finance.yahoo.com/quote/"
+        url_params = "%5E" + self.stock_symbol + "/history?p=%5E" + self.stock_symbol
+        return base_url + url_params
+
+    def get_data_as_list(self):
+        '''Extracts tabular data as a single list of dates and variables.
+        Data is listed in order, L2R, reverse chronology'''
+        # No sense scraping the same data twice
+        if hasattr(self, "data_list"):
+            return self.data_list
+        else:
+            # Create URL and extract contents
+            url = self.get_url()
+            
+            page = requests.get(url)
+            soup = BeautifulSoup(page.content, 'html.parser')
+            # Find all table column tags with appropriate class
+            data = soup.find_all('tr', class_ = "BdT Bdc($seperatorColor) Ta(end) Fz(s) Whs(nw)")  
+            # Create list of span tags containing information
+            data_as_list = [row.select('span') for row in data]
+            # Extract information
+            data_separate = [elem.text for row in data_as_list for elem in row]
+            # Remove Commas
+            data_list = [t.replace(",", "") for t in data_separate]
+            # Store the list as an attribute
+            self.data_list = data_list
+            # Return the list
+            return data_list
+
+    def data_as_pandas(self):
+        '''Convert data from list to Pandas df.'''
+        variables = ['date', 'open', 'high', 'low', 'close', 'adj_close', 'volume']
+        vars_no_date = [var for var in variables if var != "date"]
+        # No sense making the df twice
+        if hasattr(self, "df"):
+            return self.df
+        else:
+            # Extract data in list form and convert to array
+            data = self.get_data_as_list()
+            data_array = np.array(data)
+            data_array = data_array.reshape( ( int(len(data)/len(variables)) , len(variables) ) )
+            # Convert array to pandas df
+            stock_df = pd.DataFrame(data_array, columns = variables)
+            stock_df[vars_no_date] = stock_df[vars_no_date].apply(pd.to_numeric)
+            self.df = stock_df
+
+            return stock_df
+
+    def plot_data(self):
+        '''Plot each variable'''
+        df = self.data_as_pandas()
+        variables = list(df.columns)
+        df.plot(x="date", y = [var for var in variables if var != "date"])
+```
+Think of it like a blueprint for all yahoo scrapers we might want to use. Now all I have to do is define an object of that class, and I can use all the functionality we looked at earlier. Here is the last of the code:
+
+```python
+dji = YahooScraper('DJI')
+
+print(dji.data_as_pandas())
+print(dji.plot_data())
+```
+Just 3 lines of code if I want to use this scraper repeatedly. Here is the output of those 3 lines:
+
+```console
+            date      open      high       low     close  adj_close     volume
+0   Jun. 04 2021  34618.69  34772.12  34618.69  34756.39   34756.39  270050000
+1   Jun. 03 2021  34550.31  34667.41  34334.41  34577.04   34577.04  297380000
+2   Jun. 02 2021  34614.62  34706.65  34545.96  34600.38   34600.38  263810000
+3   Jun. 01 2021  34584.19  34849.32  34542.87  34575.31   34575.31  287700000
+4    May 28 2021  34558.50  34631.11  34520.09  34529.45   34529.45  290850000
+..           ...       ...       ...       ...       ...        ...        ...
+95  Jan. 19 2021  30887.42  31086.62  30865.03  30930.52   30930.52  386400000
+96  Jan. 15 2021  30926.77  30941.98  30612.67  30814.26   30814.26  433000000
+97  Jan. 14 2021  31085.67  31223.78  30982.24  30991.52   30991.52  427810000
+98  Jan. 13 2021  31084.88  31153.37  30992.05  31060.47   31060.47  413250000
+99  Jan. 12 2021  31015.01  31114.56  30888.76  31068.69   31068.69  362620000
+```
+
+<center><img src="/img/yahoo-dji-data.png" alt = "basic-nn">
+<img src="/img/yahoo-dji-volume.png" alt = "basic-nn"></center>
+
+We get the dataframe itself, as well as plots of all the variables. You can see how this would be useful for examining the history of many different stocks.
 
 ## Some Caveats
 
