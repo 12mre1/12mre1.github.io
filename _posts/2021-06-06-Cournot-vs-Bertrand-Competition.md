@@ -36,9 +36,17 @@ Invented by __Antoine Augustin Cournot__ in the mid 17th century, this model rel
 
 This model is an obvious simplification of a true economy, but it does still yield useful properties. Under Cournot Competition, we assume the following rules:
 
-1. _There are a large number of firms, or at least enough for pure competition to be feasible._ Under this setting, any deviation from market demand would result in any one firm being priced out of the market. Thus, in equilibrium (more on this later), all firms will have the same price.
+1. ***There are a large number of firms, or at least enough for pure competition to be feasible.*** Under this setting, any deviation from market demand would result in any one firm being priced out of the market. Thus, in equilibrium (more on this later), all firms will have the same price.
 
-2. _Firms choose their quantity of supply with the sole objective of profit maximization_. In reality, there are many other aspects that factor into a firm's governance, but in this setting, the only thing that matters to each firm is profit. Also behind the scenes here is the assumption that all firms behave rationally.
+2. ***Firms choose their quantity of supply with the sole objective of profit maximization***. In reality, there are many other aspects that factor into a firm's governance, but in this setting, the only thing that matters to each firm is profit. Also behind the scenes here is the assumption that all firms behave rationally.
+
+3. ***Firms make their production decisions simultaneously.*** Though, in reality, firms within any industry constantly make decisions at different times, in our setting, every firm chooses their quantity at the exact same time. This prevents any one firm from gaining a first-mover or late-mover advantage.
+
+4. ***Firms have market power, and the number of firms is fixed.*** In this setting, the total quantity supplied (which in turn, drives price through the market demand curve), is comprised of the sum of quantities chosen by each firm. No one firm has any more market power than any other, except (as we shall see) insofar as their superior cost function may allow for them to produce more than others.
+
+5. ***There is no collusion between firms.*** In a competitive setting, there is always an incentive for larger firms to collude in order to maintain high prices for increased profit, or to keep prices low (ie below fixed costs) in order to deter entry into the market. Here however, we assume this is not possible. Firms decide their quantities independently. This is not to say they do not consider the decisions of competitors; only that cooperation is not allowed.
+
+6. ***There is no product differentiation.*** This is a more implicity assumption, but in order to justify pure competition among firms, all firms must be selling the exact same good or service. There can be no differences that may account for differences in price or cost. Thus, we assume all firms produce exactly the same product. 
 
 ### Profit Maximization
 ### The Cournot Theorem
