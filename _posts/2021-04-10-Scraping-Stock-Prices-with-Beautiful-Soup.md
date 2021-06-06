@@ -170,6 +170,7 @@ print(dji.plot_data())
 ```
 Just 3 lines of code if I want to use this scraper repeatedly. Here is the output of those 3 lines:
 
+<center>
 ```console
             date      open      high       low     close  adj_close     volume
 0   Jun. 04 2021  34618.69  34772.12  34618.69  34756.39   34756.39  270050000
@@ -185,13 +186,29 @@ Just 3 lines of code if I want to use this scraper repeatedly. Here is the outpu
 99  Jan. 12 2021  31015.01  31114.56  30888.76  31068.69   31068.69  362620000
 ```
 
-<center><img src="/img/yahoo-dji-data.png" alt = "basic-nn">
+<img src="/img/yahoo-dji-data.png" alt = "basic-nn">
 <img src="/img/yahoo-dji-volume.png" alt = "basic-nn"></center>
 
 We get the dataframe itself, as well as plots of all the variables. You can see how this would be useful for examining the history of many different stocks.
 
 ## Some Caveats
 
+Let me start by saying that web scraping itself is not illegal. However, automated querying of servers to retrieve HTML from web pages can cause serious damage if increased server traffic overloads a site's capacity. If the site is commercial in nature, careless scraping could lead to lost revenue, depending on the situation. With this in mind, there are some best practices I recommend you follow:
+
+1. Check to see if the site has an API. Yahoo Finance used to have an API, which is an interface designed to give programmers controlled access to Yahoo's raw data. As of 2017, this API is no longer current, but in general you should use an API if one exists. Only in cases where there isn't one should you consider scraping.
+
+2. Use a slow crawl rate, and try to scrape during off-peak hours. To a web server, requests from a scraping program are no different than those of a point-and-click user. The difference is that the program can send hundreds or even thousands of requests per second, which has the potential to overload a web server. This can disable a website, and is called a __Denial of Service__(DoS) attack, and is a very effective tool used by malicious hackers. If you are just scraping data for research purposes, be kind and space out your requests. Some sites may explicitly state a preferred crawl rate (1 per 5 seconds is common). Try to adhere to this.
+
+3. Take only what you need. In this post, I thoroughly inspected Yahoo's webpage to learn the exact URL containing the data I wanted. In the end, I only made one request. Wasteful scraping bots may crawl through URLs searching for useful information, but if you prepare ahead of time, you can be much less burdensome. 
+
+4. Avoid re-querying the same thing. In the OOP code, I insert some logic to avoid having to re-request the same information. This is not only kinder to the website, but is computationally much faster than having to wait for a response over-and-over again. This is even more important for larger scraping projects, where a single request can take minutes.
+
 ## Conclusion
 
+So now you know how to use Beautiful Soup to extract information from websites. This is an incredibly useful skill to have, since most new data first appears online. But with great power comes great responsibility. Be kind to the owners of the pages you scrape. 
+
 ## Further Reading
+
+- [Here](https://www.dataquest.io/blog/web-scraping-python-using-beautiful-soup/) is another excellent tutorial on Beautiful Soup.
+- The [Documentation](https://pypi.org/project/beautifulsoup4/) for the package is suprisingly readable, and very helpful.
+- [Here](./research/web_scraping_principles.pdf) is a draft (incomplete) of a paper I'm working on that provides ethical and effective scraping principles.
