@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Scraping Financial Data with Beautiful Soup"
-date: 2021-05-12
+date: 2021-04-10
 ---
 _Prerequisite Math: None_
 
@@ -72,8 +72,11 @@ Now we have all the information we need. There's just one problem - it's not ver
 ```python
 print(get_data_as_list('AAPL'))
 ```
+
 ```console
-['Jun. 04, 2021', '34,618.69', '34,772.12', '34,618.69', '34,756.39', '34,756.39', '270,050,000', 'Jun. 03, 2021', '34,550.31', '34,667.41', '34,334.41', '34,577.04', '34,577.04', '297,380,000', 'Jun. 02, 2021', '34,614.62', '34,706.65', '34,545.96', '34,600.38', '34,600.38', '263,810,000', 'Jun. 01, 2021', '34,584.19', '34,849.32', '34,542.87', '34,575.31', '34,575.31', '287,700,000']
+['Jun. 04, 2021', '34,618.69', '34,772.12', '34,618.69', '34,756.39', '34,756.39', '270,050,000', 'Jun. 03, 2021', '34,550.31', 
+'34,667.41', '34,334.41', '34,577.04', '34,577.04', '297,380,000', 'Jun. 02, 2021', '34,614.62', '34,706.65', '34,545.96', 
+'34,600.38', '34,600.38', '263,810,000', 'Jun. 01, 2021', '34,584.19', '34,849.32', '34,542.87', '34,575.31', '34,575.31', '287,700,000']
 ```
 The above output is just a fraction of the total return. The true list has about 700 elements. We can see that all the information we're after is in there, but it's not easy to see which number matches to which variable. The next function will be used to convert this list into a much more sensible data structure - the pandas dataframe. Such a structure will allow for observation indices and variable names, as well as datatype identifiers, which will make it much easier to subset and analyse the data.
 
@@ -170,7 +173,6 @@ print(dji.plot_data())
 ```
 Just 3 lines of code if I want to use this scraper repeatedly. Here is the output of those 3 lines:
 
-<center>
 ```console
             date      open      high       low     close  adj_close     volume
 0   Jun. 04 2021  34618.69  34772.12  34618.69  34756.39   34756.39  270050000
@@ -186,7 +188,7 @@ Just 3 lines of code if I want to use this scraper repeatedly. Here is the outpu
 99  Jan. 12 2021  31015.01  31114.56  30888.76  31068.69   31068.69  362620000
 ```
 
-<img src="/img/yahoo-dji-data.png" alt = "basic-nn">
+<center><img src="/img/yahoo-dji-data.png" alt = "basic-nn">
 <img src="/img/yahoo-dji-volume.png" alt = "basic-nn"></center>
 
 We get the dataframe itself, as well as plots of all the variables. You can see how this would be useful for examining the history of many different stocks.
@@ -211,4 +213,4 @@ So now you know how to use Beautiful Soup to extract information from websites. 
 
 - [Here](https://www.dataquest.io/blog/web-scraping-python-using-beautiful-soup/) is another excellent tutorial on Beautiful Soup.
 - The [Documentation](https://pypi.org/project/beautifulsoup4/) for the package is suprisingly readable, and very helpful.
-- [Here](./research/web_scraping_principles.pdf) is a draft (incomplete) of a paper I'm working on that provides ethical and effective scraping principles.
+- [On my home page](https://12mre1.github.io/) is a draft (incomplete) of a paper I'm working on that provides ethical and effective scraping principles.
