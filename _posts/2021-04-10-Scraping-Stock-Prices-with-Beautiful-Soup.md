@@ -15,6 +15,32 @@ So how does an html parser work? Basically, all code on the internet is written 
 
 <center><img src="/img/yahoo-finance.png" alt = "basic-nn"></center>
 
+In the top of the image, we see the website as the browser displays it. What we're interested in here is the tabular data in the center. Below, you can see just how much extra markup language is needed to format the cells in the table. We want to automate the process of extracting the tabular data and removing the markup text. Good news! Beautiful Soup is awesome at this. But before we can extract the information from the markup text, we need a way to automatically download the code in its entirety. For this, we will use the `requests` library, which allows for simple retrieval via URL. Here is the URL for the image above, which is shows S&P 500 historical data:
+
+<center>
+
+https://ca.finance.yahoo.com/quote/%5EGSPC/history?p=%5EGSPC
+
+</center>
+
+Notice the format of the url. We have everything up to the base ('quote'), and after this, we specify the parameters. In this case, the only thing unique to the S&P 500 is the stock symbol provided at the end. When scraping from a website, it's common practice to experiment with URL construction by clicking through various pages to see what information is contained in the URLs for that specific site. I've already done this for you, so I know that only the stock symbol is needed. For example, to pull identical historical data for Apple (AAPL), I can just substitute the GSPC in the URL above for Apple's stock symbol. That said, here is the function that constructs the URL. Notice that the only argument is the stock symbol:
+
+```python
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import numpy as np
+
+def get_url(stock_symbol):
+    assert(isinstance(stock_symbol, str))
+    base_url = "https://ca.finance.yahoo.com/quote/"
+    url_params = "%5E" + stock_symbol + "/history?p=%5E" + stock_symbol
+    return base_url + url_params
+```
+This function is designed to accept string-type symbols, so I also check for that.
+
+## Some Caveats
+
 ## Conclusion
 
 ## Further Reading
