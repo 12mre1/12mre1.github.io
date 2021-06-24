@@ -32,7 +32,12 @@ $$ w := w - \alpha \frac{\partial L}{\partial w}$$
 
 Where \\( w \\) typically denotes the weight matrix. Doing this for a number of epochs will usually result in convergence to the minimum of the loss function (ie the weights converge to their optimal values). The following graph shows this process of iteratively descending the loss surface until the optimal weights are found. I'd also like to mention that I never claimed to be an artist: 
 
-<center><img src="/img/sgd.png" width = "40%" alt = "SGD"></center>
+<center>
+<figure>
+    <img src='sgd.png' alt='missing' />
+    <figcaption>Source: rasbt.github.io</figcaption>
+</figure>
+</center>
 
 In the formula above, \\( \alpha \\) denotes the __learning rate__, which is a hyperparameter designed to control step size. You can see that eventually, repeated iterations of weight updates reach the globabl minimum of the loss function. The dotted lines represent the gradients at fixed points along the way. Notice also that we're assuming the surface is differentiable (and continuous) for the entire domain of weights. However, the loss function does not necessarily have to look 'pretty'. There may be many local optima and saddle points in which regular GD can get stuck. Some of the technique's we'll discuss shortly are also great at avoiding this problem.
 
