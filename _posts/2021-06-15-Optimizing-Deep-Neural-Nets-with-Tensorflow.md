@@ -34,7 +34,7 @@ Where \\( w \\) typically denotes the weight matrix. Doing this for a number of 
 
 <center>
 <figure>
-    <img src='./img/sgd.png' alt='missing' />
+    <img src='/img/sgd.png' alt='missing' />
     <figcaption>Source: rasbt.github.io</figcaption>
 </figure>
 </center>
