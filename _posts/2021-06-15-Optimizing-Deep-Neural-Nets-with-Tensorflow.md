@@ -6,18 +6,19 @@ date: 2021-06-15
 
 ## Introduction
 
-Most of today's state of the art machine learning models are some kind of deep neural net. But while such models are excellent at fitting complex functions to model relationships between features (X) and targets (y), one of their biggest downsides is that they can take a very long time to train. There are several ways you can mitigate this such as (this list is not exhaustive):
-    - Weight Initialization (e.g. Glorot-He Initialization)
-    - Non-saturating activation functions (e.g. ReLU)
-    - Batch or Layer Normalization
-    - Pretraining (particularly in the NLP setting)
+Most of today's state-of-the-art machine learning models are some kind of deep neural network. But while such models are excellent at fitting complex functions to model relationships between features (X) and targets (y), one of their biggest downsides is that they can take a very long time to train. There are several ways you can mitigate this such as (this list is not exhaustive):
+- Weight Initialization (e.g. Glorot-He Initialization)
+- Non-saturating activation functions (e.g. ReLU)
+- Batch or Layer Normalization
+- Pretraining (particularly in the NLP setting)
+
 I encourage you to experiment with as many of these hyperparameters as possible to see what works best. However in this post, I'm going to talk about one of the biggest ways to improve training time: the __optimizer__. Most deep learning frameworks (and indeed many non-neural modelling solutions) use some version of __Gradient Descent__ as the default optimizer. While this is an excellent way to generate optimal weights in your network, researchers have in the past decade or so, come up with a variety of clever ways to modify this procedure to ensure faster and smoother convergence than is typically found in SGD. Specifically, I'm going to walk you through the following alternative procedures:
-    - 1. Momentum
-    - 2. Nesterov Accelerated Gradient
-    - 3. RMSProp
-    - 4. AdaGrad
-    - 5. Adam
-    - 6. Nadam
+- 1. Momentum
+- 2. Nesterov Accelerated Gradient
+- 3. RMSProp
+- 4. AdaGrad
+- 5. Adam
+- 6. Nadam
 
 We'll discuss how each of these is computed, as well as the intuition behind them. Then we'll train a fixed model, and use __tensorboard__ to visualize the convergence of the weights, so you can see the differences. If you've never used (or heard of) tensorboard, don't worry. I'll explain it in more detail a bit later.
 
