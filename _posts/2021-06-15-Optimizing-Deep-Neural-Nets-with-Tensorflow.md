@@ -13,12 +13,12 @@ Most of today's state-of-the-art machine learning models are some kind of deep n
 - Pretraining (particularly in the NLP setting)
 
 I encourage you to experiment with as many of these hyperparameters as possible to see what works best. However in this post, I'm going to talk about one of the biggest ways to improve training time: the __optimizer__. Most deep learning frameworks (and indeed many non-neural modelling solutions) use some version of __Gradient Descent__ as the default optimizer. While this is an excellent way to generate optimal weights in your network, researchers have in the past decade or so, come up with a variety of clever ways to modify this procedure to ensure faster and smoother convergence than is typically found in SGD. Specifically, I'm going to walk you through the following alternative procedures:
-- 1. Momentum
-- 2. Nesterov Accelerated Gradient
-- 3. RMSProp
-- 4. AdaGrad
-- 5. Adam
-- 6. Nadam
+1. Momentum
+2. Nesterov Accelerated Gradient
+3. RMSProp
+4. AdaGrad
+5. Adam
+6. Nadam
 
 We'll discuss how each of these is computed, as well as the intuition behind them. Then we'll train a fixed model, and use __tensorboard__ to visualize the convergence of the weights, so you can see the differences. If you've never used (or heard of) tensorboard, don't worry. I'll explain it in more detail a bit later.
 
@@ -34,7 +34,7 @@ Where \\( w \\) typically denotes the weight matrix. Doing this for a number of 
 
 <center><img src="/img/sgd.png" width = "40%" alt = "SGD"></center>
 
-In the formula above, \\( \alpha \\) denotes the __learning rate__, which is a hyperparameter designed to control step size. You can see that eventually, repeated iterations of weight updates reach the globabl minimum of the loss function.
+In the formula above, \\( \alpha \\) denotes the __learning rate__, which is a hyperparameter designed to control step size. You can see that eventually, repeated iterations of weight updates reach the globabl minimum of the loss function. The dotted lines represent the gradients at fixed points along the way. Notice also that we're assuming the surface is differentiable (and continuous) for the entire domain of weights. However, the loss function does not necessarily have to look 'pretty'. There may be many local optima and saddle points in which regular GD can get stuck. Some of the technique's we'll discuss shortly are also great at avoiding this problem.
 
 ## Today's Example Data 
 
