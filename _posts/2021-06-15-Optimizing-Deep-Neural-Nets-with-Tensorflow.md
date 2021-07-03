@@ -81,7 +81,9 @@ This method was introduces by Yurii Nesterov in a paper in 1983 (i'll include th
 
 Suppose our loss function is shaped like an elongated bowl (this is true for small neighborhoods even if the global function is very 'wiggly'). During the beginning of Gradient descent, the gradient will be pointed mostly downward, with only a small shift on the horizontal axis. This changes gradually in later steps, but overall, the path of descent towards the optimimum resemble something close to an 'L' shape, but with a rounded corner. What if instead of following this shape (vertical, then horizontal descent) we proceeded directly towards the optimum? Think about it like following the hypotenuse of the triangle. We could potentially save a lot of time. Here's a picture showing what I mean:
 
-You can see that going directly towards the minimum would be much quicker (the distance would be shorter). This is exactly the idea behind the _Adaptive Gradient_, or __AdaGrad__ method. We do this by scaling down the gradient in its steepest directions (which are usually closer to vertical than horizontal). Here are the update equations:
+<center><img src="/img/adagrad_loss.png" width = "40%" alt = "Adagrad Loss"></center>
+
+You can see that going directly towards the minimum (the orange trajectory) would be much quicker than the blue trajectory (the distance would be shorter). This is exactly the idea behind the _Adaptive Gradient_, or __AdaGrad__ method. We do this by scaling down the gradient in its steepest directions (which are usually closer to vertical than horizontal). Here are the update equations:
 
 $$ s \leftarrow s + \nabla_{w} J(w) \otimes \nabla_{w} J(w) $$
 
@@ -111,9 +113,13 @@ In the above implementation, \\( \beta \\) is represented by the `rho` argument.
 
 ## Nadam
 
+## Application
+
 ## Conclusion
 
 ## Further Reading
+
+- Here is the original Nesterov paper: _A Method for Unconstrained Convex Minimization Problem with the Rate of Convergence \\( O(1/k^2)\\)_. Yurii Nesterov. Doklady AN USSR 269 (1983): 543-547.
 
 - Here is the NAG paper: _On the importance of initialization and momentum in deep learning_. Ilya Sutskever, James Martens, George Dahl, Geoffrey Hinton ; Proceedings of the 30th International Conference on Machine Learning, PMLR 28(3):1139-1147, 2013. 
 
