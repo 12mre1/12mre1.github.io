@@ -20,7 +20,7 @@ I encourage you to experiment with as many of these hyperparameters as possible 
 5. Adam
 6. Nadam
 
-We'll discuss how each of these is computed, as well as the intuition behind them. Then we'll train a fixed model, and use __tensorboard__ to visualize the convergence of the weights, so you can see the differences. If you've never used (or heard of) tensorboard, don't worry. I'll explain it in more detail a bit later.
+We'll discuss how each of these is computed, as well as the intuition behind them. Then we'll train a fixed model, and visualize how some of them work faster than traditional gradient descent.
 
 ## Review of SGD
 
@@ -43,8 +43,6 @@ In the formula above, \\( \alpha \\) denotes the __learning rate__, which is a h
 
 One final thing I'd like to mention is that Gradient descent is considered a __first-order__ optimization algorithm, because we only ever work with the first derivatives of the loss surface. Although higher-order derivatives may work well in theory, in practice, this involves computing the __Hessian__ (matrix of second derivatives) of the loss, which for an entire matrix containing millions of weights, involves far too many parameters to be feasible in practice. In future I may dedicate a separate post to higher-order optimization methods, but for now just know that they do exist (and they're a fascinating area of research).
 
-## Today's Example Data 
-
 ## Momentum
 
 For those familiar with Newtonian physics, momentum measures the quantity of motion of an object. It is computed as the product of an object's mass and velocity, and it is this physical interpretation that inspired the Momentum Optimization variant. Regular Gradient descent does not care about the gradients in previous update iterations - if the current value is small, so will be the update. This can sometimes cause convergence to take a very long time. Conversely, Momentum optimization cares a lot about earlier gradients. At each iteration, instead of subtracting the gradient directly, it subtracts the gradient from a __momentum vector__, and updates the weights by adding the momentum vector to the previous instance. Here are the equations defining Momentum:
@@ -57,9 +55,27 @@ There would be identical equations for updating the bias term as well. Notice th
 
 A couple of other things to note. Often in the literature, you will see the first equation written as \\( V_{w} := \beta V_{w} + \nabla_{w} J(w) \\), which has the effect of scaling the equation by \\( 1 - \beta \\), but the principle is identical. Also, some papers don't bother using this on the bias term. Notice too that in these equations, the gradient acts not as the velocity, but as the acceleration ( \\( V_{w} \\) is akin to the velocity). If there is a drawback in using Momentum, it's that you now have another hyperparameter to tune (yay!). However in certain situations, such as when there is no batch normalization, and features can have very different units, this addition can save a lot of time.
 
-So how do we implement this in Tensorflow? Luckily, it's incredibly easy:
+So how do we implement this in Tensorflow? Luckily, it's incredibly easy. There's a built-in hyperparameter for including it in the optimizer:
+
+```{python}
+optimizer = keras.optimizers.SGD(learning_rate = 0.02, momentum = 0.9)
+```
 
 ## Nesterov Accelerated Gradient
+
+This method just involves a small variation on momentum, but it almost always works even faster. All we do to adapt momentum into Nesterov's accelerated gradient is modify the gradient itself:
+
+$$ V_{w} := \beta V_{w} + (1 - \beta) \nabla_{w} J(w + \beta V_{w}) $$
+
+$$ w := w - \alpha V_{w} $$
+
+This might seem like a small change, but it can have very large performance gains. Why? Well now we're measuring the gradient of the cost function not at the local weight position \\( w \\), but slightly ahead of it. Since the momentum vector is pointing in the direction of the optimum, it is more accurate to take steps in that direction instead of the direction of the local gradient. After many steps, these small improvements add up and this variation can be significantly faster. 
+
+Just like regular momentum, implementing this in Tensorflow is quite simple. We just set the `Nesterov` hyperparameter to `True`:
+```{python}
+optimizer = keras.optimizers.SGD(learning_rate = 0.02, momentum = 0.9, nesterov=True)
+```
+This method was introduces by Yurii Nesterov in a paper in 1983 (i'll include the original paper in the reading section), but it was first adapted to training deep neural networks in a paper by Ilya Sutskever et al in 2013. They gave it the name _Nesterov Accelerated Gradient_, or NAG, so you may see it referred to in this way.
 
 ## RMSProp
 
