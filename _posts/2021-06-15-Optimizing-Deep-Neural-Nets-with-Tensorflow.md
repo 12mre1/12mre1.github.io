@@ -151,7 +151,7 @@ Often this variation converges slightly faster than Adam. However, the paper int
 ## Application
 
 Now let's actually test some of these optimizers. This is relatively easy to do in Keras, since the loss history can be easily extracted from a trained model. The data i'll use is the built-in fashion MNIST dataset found in the keras datasets library. It consists of 70,000 grayscale 28 x 28 images, which I will split into train and test sets. I'm also going to scale the pixel values to be between 0 and 1 (this helps training). I use a train test split of 60000, 10000. Note that in this case, I don't really care much about overall performance - I'm just trying to demonstrate the differences in optimizers.
-```{python}
+```python
 from tensorflow import keras
 # 70000 grayscale 28 x 28 images, 10 classes
 fashion_mnist = keras.datasets.fashion_mnist
@@ -168,7 +168,7 @@ class_names = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
                "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
 ```
 Now I'll define a simple feed forward network. First I flatten the images into a single column vector, then I pass that input through a couple of dense layers. It's fairly self-explanatory. Ultimately our output will be a softmax score over 10 classes (see the categories listed above).
-```{python}
+```python
 model = keras.models.Sequential([
   keras.layers.Flatten(input_shape=[28,28])), # same as X.reshape(-1,1)
   keras.layers.Dense(300, activation = "relu"),
@@ -177,7 +177,7 @@ model = keras.models.Sequential([
   ])
 ```
 Now I'll compile and fit the model first using regular SGD. I'll also time the fit method:
-```{python}
+```python
 model.compile(loss="sparse_categorical_crossentropy",
               optimizer="sgd",
               metrics=["accuracy"])
@@ -189,7 +189,7 @@ sgd_time = sgd_end - sgd_start
 ```
 This may take a few minutes to run, but once it has, we can quickly extract the validation loss for each iteration (i've chosen 30 epochs
 somewhat arbitrarily, but feel free to fiddle with that number as long as you keep in constant across optimizers). Next let's retrain the model using Nadam:
-```{python}
+```python
 # Nadam
 model.compile(loss="sparse_categorical_crossentropy",
               optimizer=keras.optimizers.Nadam(beta_1 = 0.9, beta_2 = 0.999),
@@ -201,7 +201,7 @@ nadam_end = time()
 nadam_time = nadam_end - nadam_start
 ```
 Lastly, let's run RMSProp. In each of these cases, I use the default hyperparameter values we discussed earlier.
-```{python}
+```python
 # RMSProp
 model.compile(loss="sparse_categorical_crossentropy",
               optimizer=keras.optimizers.RMSprop(rho = 0.9),
@@ -213,7 +213,7 @@ rmsp_end = time()
 rmsp_time = rmsp_end - rmsp_start
 ```
 Lastly I'll show you the loss functions (train and val) for each of these optimizers:
-```{python}
+```python
 def plot_loss(history_metric):
   plt.plot(range(15), rmsp_history.history[history_metric], label = 'RMSprop')
   plt.plot(range(15), nadam_history.history[history_metric], label = 'Nadam')
