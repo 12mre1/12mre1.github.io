@@ -4,6 +4,10 @@ title: "Optimizing Deep Neural Nets with Tensorflow"
 date: 2021-06-15
 ---
 
+_Prerequisite Math: Calculus_
+
+_Prerequisite Coding: Python (Tensorflow)_
+
 ## Introduction
 
 Most of today's state-of-the-art machine learning models are some kind of deep neural network. But while such models are excellent at fitting complex functions to model relationships between features (X) and targets (y), one of their biggest downsides is that they can take a very long time to train. There are several ways you can mitigate this such as (this list is not exhaustive):
@@ -57,7 +61,7 @@ A couple of other things to note. Often in the literature, you will see the firs
 
 So how do we implement this in Tensorflow? Luckily, it's incredibly easy. There's a built-in hyperparameter for including it in the optimizer:
 
-```{python}
+```python
 optimizer = keras.optimizers.SGD(learning_rate = 0.02, momentum = 0.9)
 ```
 
@@ -72,7 +76,7 @@ $$ w := w - \alpha V_{w} $$
 This might seem like a small change, but it can have very large performance gains. Why? Well now we're measuring the gradient of the cost function not at the local weight position \\( w \\), but slightly ahead of it. Since the momentum vector is pointing in the direction of the optimum, it is more accurate to take steps in that direction instead of the direction of the local gradient. After many steps, these small improvements add up and this variation can be significantly faster. 
 
 Just like regular momentum, implementing this in Tensorflow is quite simple. We just set the `Nesterov` hyperparameter to `True`:
-```{python}
+```python
 optimizer = keras.optimizers.SGD(learning_rate = 0.02, momentum = 0.9, nesterov=True)
 ```
 This method was introduces by Yurii Nesterov in a paper in 1983 (i'll include the original paper in the reading section), but it was first adapted to training deep neural networks in a paper by Ilya Sutskever et al in 2013. They gave it the name _Nesterov Accelerated Gradient_, or NAG, so you may see it referred to in this way.
@@ -104,7 +108,7 @@ $$ w \leftarrow w - \alpha \nabla_{w} J(w) \oslash \sqrt{s + \epsilon} $$
 Only the first equation really changes. In practice, a value of 0.9 for \\( beta \\) tends to work quite well. Although this does add another hyperparameter, the default value tends to be near the best possible, so depending on the application, you may not actually have to tune it. Unless the problem is very simple, this __Root Mean Squared Propagation__ (RMSProp) algorithm almost always outperforms AdaGrad. Note that this was invented by Hinton and his students, but was never formally published.
 
 Implementing this in keras is, as you might expect, quite simple:
-```{python}
+```python
 optimizer = keras.optimizers.RMSProp(learning_rate= 0.02, rho = 0.9)
 ```
 In the above implementation, \\( \beta \\) is represented by the `rho` argument. To reiterate, using this will dampen the oscillations in descent and lead to faster convergence just like with AdaGrad, but we no longer have to worry about stopping too early. This algorithm was the preferred choice of researchers for a few years, until the next technique was introduced.
@@ -127,7 +131,7 @@ In the equation above, \\( t \\) represents the iteration number, beginning at 1
 
 Why moment estimation? Well these equations are estimating the mean and variance of our gradients, which are also called the first and second moments. And like our other methods, this one is also easy to implement in Keras.
 
-```{python}
+```python
 optimizer = keras.optimizers.Adam(learning_rate = 0.001, beta_1 = 0.9, beta_2 = 0.999)
 ```
 Note that the smoothing parameter will default to `None`, which will direct keras to use the `keras.backend.epsilon()` parameter, which defaults to 10e-07.
