@@ -134,9 +134,112 @@ Note that the smoothing parameter will default to `None`, which will direct kera
 
 ## Nadam
 
+- Nadam optimization is exactly what you're thinking: Adam optimization combined with the Nesterov trick. Now the gradient is not evaluated at the local point, but is instead evaluated at the sum of the local weight and current momentum:
+
+$$ m \leftarrow \beta_1 m - (1 - \beta_1) \nabla_{w} J(w + \beta m) $$
+
+$$ s \leftarrow \beta_2 s + (1 - \beta_2) \nabla_{w} J(w + \beta m) \otimes \nabla_{w} J(w + \beta m) $$
+
+$$ \hat{m} \leftarrow \frac{m}{1 - \beta_{1}^{t}} $$
+
+$$ \hat{s} \leftarrow \frac{s}{1 - \beta_{2}^{t}} $$
+
+$$ w \leftarrow w - \alpha \hat{m} \oslash \sqrt{\hat{s} + \epsilon} $$
+
+Often this variation converges slightly faster than Adam. However, the paper introducing this technique finds that sometimes RMSProp can outperform Nadam. So it is wise to try several different optimizers for your task, to see which one works best. Just as a caveat, current research has found that although adaptive methods like RMSProp and Nadam can greatly improve training speed, in some cases they can lead to models that do not generalize very well. In these cases you may be better off using a slower optimization to achieve a higher test error. Or try using regular Nesterov Accelerated Gradient instead of these more complex optimizers.
+
 ## Application
 
+Now let's actually test some of these optimizers. This is relatively easy to do in Keras, since the loss history can be easily extracted from a trained model. The data i'll use is the built-in fashion MNIST dataset found in the keras datasets library. It consists of 70,000 grayscale 28 x 28 images, which I will split into train and test sets. I'm also going to scale the pixel values to be between 0 and 1 (this helps training). I use a train test split of 60000, 10000. Note that in this case, I don't really care much about overall performance - I'm just trying to demonstrate the differences in optimizers.
+```{python}
+from tensorflow import keras
+# 70000 grayscale 28 x 28 images, 10 classes
+fashion_mnist = keras.datasets.fashion_mnist
+from time import time
+import matplotlib.pyplot as plt
+
+(X_train_full, y_train_full), (X_test_full, y_test_full) = fashion_mnist.load_data()
+
+# Scale
+X_train_full, X_test_full = X_train_full/255.0, X_test_full/255.0
+y_train_full, y_test_full = y_train_full, y_test_full
+
+class_names = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
+               "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
+```
+Now I'll define a simple feed forward network. First I flatten the images into a single column vector, then I pass that input through a couple of dense layers. It's fairly self-explanatory. Ultimately our output will be a softmax score over 10 classes (see the categories listed above).
+```{python}
+model = keras.models.Sequential([
+  keras.layers.Flatten(input_shape=[28,28])), # same as X.reshape(-1,1)
+  keras.layers.Dense(300, activation = "relu"),
+  keras.layers.Dense(100, activation = "relu"),
+  keras.layers.Dense(10, activation = "softmax")
+  ])
+```
+Now I'll compile and fit the model first using regular SGD. I'll also time the fit method:
+```{python}
+model.compile(loss="sparse_categorical_crossentropy",
+              optimizer="sgd",
+              metrics=["accuracy"])
+sgd_start = time()
+sgd_history = model.fit(X_train_full, y_train_full, epochs = 15,
+                        validation_data = (X_test_full, y_test_full))
+sgd_end = time()
+sgd_time = sgd_end - sgd_start
+```
+This may take a few minutes to run, but once it has, we can quickly extract the validation loss for each iteration (i've chosen 30 epochs
+somewhat arbitrarily, but feel free to fiddle with that number as long as you keep in constant across optimizers). Next let's retrain the model using Nadam:
+```{python}
+# Nadam
+model.compile(loss="sparse_categorical_crossentropy",
+              optimizer=keras.optimizers.Nadam(beta_1 = 0.9, beta_2 = 0.999),
+              metrics=["accuracy"])
+nadam_start = time()
+nadam_history = model.fit(X_train_full, y_train_full, epochs = 15,
+                        validation_data = (X_test_full, y_test_full))
+nadam_end = time()
+nadam_time = nadam_end - nadam_start
+```
+Lastly, let's run RMSProp. In each of these cases, I use the default hyperparameter values we discussed earlier.
+```{python}
+# RMSProp
+model.compile(loss="sparse_categorical_crossentropy",
+              optimizer=keras.optimizers.RMSprop(rho = 0.9),
+              metrics=["accuracy"])
+rmsp_start = time()
+rmsp_history = model.fit(X_train_full, y_train_full, epochs = 15,
+                        validation_data = (X_test_full, y_test_full))
+rmsp_end = time()
+rmsp_time = rmsp_end - rmsp_start
+```
+Lastly I'll show you the loss functions (train and val) for each of these optimizers:
+```{python}
+def plot_loss(history_metric):
+  plt.plot(range(15), rmsp_history.history[history_metric], label = 'RMSprop')
+  plt.plot(range(15), nadam_history.history[history_metric], label = 'Nadam')
+  plt.plot(range(15), sgd_history.history[history_metric], label = 'SGD')
+
+  plt.title('Comparison of {} Across Optimizers'.format(history_metric))
+  plt.xlabel('epoch')
+  plt.ylabel('{} (Categorical Crossentropy)'.format(history_metric))
+  plt.legend()
+  plt.show()
+
+plot_loss('loss')
+plot_loss('val_loss')
+```
+Here are plots showing the resulting loss and validation loss. Admittedly there is some overfitting going on here, but notice how quickly Nadam and RMS prop get to low levels of loss both in training and validation. This can save quite some time on larger datasets.
+
+<center><img src="/img/optimizers_train_loss.png" width = "30%" alt = "Train Loss">
+<img src="/img/optimizers_val_loss.png" width = "30%" alt = "Val Loss"></center>
+
+Now this was a very general demonstration. The effects are likely even more extreme when the hyperparameters are properly tuned (in particular the learning rate). I encourage you to do this.
+
 ## Conclusion
+
+We've covered a lot of information today, but the key takeaway is that there are way more powerful optimization methods than regular Gradient Descent. Note that many of these optimizers will produce very dense models (lots of nonzero parameters), which can slow down your training time. To avoid this, you might try using L1 regularization. There are also several open-source packages designed to speed up tensorflow model training.
+
+Most people do not imagine optimizer choice to be a hyperparameter. But while it is true that certain optimizers generally outperform others, I encourage you (whenever you have time) to try a variety of them on every ML task.
 
 ## Further Reading
 
@@ -147,3 +250,7 @@ Note that the smoothing parameter will default to `None`, which will direct kera
 - Here is the AdaGrad paper: _Adaptive Subgradient Methods for Online Learning and Stochastic Optimization_. John Duchi et al., Journal of Machine Learning Research 12(2011): 2121-2159.
 
 - Here is the Adam paper: _Adam: A Method for Stochastic Optimization._Diederik P. Kingma and Jimmy Ba. arXiv preprint: 1412.6980 (2014)
+
+- [Here](https://machinelearningmastery.com/gradient-descent-with-nesterov-momentum-from-scratch/) is a great article by Jason Brownlee that builds Nesterov Momentum from scratch.
+
+- The [Keras optimizers documentation](https://keras.io/api/optimizers/) is quite helpful too.
