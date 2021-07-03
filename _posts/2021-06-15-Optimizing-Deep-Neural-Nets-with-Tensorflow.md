@@ -77,9 +77,21 @@ optimizer = keras.optimizers.SGD(learning_rate = 0.02, momentum = 0.9, nesterov=
 ```
 This method was introduces by Yurii Nesterov in a paper in 1983 (i'll include the original paper in the reading section), but it was first adapted to training deep neural networks in a paper by Ilya Sutskever et al in 2013. They gave it the name _Nesterov Accelerated Gradient_, or NAG, so you may see it referred to in this way.
 
-## RMSProp
-
 ## AdaGrad
+
+Suppose our loss function is shaped like an elongated bowl (this is true for small neighborhoods even if the global function is very 'wiggly'). During the beginning of Gradient descent, the gradient will be pointed mostly downward, with only a small shift on the horizontal axis. This changes gradually in later steps, but overall, the path of descent towards the optimimum resemble something close to an 'L' shape, but with a rounded corner. What if instead of following this shape (vertical, then horizontal descent) we proceeded directly towards the optimum? Think about it like following the hypotenuse of the triangle. We could potentially save a lot of time. Here's a picture showing what I mean:
+
+You can see that going directly towards the minimum would be much quicker (the distance would be shorter). This is exactly the idea behind the _Adaptive Gradient_, or __AdaGrad__ method. We do this by scaling down the gradient in its steepest directions (which are usually closer to vertical than horizontal). Here are the update equations:
+
+$$ s \leftarrow s + \nabla_{w} J(w) \otimes \nabla_{w} J(w) $$
+
+$$ w \leftarrow w - \alpha \nabla_{w} J(w) \oslash \sqrt{s + \epsilon} $$
+
+So what's going on here? Well the first equation accumulates the squares of the weight gradients. This has the effect of identifying the steepest directions of the gradient, which will grow when squared (the directions that are not steep will not grow relative to their counterparts). Note that the \\( \otimes \\) symbol is called the _Hadamard Product_, and simply denotes elementwise multiplication. In the second equation, we update the weights, downscaling the original gradients by \\( \sqrt{s + \epsilon} \\) (note the special notation for elementwise division). Since s accumulated the square gradients, this has the effect of downscaling the steeper directions more than the others, leading to a descent that is oriented closer to the true optimum (avoiding the 'L' shape I discussed earlier). \\( \epsilon \\) is a smoothing parameter, added to prevent dividion by 0, and is typically set to 10-10.
+
+Overall, this algorithm decays the learning rate faster for steeper dimensions than for gentler ones. We call this an _adaptive learning rate_, and it requires much less tuning of the \\( \alpha \\) parameter than with other methods. An unfortunate downside of this technique is that although it is great for simple surfaces like linear regression, on neural nets it often stops too soon. The learning rate is downscaled so much that we never reach the minimum loss. There is a built-in `AdaGrad` optimzer in keras, but it rarely makes sense to use (though you could use it for simpler models, like regression). So why do I mention it? Well understanding why it works is key to understanding the next optimization technique.
+
+## RMSProp
 
 ## Adam
 
@@ -88,3 +100,5 @@ This method was introduces by Yurii Nesterov in a paper in 1983 (i'll include th
 ## Conclusion
 
 ## Further Reading
+
+- Here is the NAG paper: _On the importance of initialization and momentum in deep learning_. Ilya Sutskever, James Martens, George Dahl, Geoffrey Hinton ; Proceedings of the 30th International Conference on Machine Learning, PMLR 28(3):1139-1147, 2013. 
