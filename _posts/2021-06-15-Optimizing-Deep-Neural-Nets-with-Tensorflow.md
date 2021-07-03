@@ -81,7 +81,7 @@ This method was introduces by Yurii Nesterov in a paper in 1983 (i'll include th
 
 Suppose our loss function is shaped like an elongated bowl (this is true for small neighborhoods even if the global function is very 'wiggly'). During the beginning of Gradient descent, the gradient will be pointed mostly downward, with only a small shift on the horizontal axis. This changes gradually in later steps, but overall, the path of descent towards the optimimum resemble something close to an 'L' shape, but with a rounded corner. What if instead of following this shape (vertical, then horizontal descent) we proceeded directly towards the optimum? Think about it like following the hypotenuse of the triangle. We could potentially save a lot of time. Here's a picture showing what I mean:
 
-<center><img src="/img/adagrad_loss.png" width = "40%" alt = "Adagrad Loss"></center>
+<center><img src="/img/adagrad_loss.png" width = "30%" alt = "Adagrad Loss"></center>
 
 You can see that going directly towards the minimum (the orange trajectory) would be much quicker than the blue trajectory (the distance would be shorter). This is exactly the idea behind the _Adaptive Gradient_, or __AdaGrad__ method. We do this by scaling down the gradient in its steepest directions (which are usually closer to vertical than horizontal). Here are the update equations:
 
@@ -111,6 +111,27 @@ In the above implementation, \\( \beta \\) is represented by the `rho` argument.
 
 ## Adam
 
+_Adaptive Moment Estimation_ (Adam) combines the ideas of momentum and RMSprop. It keeps track of past gradients just like momentum, and it also keeps track of scaled squared gradients like RMSProp. There are several equations in this case, but we've covered them already:
+
+$$ m \leftarrow \beta_1 m - (1 - \beta_1) \nabla_{w} J(w) $$
+
+$$ s \leftarrow \beta_2 s + (1 - \beta_2) \nabla_{w} J(w) \otimes \nabla_{w} J(w) $$
+
+$$ \hat{m} \leftarrow \frac{m}{1 - \beta_{1}^{t}} $$
+
+$$ \hat{s} \leftarrow \frac{s}{1 - \beta_{2}^{t}} $$
+
+$$ w \leftarrow w - \alpha \hat{m} \oslash \sqrt{\hat{s} + \epsilon} $$
+
+In the equation above, \\( t \\) represents the iteration number, beginning at 1. You can see that this is very similar to both RMSProp and to Momentum. The third and forth equations are typically initialized at zero. Since they will be biased towards zero early in training, they help to boost \\( m \\) and \\( s \\). We now have several hyperparameters, but don't worry. Typically in practice, \\( \beta_1 \\) is initialized to 0.9, and \\( \beta_2 \\) initialized to 0.999. The smoothing parameter is, as before, initialized to a small number like 10e-0.7. Finally because Adam is an adaptive method, you don't need to worry as much about tuning the learning rate (0.001 usually works well).
+
+Why moment estimation? Well these equations are estimating the mean and variance of our gradients, which are also called the first and second moments. And like our other methods, this one is also easy to implement in Keras.
+
+```{python}
+optimizer = keras.optimizers.Adam(learning_rate = 0.001, beta_1 = 0.9, beta_2 = 0.999)
+```
+Note that the smoothing parameter will default to `None`, which will direct keras to use the `keras.backend.epsilon()` parameter, which defaults to 10e-07.
+
 ## Nadam
 
 ## Application
@@ -124,3 +145,5 @@ In the above implementation, \\( \beta \\) is represented by the `rho` argument.
 - Here is the NAG paper: _On the importance of initialization and momentum in deep learning_. Ilya Sutskever, James Martens, George Dahl, Geoffrey Hinton ; Proceedings of the 30th International Conference on Machine Learning, PMLR 28(3):1139-1147, 2013. 
 
 - Here is the AdaGrad paper: _Adaptive Subgradient Methods for Online Learning and Stochastic Optimization_. John Duchi et al., Journal of Machine Learning Research 12(2011): 2121-2159.
+
+- Here is the Adam paper: _Adam: A Method for Stochastic Optimization._Diederik P. Kingma and Jimmy Ba. arXiv preprint: 1412.6980 (2014)
