@@ -15,8 +15,8 @@ Most of today's state-of-the-art machine learning models are some kind of deep n
 I encourage you to experiment with as many of these hyperparameters as possible to see what works best. However in this post, I'm going to talk about one of the biggest ways to improve training time: the __optimizer__. Most deep learning frameworks (and indeed many non-neural modelling solutions) use some version of __Gradient Descent__ as the default optimizer. While this is an excellent way to generate optimal weights in your network, researchers have in the past decade or so, come up with a variety of clever ways to modify this procedure to ensure faster and smoother convergence than is typically found in SGD. Specifically, I'm going to walk you through the following alternative procedures:
 1. Momentum
 2. Nesterov Accelerated Gradient
-3. RMSProp
-4. AdaGrad
+3. AdaGrad
+4. RMSProp
 5. Adam
 6. Nadam
 
@@ -87,11 +87,25 @@ $$ s \leftarrow s + \nabla_{w} J(w) \otimes \nabla_{w} J(w) $$
 
 $$ w \leftarrow w - \alpha \nabla_{w} J(w) \oslash \sqrt{s + \epsilon} $$
 
-So what's going on here? Well the first equation accumulates the squares of the weight gradients. This has the effect of identifying the steepest directions of the gradient, which will grow when squared (the directions that are not steep will not grow relative to their counterparts). Note that the \\( \otimes \\) symbol is called the _Hadamard Product_, and simply denotes elementwise multiplication. In the second equation, we update the weights, downscaling the original gradients by \\( \sqrt{s + \epsilon} \\) (note the special notation for elementwise division). Since s accumulated the square gradients, this has the effect of downscaling the steeper directions more than the others, leading to a descent that is oriented closer to the true optimum (avoiding the 'L' shape I discussed earlier). \\( \epsilon \\) is a smoothing parameter, added to prevent dividion by 0, and is typically set to 10-10.
+So what's going on here? Well the first equation accumulates the squares of the weight gradients. This has the effect of identifying the steepest directions of the gradient, which will grow when squared (the directions that are not steep will not grow relative to their counterparts). Note that the \\( \otimes \\) symbol is called the _Hadamard Product_, and simply denotes elementwise multiplication. In the second equation, we update the weights, downscaling the original gradients by \\( \sqrt{s + \epsilon} \\) (note the special notation for elementwise division). Since s accumulated the square gradients, this has the effect of downscaling the steeper directions more than the others, leading to a descent that is oriented closer to the true optimum (avoiding the 'L' shape I discussed earlier). \\( \epsilon \\) is a smoothing parameter, added to prevent dividion by 0, and is typically set to 10e-10.
 
 Overall, this algorithm decays the learning rate faster for steeper dimensions than for gentler ones. We call this an _adaptive learning rate_, and it requires much less tuning of the \\( \alpha \\) parameter than with other methods. An unfortunate downside of this technique is that although it is great for simple surfaces like linear regression, on neural nets it often stops too soon. The learning rate is downscaled so much that we never reach the minimum loss. There is a built-in `AdaGrad` optimzer in keras, but it rarely makes sense to use (though you could use it for simpler models, like regression). So why do I mention it? Well understanding why it works is key to understanding the next optimization technique.
 
 ## RMSProp
+
+To prevent the AdaGrad algorithm from stopping too soon, we accumulate only the gradients from recent iterations instead of all gradients since training began. To accomplish this, we use a setup similar to momentum, placing an exponential decay on our \\( s \\) vector:
+
+$$ s \leftarrow \beta s + (1 - \beta) \nabla_{w} J(w) \otimes \nabla_{w} J(w) $$
+
+$$ w \leftarrow w - \alpha \nabla_{w} J(w) \oslash \sqrt{s + \epsilon} $$
+
+Only the first equation really changes. In practice, a value of 0.9 for \\( beta \\) tends to work quite well. Although this does add another hyperparameter, the default value tends to be near the best possible, so depending on the application, you may not actually have to tune it. Unless the problem is very simple, this __Root Mean Squared Propagation__ (RMSProp) algorithm almost always outperforms AdaGrad. Note that this was invented by Hinton and his students, but was never formally published.
+
+Implementing this in keras is, as you might expect, quite simple:
+```{python}
+optimizer = keras.optimizers.RMSProp(learning_rate= 0.02, rho = 0.9)
+```
+In the above implementation, \\( \beta \\) is represented by the `rho` argument. To reiterate, using this will dampen the oscillations in descent and lead to faster convergence just like with AdaGrad, but we no longer have to worry about stopping too early. This algorithm was the preferred choice of researchers for a few years, until the next technique was introduced.
 
 ## Adam
 
@@ -102,3 +116,5 @@ Overall, this algorithm decays the learning rate faster for steeper dimensions t
 ## Further Reading
 
 - Here is the NAG paper: _On the importance of initialization and momentum in deep learning_. Ilya Sutskever, James Martens, George Dahl, Geoffrey Hinton ; Proceedings of the 30th International Conference on Machine Learning, PMLR 28(3):1139-1147, 2013. 
+
+- Here is the AdaGrad paper: _Adaptive Subgradient Methods for Online Learning and Stochastic Optimization_. John Duchi et al., Journal of Machine Learning Research 12(2011): 2121-2159.
